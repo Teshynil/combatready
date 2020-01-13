@@ -1,0 +1,6 @@
+{
+    "CombatReady.Turn" : "Seu Turno",
+    "CombatReady.Next" : "Próximo",
+    "CombatReady.TimeMax" : "Tempo Máximo por Turno",
+    "CombatReady.TimeMaxHint" : "A duração do turno em minutos. O valor máximo é de 30min por turno."
+}

@@ -1,0 +1,6 @@
+{
+	"CombatReady.Turn" : "Your Turn",
+	"CombatReady.Next" : "Next Up",
+	"CombatReady.TimeMax" : "Maximum Time per Turn",
+	"CombatReady.TimeMaxHint" : "The time per turn in minutes, the maximum value is 30m per turn."
+}

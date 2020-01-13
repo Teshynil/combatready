@@ -1,0 +1,6 @@
+{
+    "CombatReady.Turn" : "Votre Tour",
+    "CombatReady.Next" : "Prochain Tour",
+    "CombatReady.TimeMax" : "Durée maximale d'un tour",
+    "CombatReady.TimeMaxHint" : "La durée d'un tour en minute, la valeur maximal est de 30mn par tours."
+}
