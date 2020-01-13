@@ -48,8 +48,8 @@
 	],
 	"styles" : ["combatready.css"],
 	"packs": [],
-	"url" : "https://gitlab.com/Ayanzo/combatready",
-	"download" : "https://gitlab.com/Ayanzo/combatready/-/archive/master/combatready-master.zip",
-	"manifest" : "https://gitlab.com/Ayanzo/combatready/raw/master/module.json",
+	"url" : "https://github.com/JacobMcAuley/combatready",
+	"download" : "https://github.com/JacobMcAuley/combatready/archive/master.zip",
+	"manifest" : "https://raw.githubusercontent.com/JacobMcAuley/combatready/master/module.json",
 	"minimumCoreVersion": "0.4.4"
 }

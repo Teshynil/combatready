@@ -22,9 +22,13 @@ to pause the timer, it responds to FVTT's pause mechanic.
 
 Combat Ready is currently speced to work with FVTT versions 0.3.6 +
 
+## Note
+
+This module was made by Ken L. This repo is only used to handle upkeep for future FVTT versions. 
+
 ## Installation Instructions
 
-Copy https://gitlab.com/Ayanzo/combatready/raw/master/module.json into the module installer
+Copy https://raw.githubusercontent.com/JacobMcAuley/combatready/master/module.json into the module installer
 inside foundry when it asks for the manifest.
 
 OR
@@ -34,5 +38,5 @@ there. Makes it easy to pull updates in the future.
 
 OR
 
-Download the zip, create a folder in public/modules called 'combatready' and extract
+Download the zip, create a folder in Data/modules called 'combatready' and extract
 the contents of "combatready-master.zip" there.
