@@ -20,7 +20,7 @@ reaches 3m, or the custom value, an 'expired' sound will play, but it does not
 automatically advance the turn. Shame is good enough in my opinion. If you need 
 to pause the timer, it responds to FVTT's pause mechanic.
 
-Combat Ready is currently speced to work with FVTT versions 0.3.6 +
+Combat Ready is currently speced to work with FVTT versions 0.4.4 +
 
 ## Note
 
