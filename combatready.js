@@ -105,6 +105,30 @@ var KHelpers = (function() {
  */
 class CombatReady {
 
+    static showEndTurnDialog() {
+      new Dialog({
+        title: 'End Turn',
+        buttons: {
+          endturn: {
+            label: 'End Turn',
+            callback: () => {
+              // game.combats.active.nextTurn()
+              // fix for 0.4.4, should be removed in 0.4.5
+              game.socket.emit(CombatReady.SOCKET, {senderId: game.user._id, type: "Boolean", endTurn: true});
+            }
+          }
+        },
+        close: () => {
+          new Promise(resolve => setTimeout(resolve, 1000)).then(() => {
+            CombatReady.toggleCheck();
+          });
+        }
+      }, {
+        width: 30,
+        top: 5
+      }).render(true);
+    }
+
 	static adjustWidth() {
 		let sidebar = document.getElementById("sidebar"); 
 		let body = document.getElementsByTagName("body")[0]; 
@@ -239,6 +263,14 @@ class CombatReady {
 				CombatReady.setTimeMax(val*60); 
 			}
 		});
+        game.settings.register("combatready", "endturndialog", {
+          name: "CombatReady.ShowEndTurnDialog",
+          hint: "CombatReady.ShowEndTurnDialogHint",
+          scope: "world",
+          config: true,
+          default: false,
+          type: Boolean
+        });
 
 		// init socket
 		game.socket.on(CombatReady.SOCKET, data => {
@@ -248,7 +280,11 @@ class CombatReady {
 					// if not ticking, start doing so to match the GM
 					if (!CombatReady.INTERVAL_IDS.some(e => {return e.name=="clock"}))
 						CombatReady.timerStart(); 	
-				}
+				} else {
+                    if (data.endTurn) {
+                        game.combats.active.nextTurn();
+                    }
+                }
 		});
 
 	}
@@ -390,8 +426,10 @@ class CombatReady {
 			let nxtentry = curCombat.turns[nxtturn]; 
 
 			if (!!entry && !game.user.isGM)
-				if (entry.actor.owner)
+				if (entry.actor.owner) {
 					CombatReady.doAnimateTurn(); 
+                    if (game.settings.get("combatready", "endturndialog")) CombatReady.showEndTurnDialog();
+                }
 				else if (nxtentry.actor.owner)
 					CombatReady.doAnimateNext(); 
 		}

@@ -2,5 +2,7 @@
 	"CombatReady.Turn" : "Your Turn",
 	"CombatReady.Next" : "Next Up",
 	"CombatReady.TimeMax" : "Maximum Time per Turn",
-	"CombatReady.TimeMaxHint" : "The time per turn in minutes, the maximum value is 30m per turn."
+	"CombatReady.TimeMaxHint" : "The time per turn in minutes, the maximum value is 30m per turn.",
+    "CombatReady.ShowEndTurnDialog": "Show End Turn Dialog",
+    "CombatReady.ShowEndTurnDialogHint": "Displays a Dialog to players on their turn that provides a button to end their current turn"
 }
