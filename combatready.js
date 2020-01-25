@@ -105,28 +105,36 @@ var KHelpers = (function() {
  */
 class CombatReady {
 
+    static EndTurnDialog = [];
+
+    static async closeEndTurnDialog() {
+      // go through all dialogs that we've opened and closed them
+      for (let d of CombatReady.EndTurnDialog) {
+        d.close();
+      }
+      CombatReady.EndTurnDialog.length = 0;
+    }
+
     static showEndTurnDialog() {
-      new Dialog({
-        title: 'End Turn',
-        buttons: {
-          endturn: {
-            label: 'End Turn',
-            callback: () => {
-              // game.combats.active.nextTurn()
-              // fix for 0.4.4, should be removed in 0.4.5
-              game.socket.emit(CombatReady.SOCKET, {senderId: game.user._id, type: "Boolean", endTurn: true});
+      CombatReady.closeEndTurnDialog().then(() => {;
+        let d = new Dialog({
+          title: 'End Turn',
+          buttons: {
+            endturn: {
+              label: 'End Turn',
+              callback: () => {
+                game.combats.active.nextTurn()
+              }
             }
           }
-        },
-        close: () => {
-          new Promise(resolve => setTimeout(resolve, 1000)).then(() => {
-            CombatReady.toggleCheck();
-          });
-        }
-      }, {
-        width: 30,
-        top: 5
-      }).render(true);
+        }, {
+          width: 30,
+          top: 5
+        });
+        d.render(true);
+        // add dialog to array of dialogs. when using just a single object we'd end up with multiple dialogs
+        CombatReady.EndTurnDialog.push(d);
+      });
     }
 
 	static adjustWidth() {
@@ -280,11 +288,7 @@ class CombatReady {
 					// if not ticking, start doing so to match the GM
 					if (!CombatReady.INTERVAL_IDS.some(e => {return e.name=="clock"}))
 						CombatReady.timerStart(); 	
-				} else {
-                    if (data.endTurn) {
-                        game.combats.active.nextTurn();
-                    }
-                }
+				}
 		});
 
 	}
@@ -425,13 +429,17 @@ class CombatReady {
 			if (nxtturn > curCombat.turns.length-1) nxtturn = 0; 
 			let nxtentry = curCombat.turns[nxtturn]; 
 
-			if (!!entry && !game.user.isGM)
-				if (entry.actor.owner) {
-					CombatReady.doAnimateTurn(); 
-                    if (game.settings.get("combatready", "endturndialog")) CombatReady.showEndTurnDialog();
-                }
-				else if (nxtentry.actor.owner)
-					CombatReady.doAnimateNext(); 
+			if (!!entry && !game.user.isGM) {
+                CombatReady.closeEndTurnDialog().then(() => {
+                  if (entry.actor.owner) {
+                      CombatReady.doAnimateTurn(); 
+                      if (game.settings.get("combatready", "endturndialog")) CombatReady.showEndTurnDialog();
+                  }
+                  else if (nxtentry.actor.owner) {
+                      CombatReady.doAnimateNext(); 
+                  }
+                });
+            }
 		}
 	}
 

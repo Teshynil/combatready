@@ -2,8 +2,8 @@
 	"name": "combatready",
 	"title": "Combat Ready!",
 	"description": "'<b><i>My Combat Tracker is Ready</i></b>' Combat ready indicator to remind players of their turn, as well as time taken. ",
-	"version": "1.1.2",
-	"author": "Ken L. maintained by JacobMcAuley and Shawn Milligan (n3rf_herder#9026 on discord)",
+	"version": "1.1.3",
+	"author": "Ken L. maintained by JacobMcAuley and Shawn Milligan [n3rf_herder#9026]",
 	"socket": true,
 	"languages": [
 		{
