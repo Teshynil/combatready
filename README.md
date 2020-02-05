@@ -28,7 +28,7 @@ This module was made by Ken L. This repo is only used to handle upkeep for futur
 
 ## Installation Instructions
 
-Copy https://raw.githubusercontent.com/JacobMcAuley/combatready/master/module.json into the module installer
+Copy https://raw.githubusercontent.com/smilligan93/combatready/master/module.json into the module installer
 inside foundry when it asks for the manifest.
 
 OR
