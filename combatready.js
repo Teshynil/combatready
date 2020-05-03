@@ -583,11 +583,13 @@ Hooks.on("deleteCombat",  function() {
  * Handle combatant update
  */
 Hooks.on("updateCombatant",  function(context, parentId, data) {
-	let combat = game.combats.get(parentId); 
-	let combatant = combat.data.combatants.find(o => o.id === data.id);
+	const combat = game.combats.get(parentId);
+	if (combat) {
+		const combatant = combat.data.combatants.find(o => o.id === data.id);
 
-	if (combatant.actor.owner) CombatReady.toggleCheck(); 
-}); 
+		if (combatant.actor.owner) CombatReady.toggleCheck();
+	}
+});
 
 /**
  * Handle combatant delete
