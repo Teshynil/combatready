@@ -49,7 +49,7 @@
 	"styles" : ["combatready.css"],
 	"packs": [],
 	"url" : "https://github.com/JacobMcAuley/combatready",
-	"download" : "https://github.com/smilligan93/combatready/archive/v1.1.4.zip",
+	"download" : "https://github.com/smilligan93/combatready/archive/master.zip",
 	"manifest" : "https://raw.githubusercontent.com/smilligan93/combatready/master/module.json",
 	"minimumCoreVersion": "0.6.0",
   	"compatibleCoreVersion": "0.6.0"
