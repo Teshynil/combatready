@@ -334,11 +334,13 @@ class CombatReady {
   }
 
   static onClickTurnBanner(ev) {
+    document.removeEventListener("click", CombatReady.onClickTurnBanner);
     CombatReady.stopAnimate();
     // play an acknowledgement sound!
     AudioHelper.play({ src: CombatReady.ACK_SOUND, volume: volume() });
   }
   static onClickNextBanner(ev) {
+    document.removeEventListener("click", CombatReady.onClickNextBanner);
     // kill next label anim if the user is fast
     let anims = TweenMax.getTweensOf(CombatReady.LABEL);
     for (let tween of anims) {
