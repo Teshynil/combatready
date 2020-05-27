@@ -42,7 +42,7 @@
 			"path": "lang/it.json"
 		}
 	],
-	"scripts": [
+	"esmodules": [
 		"greensock/dist/TweenMax.min.js",
 		"combatready.js"
 	],
