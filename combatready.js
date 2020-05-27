@@ -116,7 +116,7 @@ class CombatReady {
     }
 
     static showEndTurnDialog() {
-      CombatReady.closeEndTurnDialog().then(() => {;
+      CombatReady.closeEndTurnDialog().then(() => {
         let d = new Dialog({
           title: 'End Turn',
           buttons: {
@@ -229,7 +229,8 @@ class CombatReady {
 				break; 
 			case "ko":
 				KHelpers.addClass(label,"bmhannapro"); 
-				label.style["font-size"] = "100px"; 
+				label.style["font-size"] = "100px";
+				break;
 			case "ja":
 				KHelpers.addClass(label,"genshingothicbold"); 
 				label.style["font-size"] = "100px"; 
@@ -286,7 +287,7 @@ class CombatReady {
 					if (data.timetick) 
 						CombatReady.TIMECURRENT = data.timetick; 
 					// if not ticking, start doing so to match the GM
-					if (!CombatReady.INTERVAL_IDS.some(e => {return e.name=="clock"}))
+					if (!CombatReady.INTERVAL_IDS.some(e => {return e.name === "clock"}))
 						CombatReady.timerStart(); 	
 				}
 		});
@@ -336,9 +337,9 @@ class CombatReady {
 
 		CombatReady.BANNER.style.display = "flex"; 
 		CombatReady.COVER.style.display = "block"; 
-		CombatReady.BANNER.removeEventListener("click",CombatReady.onClickNextBanner); 
-		CombatReady.BANNER.removeEventListener("click",CombatReady.onClickTurnBanner); 
-		CombatReady.BANNER.addEventListener("click",CombatReady.onClickTurnBanner); 
+		document.removeEventListener("click",CombatReady.onClickNextBanner);
+		document.removeEventListener("click",CombatReady.onClickTurnBanner);
+		document.addEventListener("click",CombatReady.onClickTurnBanner);
 
 		TweenMax.staggerTo(CombatReady.CHEVRONS,3,{left:"100%", stagger:0.5, repeat:-1, ease:SlowMo.ease}); 
 		TweenMax.to(CombatReady.LABEL,1,{delay: 2, opacity:1}); 
@@ -367,9 +368,9 @@ class CombatReady {
 		CombatReady.COVER.style.display = "block"; 
 		CombatReady.BANNER.style.display = "flex"; 
 		CombatReady.COVER.style.display = "block"; 
-		CombatReady.BANNER.removeEventListener("click",CombatReady.onClickTurnBanner); 
-		CombatReady.BANNER.removeEventListener("click",CombatReady.onClickNextBanner); 
-		CombatReady.BANNER.addEventListener("click",CombatReady.onClickNextBanner); 
+		document.removeEventListener("click",CombatReady.onClickTurnBanner);
+		document.removeEventListener("click",CombatReady.onClickNextBanner);
+		document.addEventListener("click",CombatReady.onClickNextBanner);
 
 		// Randomize our beams
 		for (let beam of CombatReady.BEAMS) {
@@ -488,7 +489,7 @@ class CombatReady {
 
 		for (let idx=CombatReady.INTERVAL_IDS.length-1; idx>=0; --idx) {
 			let interval = CombatReady.INTERVAL_IDS[idx]; 
-			if (interval.name == "clock") {
+			if (interval.name === "clock") {
 				if (game.user.isGM) CombatReady.TIMEFILL.style.width ="0%"; 
 				// be content with a reset clock
 				return; 
@@ -510,7 +511,7 @@ class CombatReady {
 	static timerStop() {
 		for (let idx=CombatReady.INTERVAL_IDS.length-1; idx>=0; --idx) {
 			let interval = CombatReady.INTERVAL_IDS[idx]; 
-			if (interval.name == "clock") {
+			if (interval.name === "clock") {
 				window.clearInterval(interval.id); 
 				CombatReady.INTERVAL_IDS.splice(idx,1); 
 				break; 
@@ -529,7 +530,7 @@ class CombatReady {
 	static timerPause() {
 		for (let idx=CombatReady.INTERVAL_IDS.length-1; idx>=0; --idx) {
 			let interval = CombatReady.INTERVAL_IDS[idx]; 
-			if (interval.name == "clock") {
+			if (interval.name === "clock") {
 				window.clearInterval(interval.id); 
 				CombatReady.INTERVAL_IDS.splice(idx,1); 
 				break; 
@@ -543,7 +544,7 @@ class CombatReady {
 	static timerResume() {
 		for (let idx=CombatReady.INTERVAL_IDS.length-1; idx>=0; --idx) {
 			let interval = CombatReady.INTERVAL_IDS[idx]; 
-			if (interval.name == "clock")
+			if (interval.name === "clock")
 				return; 
 		}
 
@@ -596,7 +597,6 @@ Hooks.on("updateCombatant",  function(context, parentId, data) {
  */
 Hooks.on("deleteCombatant",  function(context, parentId, data) {
 	let combat = game.combats.get(parentId); 
-	let combatant = combat.data.combatants.find(o => o.id === data.id);
 
 	if (combat) {
 		CombatReady.stopAnimate(); 
@@ -640,7 +640,7 @@ Hooks.on("sidebarCollapse", function(a,collapsed) {
 Hooks.on("updateCombat", function(data, delta) {
 	CombatReady.toggleCheck(); 
 
-	if ( !game.user.isGM && Object.keys(delta).some(k => k == "round") ) {
+	if ( !game.user.isGM && Object.keys(delta).some(k => k === "round") ) {
 		AudioHelper.play({src: "modules/combatready/sounds/round.wav"});
 	}
 }); 
