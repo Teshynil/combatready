@@ -4,5 +4,10 @@
 	"CombatReady.TimeMax" : "Maximum Time per Turn",
 	"CombatReady.TimeMaxHint" : "The time per turn in minutes, the maximum value is 30m per turn.",
     "CombatReady.ShowEndTurnDialog": "Show End Turn Dialog",
-    "CombatReady.ShowEndTurnDialogHint": "Displays a Dialog to players on their turn that provides a button to end their current turn"
+    "CombatReady.ShowEndTurnDialogHint": "Displays a Dialog to players on their turn that provides a button to end their current turn",
+	"CombatReady.TickSound": "Ticking Sound",
+	"CombatReady.TickSoundHint": "Create a ticking sound when the player's turn is running out of time",
+	"CombatReady.Volume": "Volume",
+	"CombatReady.VolumeHint": "Set the overall volume of the module"
+
 }
