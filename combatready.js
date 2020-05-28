@@ -64,9 +64,9 @@ const registerSettings = () => {
 
 const volume = () => {
   const v = game.settings.get("combatready", "volume") / 100.0;
-  console.log(v)
+  console.log(v);
   return v;
-}
+};
 
 /**
  *
@@ -479,13 +479,16 @@ class CombatReady {
       if (nxtturn > curCombat.turns.length - 1) nxtturn = 0;
       let nxtentry = curCombat.turns[nxtturn];
 
-      if (!!entry && !game.user.isGM) {
+      if (entry !== undefined) {
         CombatReady.closeEndTurnDialog().then(() => {
-          if (entry.actor.owner) {
+          let isActive = entry.actor?._id === game.users.current.character?._id;
+          let isNext = nxtentry.actor?._id === game.users.current.character?._id;
+
+          if (isActive) {
             CombatReady.doAnimateTurn();
             if (game.settings.get("combatready", "endturndialog"))
               CombatReady.showEndTurnDialog();
-          } else if (nxtentry.actor.owner) {
+          } else if (isNext) {
             CombatReady.doAnimateNext();
           }
         });
@@ -513,7 +516,7 @@ class CombatReady {
 
     // If we're in the last 25%, tick
     if (CombatReady.TIMECURRENT >= (CombatReady.TIMEMAX / 4) * 3) {
-      if (game.settings.get('combatready', 'ticksound')) {
+      if (game.settings.get("combatready", "ticksound")) {
         AudioHelper.play({ src: CombatReady.TICK_SOUND, volume: volume() });
       }
     }
@@ -705,7 +708,10 @@ Hooks.on("updateCombat", function (data, delta) {
   CombatReady.toggleCheck();
 
   if (!game.user.isGM && Object.keys(delta).some((k) => k === "round")) {
-    AudioHelper.play({ src: "modules/combatready/sounds/round.wav", volume: volume() });
+    AudioHelper.play({
+      src: "modules/combatready/sounds/round.wav",
+      volume: volume(),
+    });
   }
 });
 
