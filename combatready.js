@@ -63,9 +63,7 @@ const registerSettings = () => {
 };
 
 const volume = () => {
-  const v = game.settings.get("combatready", "volume") / 100.0;
-  console.log(v);
-  return v;
+  return game.settings.get("combatready", "volume") / 100.0;
 };
 
 /**
