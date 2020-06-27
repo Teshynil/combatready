@@ -3,4 +3,10 @@
     "CombatReady.Next" : "Próximo",
     "CombatReady.TimeMax" : "Tempo Máximo por Turno",
     "CombatReady.TimeMaxHint" : "A duração do turno em minutos. O valor máximo é de 30min por turno."
+    "CombatReady.ShowEndTurnDialog": "Exibe mensagem de Fim de turno",
+    "CombatReady.ShowEndTurnDialogHint": "Exibe um diálogo para os jogadores no turno que fornece um botão para encerrar o turno atual",
+	"CombatReady.TickSound": "Som de tique-taque",
+	"CombatReady.TickSoundHint": "Crie um som de tique-taque quando o turno do jogador estiver acabando",
+	"CombatReady.Volume": "Volume",
+	"CombatReady.VolumeHint": "Defina o volume geral do módulo"
 }
