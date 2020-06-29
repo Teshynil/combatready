@@ -31,6 +31,22 @@ const registerSettings = () => {
       CombatReady.setTimeMax(val * 60);
     },
   });
+  game.settings.register("combatready", "disablenextup", {
+    name: "CombatReady.DisableNextUp",
+    hint: "CombatReady.DisableNextUpHint",
+    scope: "world",
+    config: true,
+    default: false,
+    type: Boolean,
+  });
+  game.settings.register("combatready", "disabletimer", {
+    name: "CombatReady.DisableTimer",
+    hint: "CombatReady.DisableTimerHint",
+    scope: "world",
+    config: true,
+    default: false,
+    type: Boolean,
+  });
   game.settings.register("combatready", "endturndialog", {
     name: "CombatReady.ShowEndTurnDialog",
     hint: "CombatReady.ShowEndTurnDialogHint",
@@ -397,6 +413,10 @@ class CombatReady {
    * Animate the "you're up next" prompt
    */
   static doAnimateNext() {
+    if (game.settings.get("combatready", "disablenextup")) {
+      return;
+    }
+
     if (!CombatReady.READY) {
       CombatReady.init();
     }
@@ -498,6 +518,10 @@ class CombatReady {
    *
    */
   static timerTick() {
+    if (game.settings.get("combatready", "disabletimer")) {
+      return;
+    }
+
     // If we're GM, we run the clock
     if (game.user.isGM) {
       CombatReady.TIMECURRENT++;
