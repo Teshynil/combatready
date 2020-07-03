@@ -1,0 +1,13 @@
+{
+	"CombatReady.Turn" : "你的回合",
+	"CombatReady.Next" : "下一个到你",
+	"CombatReady.TimeMax" : "每回合最长时间",
+	"CombatReady.TimeMaxHint" : "每回合最长的时间，最大为30分钟每回合。",
+    "CombatReady.ShowEndTurnDialog": "显示结束回合对话框",
+    "CombatReady.ShowEndTurnDialogHint": "在玩家的回合，显示一个对话框，玩家可以通过点击对话框中的按钮来结束当前回合。",
+	"CombatReady.TickSound": "滴答声",
+	"CombatReady.TickSoundHint": "当一个玩家的回合即将结束时，播放时钟的滴答声。",
+	"CombatReady.Volume": "音量",
+	"CombatReady.VolumeHint": "设置该模组中的音量"
+
+}
