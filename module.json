@@ -40,6 +40,11 @@
 			"lang": "it",
 			"name": "Italiano (Italian)",
 			"path": "lang/it.json"
+		},
+		{
+			"lang": "zh-SHAN",
+			"name": "简体中文 (Chinese [Simplified])",
+			"path": "lang/zh-SHAN.json"
 		}
 	],
 	"esmodules": [
