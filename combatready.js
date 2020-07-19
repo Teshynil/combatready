@@ -500,7 +500,8 @@ class CombatReady {
       if (entry !== undefined) {
         CombatReady.closeEndTurnDialog().then(() => {
           let isActive = entry.actor?._id === game.users.current.character?._id;
-          let isNext = nxtentry.actor?._id === game.users.current.character?._id;
+          let isNext =
+            nxtentry.actor?._id === game.users.current.character?._id;
 
           if (isActive) {
             CombatReady.doAnimateTurn();
@@ -511,6 +512,8 @@ class CombatReady {
           }
         });
       }
+    } else if (!curCombat) {
+      CombatReady.closeEndTurnDialog();
     }
   }
 
@@ -667,6 +670,7 @@ Hooks.on("pauseGame", function () {
 Hooks.on("deleteCombat", function () {
   CombatReady.timerStop();
   CombatReady.stopAnimate();
+  CombatReady.toggleCheck();
 });
 
 /**
@@ -689,8 +693,8 @@ Hooks.on("deleteCombatant", function (context, parentId, data) {
 
   if (combat) {
     CombatReady.stopAnimate();
-    CombatReady.toggleCheck();
   }
+  CombatReady.toggleCheck();
 });
 
 /**
@@ -728,6 +732,8 @@ Hooks.on("sidebarCollapse", function (a, collapsed) {
  */
 Hooks.on("updateCombat", function (data, delta) {
   CombatReady.toggleCheck();
+
+  console.log("update combat", data);
 
   if (!game.user.isGM && Object.keys(delta).some((k) => k === "round")) {
     AudioHelper.play({
