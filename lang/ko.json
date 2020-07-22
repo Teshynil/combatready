@@ -3,10 +3,15 @@
 	"CombatReady.Next" : "다음 차례",
 	"CombatReady.TimeMax" : "턴당 최대 시간",
 	"CombatReady.TimeMaxHint" : "분 단위의 턴당 시간, 최대치는 30분이다.",
+	"CombatReady.DisableNextUp": "'다음 차례' 알림 사용 안 함",
+	"CombatReady.DisableNextUpHint": "다음 차례에 대한 알림을 제거한다",
+	"CombatReady.DisableTimer": "타이머 비활성화",
+	"CombatReady.DisableTimerHint": "화면 하단의 타이머 기능을 완전히 비활성화 한다",
     "CombatReady.ShowEndTurnDialog": "턴 종료 대화상자 표시",
     "CombatReady.ShowEndTurnDialogHint": "플레이어가 현재 턴을 끝낼 수 있는 버튼을 제공하는 대화상자를 표시한다",
 	"CombatReady.TickSound": "시계 소리",
 	"CombatReady.TickSoundHint": "플레이어의 턴에서 시간이 부족할 때 똑딱거리는 소리를 만든다",
 	"CombatReady.Volume": "볼륨",
 	"CombatReady.VolumeHint": "모듈의 전체적 볼륨 설정"
+
 }
