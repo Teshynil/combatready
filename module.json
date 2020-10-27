@@ -2,8 +2,8 @@
 	"name": "combatready",
 	"title": "Combat Ready!",
 	"description": "'<b><i>My Combat Tracker is Ready</i></b>' Combat ready indicator to remind players of their turn, as well as time taken. ",
-	"version": "1.1.8",
-	"author": "Ken L. maintained by Shawn Milligan [n3rf_herder#9026]",
+	"version": "1.1.10",
+	"author": "Shawn Milligan [n3rf_herder#9026]",
 	"socket": true,
 	"languages": [
 		{
@@ -48,14 +48,13 @@
 		}
 	],
 	"esmodules": [
-		"greensock/dist/TweenMax.min.js",
 		"combatready.js"
 	],
 	"styles" : ["combatready.css"],
 	"packs": [],
-	"url" : "https://github.com/JacobMcAuley/combatready",
+	"url" : "https://github.com/smilligan93/combatready",
 	"download" : "https://github.com/smilligan93/combatready/archive/master.zip",
 	"manifest" : "https://raw.githubusercontent.com/smilligan93/combatready/master/module.json",
-	"minimumCoreVersion": "0.6.0",
-  	"compatibleCoreVersion": "0.6.0"
+	"minimumCoreVersion": "0.7.1",
+  	"compatibleCoreVersion": "0.7.5"
 }

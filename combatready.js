@@ -1,3 +1,5 @@
+import { gsap } from "/scripts/greensock/esm/all.js";
+
 const registerSettings = () => {
   // module settings
   game.settings.register("combatready", "timeractive", {
@@ -356,7 +358,7 @@ class CombatReady {
   static onClickNextBanner(ev) {
     document.removeEventListener("click", CombatReady.onClickNextBanner);
     // kill next label anim if the user is fast
-    let anims = TweenMax.getTweensOf(CombatReady.LABEL);
+    let anims = gsap.getTweensOf(CombatReady.LABEL);
     for (let tween of anims) {
       tween.kill();
     }
@@ -364,8 +366,8 @@ class CombatReady {
     // hide cover, but keep the beams to let the user know their turn is coming up!
     KHelpers.addClass(CombatReady.BANNER, "combatready-bannerdisable");
 
-    TweenMax.to(CombatReady.LABEL, 0.5, { opacity: 0.3 });
-    TweenMax.to(CombatReady.COVER, 0.5, {
+    gsap.to(CombatReady.LABEL, 0.5, { opacity: 0.3 });
+    gsap.to(CombatReady.COVER, 0.5, {
       opacity: 0,
       onComplete: function () {
         CombatReady.COVER.style.display = "none";
@@ -397,14 +399,17 @@ class CombatReady {
     document.removeEventListener("click", CombatReady.onClickTurnBanner);
     document.addEventListener("click", CombatReady.onClickTurnBanner);
 
-    TweenMax.staggerTo(CombatReady.CHEVRONS, 3, {
+    // TODO fix this stagger
+    gsap.to(CombatReady.CHEVRONS, {
       left: "100%",
-      stagger: 0.5,
-      repeat: -1,
-      ease: SlowMo.ease,
+      stagger: {
+        repeat: -1,
+        each: 3,
+      },
+      ease: "ease",
     });
-    TweenMax.to(CombatReady.LABEL, 1, { delay: 2, opacity: 1 });
-    TweenMax.to(CombatReady.COVER, 2, { opacity: 0.75 });
+    gsap.to(CombatReady.LABEL, 1, { delay: 2, opacity: 1 });
+    gsap.to(CombatReady.COVER, 2, { opacity: 0.75 });
     // play a sound, meep meep!
     AudioHelper.play({ src: CombatReady.TURN_SOUND, volume: volume() });
   }
@@ -447,8 +452,8 @@ class CombatReady {
       beam.style.cssText += `animation: speedbeam ${time}s linear ${delay}s infinite; top: ${toffset}%; width: ${width}px; height: ${iheight}; left: ${-width}px;`;
     }
 
-    TweenMax.to(CombatReady.LABEL, 1, { delay: 2, opacity: 1 });
-    TweenMax.to(CombatReady.COVER, 2, { opacity: 0.75 });
+    gsap.to(CombatReady.LABEL, 1, { delay: 2, opacity: 1 });
+    gsap.to(CombatReady.COVER, 2, { opacity: 0.75 });
     // play a sound, beep beep!
     AudioHelper.play({ src: CombatReady.NEXT_SOUND, volume: volume() });
   }
@@ -457,15 +462,15 @@ class CombatReady {
    * Stop it
    */
   static stopAnimate() {
-    let anims = TweenMax.getTweensOf(CombatReady.CHEVRONS);
+    let anims = gsap.getTweensOf(CombatReady.CHEVRONS);
     for (let tween of anims) {
       tween.kill();
     }
-    anims = TweenMax.getTweensOf(CombatReady.LABEL);
+    anims = gsap.getTweensOf(CombatReady.LABEL);
     for (let tween of anims) {
       tween.kill();
     }
-    anims = TweenMax.getTweensOf(CombatReady.COVER);
+    anims = gsap.getTweensOf(CombatReady.COVER);
     for (let tween of anims) {
       tween.kill();
     }
@@ -474,7 +479,7 @@ class CombatReady {
 
     CombatReady.BANNER.style.display = "none";
     KHelpers.removeClass(CombatReady.BANNER, "combatready-bannerdisable");
-    TweenMax.to(CombatReady.COVER, 0.5, {
+    gsap.to(CombatReady.COVER, 0.5, {
       opacity: 0,
       onComplete: function () {
         CombatReady.COVER.style.display = "none";
@@ -750,7 +755,7 @@ Hooks.on("ready", function () {
   CombatReady.init();
   // 3m
   //CombatReady.setTimeMax(180);
-  let timemax = game.settings.get("combatready", "timemax") || 3;
+  let timemax = game.settings.get("combatready", "timemax") ?? 3;
   CombatReady.setTimeMax(timemax * 60);
 
   //check if it's our turn! since we're ready
