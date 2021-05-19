@@ -7,11 +7,12 @@
 	"CombatReady.DisableNextUpHint": "Remove notification about your next turn",
 	"CombatReady.DisableTimer": "Disable timer",
 	"CombatReady.DisableTimerHint": "Completely disable timer feature at bottom of the screen",
+	"CombatReady.DisableTimerGM": "Disable timer for the GM",
+	"CombatReady.DisableTimerGMHint": "Disable timer feature at bottom of the screen for GM npc´s",
     "CombatReady.ShowEndTurnDialog": "Show End Turn Dialog",
     "CombatReady.ShowEndTurnDialogHint": "Displays a Dialog to players on their turn that provides a button to end their current turn",
 	"CombatReady.TickSound": "Ticking Sound",
 	"CombatReady.TickSoundHint": "Create a ticking sound when the player's turn is running out of time",
 	"CombatReady.Volume": "Volume",
 	"CombatReady.VolumeHint": "Set the overall volume of the module"
-
 }

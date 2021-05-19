@@ -20,15 +20,16 @@ reaches 3m, or the custom value, an 'expired' sound will play, but it does not
 automatically advance the turn. Shame is good enough in my opinion. If you need 
 to pause the timer, it responds to FVTT's pause mechanic.
 
-Combat Ready is currently speced to work with FVTT versions 0.4.4 +
+Combat Ready is currently spected to work with FVTT version 0.7.9
 
 ## Note
 
-This module was made by Ken L. This repo is only used to handle upkeep for future FVTT versions. 
+This module was made by Ken L. Then taken care by Jacob McAuley, later by Shawn Milligan now this is an attempt to give maitenance to the module.
+
 
 ## Installation Instructions
 
-Copy https://raw.githubusercontent.com/smilligan93/combatready/master/module.json into the module installer
+Copy https://raw.githubusercontent.com/Teshynil/combatready/master/module.json into the module installer
 inside foundry when it asks for the manifest.
 
 OR

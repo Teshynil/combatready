@@ -22,7 +22,7 @@ const registerSettings = () => {
     type: Number,
     onChange: (value) => {
       let val = Number(value);
-      if (isNaN(val)) {
+      if (isNaN(val)||val<=0) {
         game.settings.set("combatready", "timemax", 3);
         return;
       }
@@ -44,6 +44,14 @@ const registerSettings = () => {
   game.settings.register("combatready", "disabletimer", {
     name: "CombatReady.DisableTimer",
     hint: "CombatReady.DisableTimerHint",
+    scope: "world",
+    config: true,
+    default: false,
+    type: Boolean,
+  });
+  game.settings.register("combatready", "disabletimerGM", {
+    name: "CombatReady.DisableTimerGM",
+    hint: "CombatReady.DisableTimerGMHint",
     scope: "world",
     config: true,
     default: false,
@@ -529,6 +537,11 @@ class CombatReady {
     if (game.settings.get("combatready", "disabletimer")) {
       return;
     }
+    if(game.settings.get("combatready","disabletimerGM")){
+      let curCombat = game.combats.active;
+      let entry = curCombat.combatant;
+      if(entry.players.length==0)return;
+    }
 
     // If we're GM, we run the clock
     if (game.user.isGM) {
@@ -592,7 +605,7 @@ class CombatReady {
 
     if (!game.paused) {
       // If not a GM, and the actor is hidden, don't show it
-      //CombatReady.TIMEFILL.style.width = "0%";
+      CombatReady.TIMEFILL.style.width = "0%";
       CombatReady.INTERVAL_IDS.push({
         name: "clock",
         id: window.setInterval(CombatReady.timerTick, 1000),
