@@ -55,7 +55,7 @@
 	"minimumCoreVersion": "0.7.1",
   	"compatibleCoreVersion": "0.7.9",
 	"url" : "https://github.com/Teshynil/combatready",
-	"download" : "https://github.com/smilligan93/combatready/archive/1.2.0.zip",
+	"download" : "https://github.com/Teshynil/combatready/archive/1.2.0.zip",
 	"manifest" : "https://raw.githubusercontent.com/Teshynil/combatready/master/module.json",
 	"license": "https://github.com/Teshynil/combatready/blob/1.2.0/LICENSE",
   	"readme": "https://github.com/Teshynil/combatready/blob/1.2.0/README.md",
