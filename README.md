@@ -20,24 +20,30 @@ reaches 3m, or the custom value, an 'expired' sound will play, but it does not
 automatically advance the turn. Shame is good enough in my opinion. If you need 
 to pause the timer, it responds to FVTT's pause mechanic.
 
-Combat Ready is currently spected to work with FVTT version 0.8.7
+Combat Ready is currently spected to work with FVTT version 0.8.9
 
 ## Note
 
 This module was made by Ken L. Then taken care by Jacob McAuley, later by Shawn Milligan now this is an attempt to give maitenance to the module.
 
+## Usage
+
+Just install it, start a combat and ejoy.
+
+For aditional settings see below.
+
+### Module
+![Combat](https://raw.githubusercontent.com/Teshynil/combatready/master/support/Combat.png)
+![NextUp](https://raw.githubusercontent.com/Teshynil/combatready/master/support/NextUp.png)
+![YourTurn](https://raw.githubusercontent.com/Teshynil/combatready/master/support/YourTurn.png)
+![Settings](https://raw.githubusercontent.com/Teshynil/combatready/master/support/Settings.png)
 
 ## Installation Instructions
 
-Copy https://raw.githubusercontent.com/Teshynil/combatready/master/module.json into the module installer
+Copy https://raw.githubusercontent.com/Teshynil/combatready/master/src/module.json into the module installer
 inside foundry when it asks for the manifest.
 
 OR
 
-Simply create a folder named 'combatready' in public/modules and git clone this repository
-there. Makes it easy to pull updates in the future.
-
-OR
-
-Download the zip, create a folder in Data/modules called 'combatready' and extract
-the contents of "combatready-master.zip" there.
+Download the zip in the release section, create a folder in Data/modules called 'combatready' and extract
+the contents of "combatready-v-x.x.x.zip" there.

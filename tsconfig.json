@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"moduleResolution": "node",
+		"noEmit": false,
+		"strict": false,
+		"target": "es2020",
+		"lib": [
+			"DOM",
+			"DOM.Iterable",
+			"ES6",
+			"ES2020"
+    	],
+		"types": [
+			"@league-of-foundry-developers/foundry-vtt-types",
+			"@types/jest"
+		],
+    "strictNullChecks": true
+	}
+}

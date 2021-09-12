@@ -1,25 +1,25 @@
 @font-face {
   font-family: "Speedp";
-  src: url('graphics/fonts/speed+.ttf');
+  src: url('fonts/speed+.ttf');
 }
 /* Latin */
 @font-face {
   font-family: "Ethnocentric";
-  src: url('graphics/fonts/ethnocentric-rg.ttf');
+  src: url('fonts/ethnocentric-rg.ttf');
 }
 /* JA */
 @font-face {
   font-family: "GenShinGothicBold";
-  src: url('graphics/fonts/GenShinGothic-Bold.ttf');
+  src: url('fonts/GenShinGothic-Bold.ttf');
 }
 /* KO */
 @font-face {
   font-family: "BMDohyeon";
-  src: url('../graphics/fonts/ko/BMDOHYEON_ttf.ttf');
+  src: url('fonts/BMDOHYEON_ttf.ttf');
 }
 @font-face {
   font-family: "BMHannaPro";
-  src: url('../graphics/fonts/ko/BMHANNAPro.ttf');
+  src: url('fonts/BMHANNAPro.ttf');
 }
 
 .speedp {

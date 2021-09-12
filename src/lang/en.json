@@ -14,5 +14,7 @@
 	"CombatReady.TickSound": "Ticking Sound",
 	"CombatReady.TickSoundHint": "Create a ticking sound when the player's turn is running out of time",
 	"CombatReady.Volume": "Volume",
-	"CombatReady.VolumeHint": "Set the overall volume of the module"
+	"CombatReady.VolumeHint": "Set the overall volume of the module",
+	"CombatReady.TickOnLast": "Tick on last seconds",
+	"CombatReady.TickOnLastHint": "Set the last seconds remaining for the ticking to start"
 }

@@ -1,0 +1,5 @@
+gulpfile.js
+.eslintrc
+.prettierrc
+tsconfig.json
+/dist
