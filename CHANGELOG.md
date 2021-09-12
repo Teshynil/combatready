@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## [1.2.2] 2021-09-12
+
+- Update, cleaning and changing to TypeScript
+- Added function to set at wich time to start the ticking sound
+
 ## [1.2.1] 2021-06-16
 
 - Updated module.json for 0.8.7 (Compatible 0.8.x & 0.7.x)
