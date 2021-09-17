@@ -1,8 +1,8 @@
 {
-    "CombatReady.Turn" : "Votre Tour",
+	"CombatReady.Turn" : "Votre Tour",
     "CombatReady.Next" : "Prochain Tour",
     "CombatReady.TimeMax" : "Durée maximale d'un tour",
-    "CombatReady.TimeMaxHint" : "La durée d'un tour en minute, la valeur maximal est de 30mn par tour."
+    "CombatReady.TimeMaxHint" : "La durée d'un tour en minute, la valeur maximal est de 30mn par tour.",
 	"CombatReady.DisableNextUp": "Désactiver la notification 'Prochain Tour'",
 	"CombatReady.DisableNextUpHint": "Désactiver la notification du prochain tour",
 	"CombatReady.DisableNextUpOnLastTurn": "Désactive 'Prochain Tour' lors du changement de round",
@@ -39,6 +39,4 @@
 	"CombatReady.AnimationStyleComplete":"Toutes les animations",
 	"CombatReady.AnimationStyleReduced":"Juste le texte",
 	"CombatReady.AnimationStyleNone":"Aucune animation"
-}
-
 }
