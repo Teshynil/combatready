@@ -1,5 +1,6 @@
 import { CombatReady } from "./combatReady";
 export const MODULE_NAME = "combatready";
+
 export function getCanvas(): Canvas {
     if (!(canvas instanceof Canvas) || !canvas.ready) {
         throw new Error('Canvas Is Not Initialized');
@@ -62,6 +63,35 @@ export const registerSettings = () => {
         default: false,
         type: Boolean,
     });
+    getGame().settings.register(MODULE_NAME, "disablenextuplingering", {
+        name: "CombatReady.DisableNextUpLingering",
+        hint: "CombatReady.DisableNextUpLingeringHint",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
+    getGame().settings.register(MODULE_NAME, "animationstyle", {
+        name: "CombatReady.AnimationStyle",
+        hint: "CombatReady.AnimationStyleHint",
+        scope: "world",
+        config: true,
+        default: "Complete",
+        choices: {
+            "Complete": "CombatReady.AnimationStyleComplete",
+            "Reduced": "CombatReady.AnimationStyleReduced",
+            "None": "CombatReady.AnimationStyleNone"
+        },
+        type: String,
+    });
+    getGame().settings.register(MODULE_NAME, "disablenextuponlastturn", {
+        name: "CombatReady.DisableNextUpOnLastTurn",
+        hint: "CombatReady.DisableNextUpOnLastTurnHint",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
     getGame().settings.register(MODULE_NAME, "disabletimer", {
         name: "CombatReady.DisableTimer",
         hint: "CombatReady.DisableTimerHint",
@@ -86,13 +116,59 @@ export const registerSettings = () => {
         default: false,
         type: Boolean,
     });
+    getGame().settings.register(MODULE_NAME, "wrapitupdialog", {
+        name: "CombatReady.ShowWrapItUpDialog",
+        hint: "CombatReady.ShowWrapItUpDialogHint",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
     getGame().settings.register(MODULE_NAME, "ticksound", {
         name: "CombatReady.TickSound",
         hint: "CombatReady.TickSoundHint",
         scope: "world",
         config: true,
-        default: true,
-        type: Boolean,
+        choices: {
+            "Everyone": "CombatReady.Everyone",
+            "OnlyPlayers": "CombatReady.OnlyPlayers",
+            "Player": "CombatReady.CurrentCombatant",
+            "GM": "CombatReady.GM",
+            "GM+Player": "CombatReady.GMAndPlayer",
+            "None": "CombatReady.None"
+        },
+        default: "Everyone",
+        type: String,
+    });
+    getGame().settings.register(MODULE_NAME, "expiresound", {
+        name: "CombatReady.ExpireSound",
+        hint: "CombatReady.ExpireSoundHint",
+        scope: "world",
+        config: true,
+        choices: {
+            "Everyone": "CombatReady.Everyone",
+            "OnlyPlayers": "CombatReady.OnlyPlayers",
+            "Player": "CombatReady.CurrentCombatant",
+            "GM": "CombatReady.GM",
+            "GM+Player": "CombatReady.GMAndPlayer",
+            "None": "CombatReady.None"
+        },
+        default: "Everyone",
+        type: String,
+    });
+    getGame().settings.register(MODULE_NAME, "roundsound", {
+        name: "CombatReady.RoundSound",
+        hint: "CombatReady.RoundSoundHint",
+        scope: "world",
+        config: true,
+        choices: {
+            "Everyone": "CombatReady.Everyone",
+            "OnlyPlayers": "CombatReady.OnlyPlayers",
+            "GM": "CombatReady.GM",
+            "None": "CombatReady.None"
+        },
+        default: "Everyone",
+        type: String,
     });
     getGame().settings.register(MODULE_NAME, "tickonlast", {
         name: "CombatReady.TickOnLast",

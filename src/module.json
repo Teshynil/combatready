@@ -2,8 +2,21 @@
 	"name": "combatready",
 	"title": "Combat Ready!",
 	"description": "'<b><i>My Combat Tracker is Ready</i></b>' Combat ready indicator to remind players of their turn, as well as time taken. ",
-	"version": "1.2.2",
+	"version": "1.3.0",
 	"author": "Teshynil",
+	"authors": [
+		{
+			"name": "Teshynil",
+			"url": "https://github.com/Teshynil/",
+			"email": "",
+			"discord": "Teshynil#8564",
+			"ko-fi": "",
+			"patreon": "",
+			"reddit": "u/Teshynil",
+			"twitter": "@Teshynil"
+		}
+	],
+	"manifestPlusVersion": "1.2.0",
 	"socket": true,
 	"languages": [
 		{
@@ -50,14 +63,16 @@
 	"esmodules": [
 		"combatready.js"
 	],
-	"styles" : ["combatready.css"],
+	"styles": [
+		"combatready.css"
+	],
 	"packs": [],
-	"minimumCoreVersion": "0.8.0",
-  	"compatibleCoreVersion": "0.8.9",
-	"url" : "https://github.com/Teshynil/combatready",
-	"download" : "https://github.com/Teshynil/combatready/releases/download/1.2.2/combatready-v1.2.2.zip",
-	"manifest" : "https://raw.githubusercontent.com/Teshynil/combatready/master/src/module.json",
-	"license": "https://github.com/Teshynil/combatready/blob/1.2.2/LICENSE",
-  	"readme": "https://github.com/Teshynil/combatready/blob/1.2.2/README.md",
-  	"changelog": "https://github.com/Teshynil/combatready/blob/1.2.2/CHANGELOG.md"
+	"minimumCoreVersion": "0.8.6",
+	"compatibleCoreVersion": "0.8.9",
+	"url": "https://github.com/Teshynil/combatready",
+	"download": "https://github.com/Teshynil/combatready/releases/download/1.3.0/combatready-v1.3.0.zip",
+	"manifest": "https://raw.githubusercontent.com/Teshynil/combatready/master/src/module.json",
+	"license": "https://github.com/Teshynil/combatready/blob/1.3.0/LICENSE",
+	"readme": "https://github.com/Teshynil/combatready/blob/1.3.0/README.md",
+	"changelog": "https://github.com/Teshynil/combatready/blob/1.3.0/CHANGELOG.md"
 }

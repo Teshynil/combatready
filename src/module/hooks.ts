@@ -80,15 +80,17 @@ export const initHooks = () => {
      * Combat update hook
      */
     Hooks.on("updateCombat", function (data, delta) {
+        if (Object.keys(delta).some((k) => k === "turn")) {
+            CombatReady.timerStop();
+        }
         CombatReady.toggleCheck();
 
         console.log("update combat", data);
 
-        if (!getGame().user?.isGM && Object.keys(delta).some((k) => k === "round")) {
-            AudioHelper.play({
-                src: "modules/combatready/sounds/round.wav",
-                volume: volume(),
-            });
+        if (Object.keys(delta).some((k) => k === "round")) {
+            if (delta["turn"] == 0) {
+                CombatReady.nextRound();
+            }
         }
     });
 

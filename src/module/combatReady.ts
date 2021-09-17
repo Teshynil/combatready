@@ -9,6 +9,7 @@ export const volume = () => {
 
 export class CombatReady {
     public static EndTurnDialog: Array<Dialog> = [];
+    public static WrapItUpDialog: Array<Dialog> = [];
     public static READY: boolean;
     public static BANNER: HTMLDivElement;
     public static CHEVRONS: HTMLCollectionOf<HTMLElement>;
@@ -22,13 +23,50 @@ export class CombatReady {
     public static TIMECURRENT: number;
     public static TIMEMAX: number;
     public static INTERVAL_IDS: Array<{ name, id }>;
-    public static TURN_SOUND: string;
-    public static NEXT_SOUND: string;
-    public static ROUND_SOUND: string;
-    public static EXPIRE_SOUND: string;
-    public static ACK_SOUND: string;
-    public static TICK_SOUND: string;
+    public static TURN_SOUND: { file: string, setting: string };
+    public static NEXT_SOUND: { file: string, setting: string };
+    public static ROUND_SOUND: { file: string, setting: string };
+    public static EXPIRE_SOUND: { file: string, setting: string };
+    public static ACK_SOUND: { file: string, setting: string };
+    public static TICK_SOUND: { file: string, setting: string };
 
+    static playSound(sound: { file: string, setting: string }): void {
+        let curCombat = getCombats().active as StoredDocument<Combat>;
+        let entry = curCombat.combatant;
+        let playTo = "Everyone";
+        try {
+            playTo = <string>getGame().settings.get("combatready", sound.setting);
+        } catch (e) { }
+
+        switch (playTo) {
+            case "None":
+                break;
+            case "GM+Player":
+                if (getGame().user?.isGM || entry.actor?.isOwner) {
+                    AudioHelper.play({ src: sound.file, volume: volume() });
+                }
+                break;
+            case "GM":
+                if (getGame().user?.isGM) {
+                    AudioHelper.play({ src: sound.file, volume: volume() });
+                }
+                break;
+            case "OnlyPlayers":
+                if (!getGame().user?.isGM) {
+                    AudioHelper.play({ src: sound.file, volume: volume() });
+                }
+                break;
+            case "Player":
+                if ((entry.actor?.isOwner && !getGame().user?.isGM) || entry.players.length == 0 && getGame().user?.isGM) {
+                    AudioHelper.play({ src: sound.file, volume: volume() });
+                }
+                break;
+            case "Everyone":
+            default:
+                AudioHelper.play({ src: sound.file, volume: volume() });
+                break;
+        }
+    }
     static async closeEndTurnDialog() {
         // go through all dialogs that we've opened and closed them
         for (let d of CombatReady.EndTurnDialog) {
@@ -61,6 +99,43 @@ export class CombatReady {
             d.render(true);
             // add dialog to array of dialogs. when using just a single object we'd end up with multiple dialogs
             CombatReady.EndTurnDialog.push(d);
+        });
+    }
+
+    static async closeWrapItUpDialog() {
+        // go through all dialogs that we've opened and closed them
+        for (let d of CombatReady.WrapItUpDialog) {
+            d.close();
+        }
+        CombatReady.WrapItUpDialog.length = 0;
+    }
+    static showWrapItUpDialog() {
+        CombatReady.closeWrapItUpDialog().then(() => {
+            if (getGame().settings.get("combatready", "disabletimer")) {
+                return;
+            }
+            let d = new Dialog(
+                {
+                    title: "Wrap It Up",
+                    default: "",
+                    content: "",
+                    buttons: {
+                        wrapitup: {
+                            label: getGame().i18n.localize("CombatReady.WrapItUp"),
+                            callback: () => {
+                                CombatReady.timerStart()
+                            },
+                        },
+                    },
+                },
+                {
+                    width: 30,
+                    top: 5,
+                }
+            );
+            d.render(true);
+            // add dialog to array of dialogs. when using just a single object we'd end up with multiple dialogs
+            CombatReady.WrapItUpDialog.push(d);
         });
     }
 
@@ -141,12 +216,12 @@ export class CombatReady {
         CombatReady.TIMEMAX = 20;
         CombatReady.INTERVAL_IDS = [];
         // sound statics
-        CombatReady.TURN_SOUND = "modules/combatready/sounds/turn.wav";
-        CombatReady.NEXT_SOUND = "modules/combatready/sounds/next.wav";
-        CombatReady.ROUND_SOUND = "modules/combatready/sounds/round.wav";
-        CombatReady.EXPIRE_SOUND = "modules/combatready/sounds/notime.wav";
-        CombatReady.ACK_SOUND = "modules/combatready/sounds/ack.wav";
-        CombatReady.TICK_SOUND = "modules/combatready/sounds/clocktick.mp3";
+        CombatReady.TURN_SOUND = { file: "modules/combatready/sounds/turn.wav", setting: "turnsound" };
+        CombatReady.NEXT_SOUND = { file: "modules/combatready/sounds/next.wav", setting: "nextsound" };
+        CombatReady.ROUND_SOUND = { file: "modules/combatready/sounds/round.wav", setting: "roundsound" };
+        CombatReady.EXPIRE_SOUND = { file: "modules/combatready/sounds/notime.wav", setting: "expiresound" };
+        CombatReady.ACK_SOUND = { file: "modules/combatready/sounds/ack.wav", setting: "acksound" };
+        CombatReady.TICK_SOUND = { file: "modules/combatready/sounds/clocktick.mp3", setting: "ticksound" };
         // language specific fonts
         switch (getGame().i18n.lang) {
             case "en":
@@ -189,7 +264,7 @@ export class CombatReady {
         document.removeEventListener("click", CombatReady.onClickTurnBanner);
         CombatReady.stopAnimate();
         // play an acknowledgement sound!
-        AudioHelper.play({ src: CombatReady.ACK_SOUND, volume: volume() });
+        CombatReady.playSound(CombatReady.ACK_SOUND);
     }
     static onClickNextBanner(ev) {
         document.removeEventListener("click", CombatReady.onClickNextBanner);
@@ -202,7 +277,14 @@ export class CombatReady {
         // hide cover, but keep the beams to let the user know their turn is coming up!
         addClass(CombatReady.BANNER, "combatready-bannerdisable");
 
-        gsap.to(CombatReady.LABEL, 0.5, { opacity: 0.3 });
+        gsap.to(CombatReady.LABEL, 0.5, {
+            opacity: 0.3,
+            onComplete: function () {
+                if (getGame().settings.get("combatready", "disablenextuplingering")) {
+                    CombatReady.BANNER.style.display = "none";
+                }
+            },
+        });
         gsap.to(CombatReady.COVER, 0.5, {
             opacity: 0,
             onComplete: function () {
@@ -218,36 +300,39 @@ export class CombatReady {
         if (!CombatReady.READY) {
             CombatReady.init();
         }
-        for (let e of CombatReady.CHEVRONS) e.style.left = "-200px";
-        for (let e of CombatReady.BEAMS) {
-            e.style.left = "-200px";
-            e.style.animation = "none";
+        if (<string>getGame().settings.get("combatready", "animationstyle") !== "None") {
+            for (let e of CombatReady.CHEVRONS) e.style.left = "-200px";
+            for (let e of CombatReady.BEAMS) {
+                e.style.left = "-200px";
+                e.style.animation = "none";
+            }
+
+            CombatReady.LABEL.style.opacity = "0";
+            CombatReady.LABEL.textContent = getGame().i18n.localize("CombatReady.Turn");
+
+            removeClass(CombatReady.BANNER, "combatready-bannerdisable");
+
+            CombatReady.BANNER.style.display = "flex";
+            CombatReady.COVER.style.display = "block";
+            document.removeEventListener("click", CombatReady.onClickNextBanner);
+            document.removeEventListener("click", CombatReady.onClickTurnBanner);
+            document.addEventListener("click", CombatReady.onClickTurnBanner);
+
+            if (<string>getGame().settings.get("combatready", "animationstyle") == "Complete") {
+                gsap.to(CombatReady.CHEVRONS, {
+                    left: "100%",
+                    stagger: {
+                        repeat: -1,
+                        each: 3,
+                    },
+                    ease: "ease",
+                });
+                gsap.to(CombatReady.COVER, 2, { opacity: 0.75 });
+            }
+            gsap.to(CombatReady.LABEL, 1, { delay: 2, opacity: 1 });
         }
-
-        CombatReady.LABEL.style.opacity = "0";
-        CombatReady.LABEL.textContent = getGame().i18n.localize("CombatReady.Turn");
-
-        removeClass(CombatReady.BANNER, "combatready-bannerdisable");
-
-        CombatReady.BANNER.style.display = "flex";
-        CombatReady.COVER.style.display = "block";
-        document.removeEventListener("click", CombatReady.onClickNextBanner);
-        document.removeEventListener("click", CombatReady.onClickTurnBanner);
-        document.addEventListener("click", CombatReady.onClickTurnBanner);
-
-        // TODO fix this stagger
-        gsap.to(CombatReady.CHEVRONS, {
-            left: "100%",
-            stagger: {
-                repeat: -1,
-                each: 3,
-            },
-            ease: "ease",
-        });
-        gsap.to(CombatReady.LABEL, 1, { delay: 2, opacity: 1 });
-        gsap.to(CombatReady.COVER, 2, { opacity: 0.75 });
         // play a sound, meep meep!
-        AudioHelper.play({ src: CombatReady.TURN_SOUND, volume: volume() });
+        CombatReady.playSound(CombatReady.TURN_SOUND);
     }
 
     /**
@@ -261,37 +346,38 @@ export class CombatReady {
         if (!CombatReady.READY) {
             CombatReady.init();
         }
+        if (<string>getGame().settings.get("combatready", "animationstyle") !== "None") {
+            for (let e of CombatReady.CHEVRONS) e.style.left = "-200px";
+            if (<string>getGame().settings.get("combatready", "animationstyle") == "Complete") {
 
-        for (let e of CombatReady.CHEVRONS) e.style.left = "-200px";
 
-        CombatReady.LABEL.style.opacity = "0";
-        CombatReady.LABEL.textContent = getGame().i18n.localize("CombatReady.Next");
+                // Randomize our beams
+                for (let beam of CombatReady.BEAMS) {
+                    let width = Math.floor(Math.random() * 100) + 30;
+                    let time = Math.floor(Math.random() * 1.5 * 100) / 100 + 2.0;
+                    let delay = Math.floor(Math.random() * 3 * 100) / 100 + 0.01;
+                    let toffset = Math.floor(Math.random() * 90) + 10;
+                    let iheight = Math.floor(Math.random() * 3) + 2;
 
-        removeClass(CombatReady.BANNER, "combatready-bannerdisable");
+                    beam.style.cssText += `animation: speedbeam ${time}s linear ${delay}s infinite; top: ${toffset}%; width: ${width}px; height: ${iheight}; left: ${-width}px;`;
+                }
 
-        CombatReady.BANNER.style.display = "flex";
-        CombatReady.COVER.style.display = "block";
-        CombatReady.BANNER.style.display = "flex";
-        CombatReady.COVER.style.display = "block";
-        document.removeEventListener("click", CombatReady.onClickTurnBanner);
-        document.removeEventListener("click", CombatReady.onClickNextBanner);
-        document.addEventListener("click", CombatReady.onClickNextBanner);
-
-        // Randomize our beams
-        for (let beam of CombatReady.BEAMS) {
-            let width = Math.floor(Math.random() * 100) + 30;
-            let time = Math.floor(Math.random() * 1.5 * 100) / 100 + 2.0;
-            let delay = Math.floor(Math.random() * 3 * 100) / 100 + 0.01;
-            let toffset = Math.floor(Math.random() * 90) + 10;
-            let iheight = Math.floor(Math.random() * 3) + 2;
-
-            beam.style.cssText += `animation: speedbeam ${time}s linear ${delay}s infinite; top: ${toffset}%; width: ${width}px; height: ${iheight}; left: ${-width}px;`;
+                gsap.to(CombatReady.COVER, 2, { opacity: 0.75 });
+            }
+            removeClass(CombatReady.BANNER, "combatready-bannerdisable");
+            CombatReady.BANNER.style.display = "flex";
+            CombatReady.COVER.style.display = "block";
+            CombatReady.BANNER.style.display = "flex";
+            CombatReady.COVER.style.display = "block";
+            document.removeEventListener("click", CombatReady.onClickTurnBanner);
+            document.removeEventListener("click", CombatReady.onClickNextBanner);
+            document.addEventListener("click", CombatReady.onClickNextBanner);
+            CombatReady.LABEL.style.opacity = "0";
+            CombatReady.LABEL.textContent = getGame().i18n.localize("CombatReady.Next");
+            gsap.to(CombatReady.LABEL, 1, { delay: 2, opacity: 1 });
         }
-
-        gsap.to(CombatReady.LABEL, 1, { delay: 2, opacity: 1 });
-        gsap.to(CombatReady.COVER, 2, { opacity: 0.75 });
         // play a sound, beep beep!
-        AudioHelper.play({ src: CombatReady.NEXT_SOUND, volume: volume() });
+        CombatReady.playSound(CombatReady.NEXT_SOUND);
     }
 
     /**
@@ -330,9 +416,17 @@ export class CombatReady {
         let curCombat = getCombats().active;
 
         if (curCombat && curCombat.started) {
-            CombatReady.stopAnimate();
-            CombatReady.timerStart();
             let entry = curCombat.combatant;
+            CombatReady.stopAnimate();
+            if (<boolean>getGame().settings.get("combatready", "wrapitupdialog")) {
+                if (getGame().user?.isGM && entry.players.length > 0) {
+                    CombatReady.showWrapItUpDialog();
+                } else {
+                    CombatReady.closeWrapItUpDialog();
+                }
+            } else {
+                CombatReady.timerStart();
+            }
             // next combatant
             let nxtturn = (curCombat.turn || 0) + 1;
             if (nxtturn > curCombat.turns.length - 1) nxtturn = 0;
@@ -340,34 +434,39 @@ export class CombatReady {
 
             if (entry !== undefined) {
                 CombatReady.closeEndTurnDialog().then(() => {
-                    let isActive = entry.actor?.id === getGame().users?.current?.character?.id;
-                    let isNext =
-                        nxtentry.actor?.id === getGame().users?.current?.character?.id;
+                    let isActive = entry.actor?.isOwner && !getGame().user?.isGM;
+                    let isNext = nxtentry.actor?.isOwner && !getGame().user?.isGM;
 
                     if (isActive) {
                         CombatReady.doAnimateTurn();
-                        if (getGame().settings.get("combatready", "endturndialog"))
+                        if (<boolean>getGame().settings.get("combatready", "endturndialog"))
                             CombatReady.showEndTurnDialog();
                     } else if (isNext) {
+                        if (nxtturn == 0 && <boolean>getGame().settings.get("combatready", "disablenextuponlastturn"))
+                            return;
                         CombatReady.doAnimateNext();
                     }
                 });
             }
         } else if (!curCombat) {
             CombatReady.closeEndTurnDialog();
+            CombatReady.closeWrapItUpDialog();
         }
     }
 
+    static nextRound() {
+        this.playSound(CombatReady.ROUND_SOUND);
+    }
     /**
      *
      */
     static timerTick() {
+        let curCombat = getCombats().active as StoredDocument<Combat>;
+        let entry = curCombat.combatant;
         if (getGame().settings.get("combatready", "disabletimer")) {
             return;
         }
         if (getGame().settings.get("combatready", "disabletimerGM")) {
-            let curCombat = getCombats().active as StoredDocument<Combat>;
-            let entry = curCombat.combatant;
             if (entry.players.length == 0) return;
         }
 
@@ -387,15 +486,12 @@ export class CombatReady {
 
         // If we're in the last seconds defined we tick
         if (CombatReady.TIMEMAX - CombatReady.TIMECURRENT <= <Number>getGame().settings.get(MODULE_NAME, "tickonlast")) {
-            if (getGame().settings.get("combatready", "ticksound")) {
-                AudioHelper.play({ src: CombatReady.TICK_SOUND, volume: volume() });
-            }
+            CombatReady.playSound(CombatReady.TICK_SOUND);
         }
-
         let width = (CombatReady.TIMECURRENT / CombatReady.TIMEMAX) * 100;
         if (width > 100) {
             CombatReady.timerStop();
-            AudioHelper.play({ src: CombatReady.EXPIRE_SOUND, volume: volume() });
+            CombatReady.playSound(CombatReady.EXPIRE_SOUND);
         } else {
             CombatReady.TIMEFILL.style.transition = "";
             CombatReady.TIMEFILL.style.width = `${width}%`;

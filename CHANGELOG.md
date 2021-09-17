@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## [1.3.0] 2021-09-17
+### The after adoption update
+- Added some fields from Manifest+ to module.json
+- Added option to remove the 'Next up' Notification after its clicked
+    > Takes care of #8 Original [#6](https://github.com/smilligan93/combatready/issues/14)
+- Added option to control the animations of the module
+    > Takes care of #7 Original [#14](https://github.com/smilligan93/combatready/issues/14)
+- Added option to manual activate the timer on a player turn
+    > Takes care of #6 Original [#18](https://github.com/smilligan93/combatready/issues/18)
+- Added multiple options to control who can listen the sounds notifications
+    > Takes care of #3 Original [#23](https://github.com/smilligan93/combatready/issues/23)
+- Added option to disable the timer on non owned characters
+    > Takes care of #2 Original [#25](https://github.com/smilligan93/combatready/issues/25)
+- Added option to disable 'Next up' Notification on round change
+    > Takes care of #1 Original [#26](https://github.com/smilligan93/combatready/issues/26)
+
 ## [1.2.2] 2021-09-12
 
 - Update, cleaning and changing to TypeScript
