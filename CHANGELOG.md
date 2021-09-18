@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.4.1] 2021-09-18
+
+* Fix of unpause sometimes does not continue timer
+
 ## [1.4.0] 2021-09-18
 
 * Added option to autoend the current turn if the timer runs out

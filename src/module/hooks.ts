@@ -5,15 +5,20 @@ export const initHooks = () => {
      * Toggle pause
      */
     Hooks.on("pauseGame", function () {
-        if (getGame().paused) CombatReady.timerPause();
-        else CombatReady.timerResume();
+        if (getGame().combats?.active == undefined) return;
+        if (getGame().paused) {
+            CombatReady.timerPause();
+        }
+        else {
+            CombatReady.timerResume();
+        }
     });
 
     /**
      * Handle combatant removal
      */
-    Hooks.on("deleteCombat", function () {
-        CombatReady.timerStop();
+    Hooks.on("deleteCombat", async function () {
+        await CombatReady.timerStop();
         CombatReady.stopAnimate();
         CombatReady.toggleCheck();
     });
@@ -67,9 +72,9 @@ export const initHooks = () => {
     /**
      * Combat update hook
      */
-    Hooks.on("updateCombat", function (data, delta) {
+    Hooks.on("updateCombat", async function (data, delta) {
         if (Object.keys(delta).some((k) => k === "turn")) {
-            CombatReady.timerStop();
+            await CombatReady.timerStop();
         }
         CombatReady.toggleCheck();
 

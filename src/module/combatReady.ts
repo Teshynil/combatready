@@ -455,7 +455,7 @@ export class CombatReady {
     /**
      *
      */
-    static timerTick() {
+    static async timerTick() {
         let curCombat = getCombats().active as StoredDocument<Combat>;
         let entry = curCombat.combatant;
         if (getGame().settings.get("combatready", "disabletimer")) {
@@ -485,7 +485,7 @@ export class CombatReady {
         }
         let width = (CombatReady.TIMECURRENT / CombatReady.TIMEMAX) * 100;
         if (width > 100) {
-            CombatReady.timerStop();
+            await CombatReady.timerStop();
             if (<boolean>getGame().settings.get(MODULE_NAME, "autoendontimer")) {
                 if (getGame().user?.isGM) {//run only from the GM side
                     if (entry.players.length > 0) {//run only if the actor has owners
@@ -510,7 +510,7 @@ export class CombatReady {
     /**
      *
      */
-    static timerStart() {
+    static async timerStart() {
         CombatReady.TIMEBAR.style.display = "block";
         if (getGame().user?.isGM) {
             // push GM time
@@ -520,7 +520,9 @@ export class CombatReady {
                 type: "Number",
                 timetick: CombatReady.TIMECURRENT,
             });
-            getGame().settings.set("combatready", "timeractive", true);
+            /*setTimeout(async () => {
+                await getGame().settings.set("combatready", "timeractive", true);
+            }, 300);*/
         }
 
         for (let idx = CombatReady.INTERVAL_IDS.length - 1; idx >= 0; --idx) {
@@ -547,7 +549,7 @@ export class CombatReady {
     /**
      *
      */
-    static timerStop() {
+    static async timerStop() {
         for (let idx = CombatReady.INTERVAL_IDS.length - 1; idx >= 0; --idx) {
             let interval = CombatReady.INTERVAL_IDS[idx];
             if (interval.name === "clock") {
@@ -559,7 +561,11 @@ export class CombatReady {
         // kill paused bar
         CombatReady.TIMECURRENT = 0;
         CombatReady.TIMEBAR.style.display = "none";
-        if (getGame().user?.isGM) getGame().settings.set("combatready", "timeractive", false);
+        /*if (getGame().user?.isGM) {
+            setTimeout(async () => {
+                await getGame().settings.set("combatready", "timeractive", false);
+            }, 300);
+        }*/
     }
 
     /**
@@ -593,10 +599,10 @@ export class CombatReady {
                 timetick: CombatReady.TIMECURRENT,
             });
 
-        if (getGame().settings.get("combatready", "timeractive"))
-            CombatReady.INTERVAL_IDS.push({
-                name: "clock",
-                id: window.setInterval(CombatReady.timerTick, 1000),
-            });
+        //if (getGame().settings.get("combatready", "timeractive"))
+        CombatReady.INTERVAL_IDS.push({
+            name: "clock",
+            id: window.setInterval(CombatReady.timerTick, 1000),
+        });
     }
 }
