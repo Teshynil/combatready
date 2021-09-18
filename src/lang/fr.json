@@ -38,5 +38,14 @@
 	"CombatReady.WrapItUp": "Il est temps de finir",
 	"CombatReady.AnimationStyleComplete": "Toutes les animations",
 	"CombatReady.AnimationStyleReduced": "Juste le texte",
-	"CombatReady.AnimationStyleNone": "Aucune animation"
+	"CombatReady.AnimationStyleNone": "Aucune animation",
+	"CombatReady.AutoEndOnTimer": "Automatiquement finir le tour",
+	"CombatReady.AutoEndOnTimerHint": "Met fin au tour actuel si le compte-à-rebours se termine. (Ne s'applique pas aux PNJ)",
+	"CombatReady.TimerColor": "Couleur du compte-à-rebours",
+	"CombatReady.TimerColorHint": "Sélectionner la couleur du compte-à-rebours",
+	"CombatReady.TimeBarLocation": "Position du compte-à-rebours",
+	"CombatReady.TimeBarLocationHint": "Sélectionner la position du compte-à-rebours",
+	"CombatReady.Top": "En haut",
+	"CombatReady.Sidebar": "Barre latérale",
+	"CombatReady.Bottom": "En bas"
 }
