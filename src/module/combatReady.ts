@@ -19,7 +19,6 @@ export class CombatReady {
     public static SOCKET: string;
     public static TIMEBAR: HTMLDivElement;
     public static TIMEFILL: HTMLDivElement;
-    public static TIMEICO: HTMLDivElement;
     public static TIMECURRENT: number;
     public static TIMEMAX: number;
     public static INTERVAL_IDS: Array<{ name, id }>;
@@ -138,22 +137,22 @@ export class CombatReady {
             CombatReady.WrapItUpDialog.push(d);
         });
     }
-
     static adjustWidth() {
         let sidebar = document.getElementById("sidebar") as HTMLElement;
-        let body = document.getElementsByTagName("body")[0] as HTMLElement;
-        let banner = body.getElementsByClassName("combatready-container")[0] as HTMLElement;
-        let timebar = body.getElementsByClassName("combatready-timebar")[0] as HTMLElement;
-
-        // re-adjust width
-        banner.style.cssText += `width: calc(100% - ${sidebar.style.width})`;
-        timebar.style.cssText += `width: calc(100% - ${sidebar.style.width})`;
+        let width = sidebar.offsetWidth;
+        if (getGame().settings.get(MODULE_NAME, "timebarlocation") == "sidebar") {
+            CombatReady.TIMEBAR.style.width = `100%`;
+        } else {
+            if (getGame().settings.get(MODULE_NAME, "timebarlocation") == "bottom" && width == 30) width = 0;
+            CombatReady.BANNER.style.width = `calc(100% - ${width}px)`;
+            CombatReady.TIMEBAR.style.width = `calc(100% - ${width}px)`;
+        }
     }
-
     /**
      * JQuery stripping
      */
     static init() {
+
         let body = document.getElementsByTagName("body")[0] as HTMLElement;
         let sidebar = document.getElementById("sidebar") as HTMLElement;
 
@@ -163,11 +162,8 @@ export class CombatReady {
 
         let timebar = document.createElement("div");
         let timefill = document.createElement("div");
-        let timeicon = document.createElement("div");
         addClass(timebar, "combatready-timebar");
         addClass(timefill, "combatready-timebar-fill");
-        addClass(timeicon, "combatready-timebaricon");
-        timefill.appendChild(timeicon);
         timebar.appendChild(timefill);
 
         let banner = document.createElement("div");
@@ -211,7 +207,6 @@ export class CombatReady {
         // timer
         CombatReady.TIMEBAR = timebar;
         CombatReady.TIMEFILL = timefill;
-        CombatReady.TIMEICO = timeicon;
         CombatReady.TIMECURRENT = 0;
         CombatReady.TIMEMAX = 20;
         CombatReady.INTERVAL_IDS = [];
@@ -491,6 +486,13 @@ export class CombatReady {
         let width = (CombatReady.TIMECURRENT / CombatReady.TIMEMAX) * 100;
         if (width > 100) {
             CombatReady.timerStop();
+            if (<boolean>getGame().settings.get(MODULE_NAME, "autoendontimer")) {
+                if (getGame().user?.isGM) {//run only from the GM side
+                    if (entry.players.length > 0) {//run only if the actor has owners
+                        getCombats().active?.nextTurn();
+                    }
+                }
+            }
             CombatReady.playSound(CombatReady.EXPIRE_SOUND);
         } else {
             CombatReady.TIMEFILL.style.transition = "";

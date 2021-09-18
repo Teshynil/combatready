@@ -1,4 +1,5 @@
 import { CombatReady } from "./combatReady";
+import { addClass, removeClass } from "./helpers";
 export const MODULE_NAME = "combatready";
 
 export function getCanvas(): Canvas {
@@ -84,6 +85,38 @@ export const registerSettings = () => {
         },
         type: String,
     });
+    //@ts-ignore
+    new window.Ardittristan.ColorSetting(MODULE_NAME, "timercolor", {
+        name: "CombatReady.TimerColor",       // The name of the setting in the settings menu
+        hint: "CombatReady.TimerColorHint",   // A description of the registered setting and its behavior
+        label: "Color Picker",          // The text label used in the button
+        restricted: false,              // Restrict this setting to gamemaster only?
+        defaultColor: "#B71703ff",      // The default color of the setting
+        scope: "world",                 // The scope of the setting
+        onChange: (value) => { CombatReady.TIMEFILL.style.backgroundColor = value }        // A callback function which triggers when the setting is changed
+    });
+    CombatReady.TIMEFILL.style.backgroundColor = <string>getGame().settings.get(MODULE_NAME, "timercolor");
+    getGame().settings.register(MODULE_NAME, "timebarlocation", {
+        name: "CombatReady.TimeBarLocation",
+        hint: "CombatReady.TimeBarLocationHint",
+        scope: "world",
+        config: true,
+        default: "bottom",
+        choices: {
+            "top": "CombatReady.Top",
+            "sidebar": "CombatReady.Sidebar",
+            "bottom": "CombatReady.Bottom"
+        },
+        type: String,
+        onChange: (value) => {
+            removeClass(CombatReady.TIMEBAR, "combatready-timebar-top");
+            removeClass(CombatReady.TIMEBAR, "combatready-timebar-sidebar");
+            removeClass(CombatReady.TIMEBAR, "combatready-timebar-bottom");
+            addClass(CombatReady.TIMEBAR, "combatready-timebar-" + value);
+            CombatReady.adjustWidth();
+        }
+    });
+    addClass(CombatReady.TIMEBAR, "combatready-timebar-" + getGame().settings.get(MODULE_NAME, "timebarlocation"));
     getGame().settings.register(MODULE_NAME, "disablenextuponlastturn", {
         name: "CombatReady.DisableNextUpOnLastTurn",
         hint: "CombatReady.DisableNextUpOnLastTurnHint",
@@ -119,6 +152,14 @@ export const registerSettings = () => {
     getGame().settings.register(MODULE_NAME, "wrapitupdialog", {
         name: "CombatReady.ShowWrapItUpDialog",
         hint: "CombatReady.ShowWrapItUpDialogHint",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
+    getGame().settings.register(MODULE_NAME, "autoendontimer", {
+        name: "CombatReady.AutoEndOnTimer",
+        hint: "CombatReady.AutoEndOnTimerHint",
         scope: "world",
         config: true,
         default: false,

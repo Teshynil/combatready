@@ -1,4 +1,4 @@
-import { getCombats, getGame } from "./settings";
+import { getCombats, getGame, MODULE_NAME } from "./settings";
 import { CombatReady, volume } from "./combatReady";
 export const initHooks = () => {
     /**
@@ -59,21 +59,9 @@ export const initHooks = () => {
     /**
      * Sidebar collapse hook
      */
-    Hooks.on("sidebarCollapse", function (a, collapsed) {
-        let sidebar = document.getElementById("sidebar") as HTMLElement;
-        let body = document.getElementsByTagName("body")[0] as HTMLElement;
-        let banner = body.getElementsByClassName("combatready-container")[0] as HTMLElement;
-        let timebar = body.getElementsByClassName("combatready-timebar")[0] as HTMLElement;
-
-        if (collapsed) {
-            // set width to 100%
-            banner.style.width = "100%";
-            timebar.style.width = "100%";
-        } else {
-            // set width to sidebar offset size
-            banner.style.width = `calc(100% - ${sidebar.offsetWidth}px)`;
-            timebar.style.width = `calc(100% - ${sidebar.offsetWidth}px)`;
-        }
+    Hooks.on("collapseSidebar", function (a, collapsed) {
+        // set width to sidebar offset size
+        CombatReady.adjustWidth();
     });
 
     /**
