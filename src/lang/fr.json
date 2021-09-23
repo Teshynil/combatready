@@ -1,51 +1,99 @@
 {
-	"CombatReady.Turn": "Votre Tour",
-	"CombatReady.Next": "Prochain Tour",
-	"CombatReady.TimeMax": "Durée maximale d'un tour",
-	"CombatReady.TimeMaxHint": "La durée d'un tour en minute, la valeur maximal est de 30mn par tour.",
-	"CombatReady.DisableNextUp": "Désactiver la notification 'Prochain Tour'",
-	"CombatReady.DisableNextUpHint": "Désactiver la notification du prochain tour",
-	"CombatReady.DisableNextUpOnLastTurn": "Désactive 'Prochain Tour' lors du changement de round",
-	"CombatReady.DisableNextUpOnLastTurnHint": "Désactive la notification de votre prochain tour s'il y a un changement de round",
-	"CombatReady.DisableNextUpLingering": "Cacher la notification 'Prochain Tour' avec le clic",
-	"CombatReady.DisableNextUpLingeringHint": "Cache le message de Prochain Tour lorsque le joueur clique dessus",
-	"CombatReady.DisableTimer": "Désactiver le compte-à-rebours",
-	"CombatReady.DisableTimerHint": "Désactive complètement l'option de compte-à-rebours en bas de l'écran",
-	"CombatReady.DisableTimerGM": "Désactiver le compte-à-rebours pour le MJ",
-	"CombatReady.DisableTimerGMHint": "Désactive complètement l'option de compte-à-rebours en bas de l'écran pour les PNJ du MJ",
-	"CombatReady.AnimationStyle": "Paramètres d'animations",
-	"CombatReady.AnimationStyleHint": "Détermine le nombre d'animations dont le module effectue le rendu",
-	"CombatReady.ShowEndTurnDialog": "Montrer le dialogue Fin du Tour",
-	"CombatReady.ShowEndTurnDialogHint": "Montre un dialogue aux joueurs lors de leur tour leur permettant de finir leur tour actuel",
-	"CombatReady.ShowWrapItUpDialog": "Montrer le dialogue Il est temps de finir",
-	"CombatReady.ShowWrapItUpDialogHint": "Montre un dialogue au MJ lors du tour des joueurs qui ajoute un bouton pour lancer le compte-à-rebours, cela empêche le compte-à-rebours de commmencer automatiquement",
-	"CombatReady.TickSound": "Son de Tic-Tac",
-	"CombatReady.TickSoundHint": "Crée un son de Tic-Tac pour les joueurs sélectionnés lorsque qu'il ne reste que peu de temps lors de leur tour actuel",
-	"CombatReady.ExpireSound": "Son d'expiration du compte-à-rebours",
-	"CombatReady.ExpireSoundHint": "Crée un son d'expiration du compte-à-rebours pour les joueurs sélectionnés quand le tour actuel n'a plus de temps",
-	"CombatReady.RoundSound": "Son de Round",
-	"CombatReady.RoundSoundHint": "Crée un son audible par les joueurs sélectionnés lorsqu'ils passent au round suivant",
-	"CombatReady.Volume": "Volume",
-	"CombatReady.VolumeHint": "Paramètre le volume général du module",
-	"CombatReady.TickOnLast": "Tic-Tac sur les dernières secondes",
-	"CombatReady.TickOnLastHint": "Paramètre le nombre de secondes restantes pour lancer le son de Tic-Tac",
-	"CombatReady.Everyone": "Tout le monde",
-	"CombatReady.OnlyPlayers": "Tous les joueurs sauf le MJ et les Assistants",
-	"CombatReady.CurrentCombatant": "Joueur actuel ou MJ si PNJ",
-	"CombatReady.GM": "MJ et Assistants",
-	"CombatReady.GMAndPlayer": "MJ, Assistants et les joueurs actuels",
-	"CombatReady.None": "Personne",
-	"CombatReady.WrapItUp": "Il est temps de finir",
-	"CombatReady.AnimationStyleComplete": "Toutes les animations",
-	"CombatReady.AnimationStyleReduced": "Juste le texte",
-	"CombatReady.AnimationStyleNone": "Aucune animation",
-	"CombatReady.AutoEndOnTimer": "Automatiquement finir le tour",
-	"CombatReady.AutoEndOnTimerHint": "Met fin au tour actuel si le compte-à-rebours se termine. (Ne s'applique pas aux PNJ)",
-	"CombatReady.TimerColor": "Couleur du compte-à-rebours",
-	"CombatReady.TimerColorHint": "Sélectionner la couleur du compte-à-rebours",
-	"CombatReady.TimeBarLocation": "Position du compte-à-rebours",
-	"CombatReady.TimeBarLocationHint": "Sélectionner la position du compte-à-rebours",
-	"CombatReady.Top": "En haut",
-	"CombatReady.Sidebar": "Barre latérale",
-	"CombatReady.Bottom": "En bas"
+	"combatReady": {
+		"text": {
+			"wrapItUp": "Il est temps de finir",
+			"turn": "Votre Tour",
+			"next": "Prochain Tour"
+		},
+		"settings": {
+			"timeMax": {
+				"name": "Durée maximale d'un tour",
+				"hint": "La durée d'un tour en minute, la valeur maximal est de 30mn par tour."
+			},
+			"disableNextUp": {
+				"name": "Désactiver la notification 'Prochain Tour'",
+				"hint": "Remove notification about your next turn"
+			},
+			"disableNextUpOnLastTurn": {
+				"name": "Désactive 'Prochain Tour' lors du changement de round",
+				"hint": "Désactive la notification de votre prochain tour s'il y a un changement de round"
+			},
+			"disableTimer": {
+				"name": "Désactiver le compte-à-rebours",
+				"hint": "Désactive complètement l'option de compte-à-rebours en bas de l'écran"
+			},
+			"disableTimerGM": {
+				"name": "Désactiver le compte-à-rebours pour le MJ",
+				"hint": "Désactive complètement l'option de compte-à-rebours en bas de l'écran pour les PNJ du MJ"
+			},
+			"showEndTurnDialog": {
+				"name": "Montrer le dialogue Fin du Tour",
+				"hint": "Montre un dialogue aux joueurs lors de leur tour leur permettant de finir leur tour actuel"
+			},
+			"showWrapItUpDialog": {
+				"name": "Montrer le dialogue Il est temps de finir",
+				"hint": "Montre un dialogue au MJ lors du tour des joueurs qui ajoute un bouton pour lancer le compte-à-rebours, cela empêche le compte-à-rebours de commmencer automatiquement"
+			},
+			"tickSound": {
+				"name": "Son de Tic-Tac",
+				"hint": "Crée un son de Tic-Tac pour les joueurs sélectionnés lorsque qu'il ne reste que peu de temps lors de leur tour actuel"
+			},
+			"expireSound": {
+				"name": "Son d'expiration du compte-à-rebours",
+				"hint": "Crée un son d'expiration du compte-à-rebours pour les joueurs sélectionnés quand le tour actuel n'a plus de temps"
+			},
+			"roundSound": {
+				"name": "Son de Round",
+				"hint": "Crée un son audible par les joueurs sélectionnés lorsqu'ils passent au round suivant"
+			},
+			"volume": {
+				"name": "Volume",
+				"hint": "Paramètre le volume général du module"
+			},
+			"tickOnLast": {
+				"name": "Tic-Tac sur les dernières secondes",
+				"hint": "Paramètre le nombre de secondes restantes pour lancer le son de Tic-Tac"
+			},
+			"autoEndOnTimer": {
+				"name": "Automatiquement finir le tour",
+				"hint": "Met fin au tour actuel si le compte-à-rebours se termine. (Ne s'applique pas aux PNJ)"
+			},
+			"timerColor": {
+				"name": "Couleur du compte-à-rebours",
+				"hint": "Sélectionner la couleur du compte-à-rebours"
+			},
+			"timeBarLocation": {
+				"name": "Position du compte-à-rebours",
+				"hint": "Sélectionner la position du compte-à-rebours"
+			},
+			"text": {
+				"everyone": "Tout le monde",
+				"onlyPlayers": "Tous les joueurs sauf le MJ et les Assistants",
+				"currentCombatant": "Joueur actuel ou MJ si PNJ",
+				"GM": "MJ et Assistants",
+				"GMAndPlayer": "MJ, Assistants et les joueurs actuels",
+				"none": "Personne",
+				"top": "En haut",
+				"sidebar": "Barre latérale",
+				"bottom": "En bas"
+			}
+		},
+		"baseAnimation": {
+			"settings": {
+				"disableNextUpLingering": {
+					"name": "Cacher la notification 'Prochain Tour' avec le clic",
+					"hint": "Cache le message de Prochain Tour lorsque le joueur clique dessus"
+				},
+				"animationStyle": {
+					"name": "Set the animation settings",
+					"hint": "Choose how much animation the module will render"
+				},
+				"text": {
+					"complete": "Toutes les animations",
+					"reduced": "Juste le texte",
+					"none": "Aucune animation"
+				}
+			}
+		}
+	}
 }

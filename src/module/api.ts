@@ -1,0 +1,38 @@
+import { NativeAnimationTheme, CombatReadyAnimationTheme } from "./themes";
+import { getGame, MODULE_NAME } from "./settings";
+
+export const availableThemes: Array<CombatReadyAnimationTheme> = []
+export let currentTheme: CombatReadyAnimationTheme;
+
+export function initApi() {
+    const CombatReadyTheme = new NativeAnimationTheme("native")
+    setupTheme(CombatReadyTheme)
+    setupTheme(new NativeAnimationTheme("testeo"))
+}
+function setupTheme(themes) {
+    if (themes instanceof CombatReadyAnimationTheme) {
+        for (const setting of themes.settings) {
+            setting.setting.config = false
+            if (setting.setting.type == "Color") {
+                //@ts-ignore
+                new window.Ardittristan.ColorSetting(MODULE_NAME, `themes.${themes.id}.setting.${setting.id}`, setting.setting);
+            } else {
+                getGame().settings.register(MODULE_NAME, `themes.${themes.id}.setting.${setting.id}`, setting.setting)
+            }
+        }
+    }
+
+    availableThemes[themes.id] = themes;
+    (<ClientSettings.CompleteSetting>getGame().settings.settings.get(MODULE_NAME + ".selectedTheme")).default = getDefaultTheme()
+    updateAnimation();
+}
+export function getDefaultTheme() {
+    const ThemeIds = Object.keys(availableThemes)
+    return ThemeIds[0]
+}
+
+export function updateAnimation() {
+    const selectedTheme = <String>getGame().settings.get(MODULE_NAME, "selectedTheme")
+    //@ts-ignore
+    currentTheme = availableThemes[selectedTheme] ?? availableThemes[<String>getGame().settings?.settings?.get(MODULE_NAME + ".themes").default]
+}

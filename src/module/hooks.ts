@@ -1,5 +1,6 @@
 import { getCombats, getGame, MODULE_NAME } from "./settings";
 import { CombatReady, volume } from "./combatReady";
+import { currentTheme } from "./api";
 export const initHooks = () => {
     /**
      * Toggle pause
@@ -19,7 +20,7 @@ export const initHooks = () => {
      */
     Hooks.on("deleteCombat", async function () {
         await CombatReady.timerStop();
-        CombatReady.stopAnimate();
+        currentTheme.clean();
         CombatReady.toggleCheck();
     });
 
@@ -43,7 +44,7 @@ export const initHooks = () => {
         let combat = getCombats().get(parentId);
 
         if (combat) {
-            CombatReady.stopAnimate();
+            currentTheme.clean();
         }
         CombatReady.toggleCheck();
     });

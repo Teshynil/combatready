@@ -2,6 +2,7 @@
 import { gsap } from "/scripts/greensock/esm/all.js";
 import { addClass, removeClass } from "./helpers";
 import { getCombats, getGame, MODULE_NAME, registerSettings } from "./settings";
+import { currentTheme } from "./api";
 
 export const volume = () => {
     return (Number)(getGame().settings.get("combatready", "volume")) / 100.0;
@@ -11,11 +12,6 @@ export class CombatReady {
     public static EndTurnDialog: Array<Dialog> = [];
     public static WrapItUpDialog: Array<Dialog> = [];
     public static READY: boolean;
-    public static BANNER: HTMLDivElement;
-    public static CHEVRONS: HTMLCollectionOf<HTMLElement>;
-    public static BEAMS: HTMLCollectionOf<HTMLElement>;
-    public static LABEL: HTMLDivElement;
-    public static COVER: HTMLDivElement;
     public static SOCKET: string;
     public static TIMEBAR: HTMLDivElement;
     public static TIMEFILL: HTMLDivElement;
@@ -120,7 +116,7 @@ export class CombatReady {
                     content: "",
                     buttons: {
                         wrapitup: {
-                            label: getGame().i18n.localize("CombatReady.WrapItUp"),
+                            label: getGame().i18n.localize("combatReady.text.wrapItUp"),
                             callback: () => {
                                 CombatReady.timerStart()
                             },
@@ -144,7 +140,7 @@ export class CombatReady {
             CombatReady.TIMEBAR.style.width = `100%`;
         } else {
             if (getGame().settings.get(MODULE_NAME, "timebarlocation") == "bottom" && width == 30) width = 0;
-            CombatReady.BANNER.style.width = `calc(100% - ${width}px)`;
+            currentTheme.adjustWidth(width);
             CombatReady.TIMEBAR.style.width = `calc(100% - ${width}px)`;
         }
     }
@@ -156,53 +152,18 @@ export class CombatReady {
         let body = document.getElementsByTagName("body")[0] as HTMLElement;
         let sidebar = document.getElementById("sidebar") as HTMLElement;
 
-        // Build HTML to Inject
-        let cover = document.createElement("div");
-        addClass(cover, "combatready-boardcover");
-
         let timebar = document.createElement("div");
         let timefill = document.createElement("div");
         addClass(timebar, "combatready-timebar");
         addClass(timefill, "combatready-timebar-fill");
         timebar.appendChild(timefill);
 
-        let banner = document.createElement("div");
-        let label = document.createElement("div");
-        addClass(banner, "combatready-container");
-        addClass(label, "combatready-label");
-        // chevrons
-        for (let idx = 0; idx < 6; ++idx) {
-            let chevron = document.createElement("div");
-            addClass(chevron, "combatready-chevron");
-            banner.appendChild(chevron);
-        }
-        let chevrons = banner.getElementsByClassName("combatready-chevron") as HTMLCollectionOf<HTMLElement>;
-        // beams
-        for (let idx = 0; idx < 40; ++idx) {
-            let beam = document.createElement("div");
-            addClass(beam, "combatready-beam");
-            banner.appendChild(beam);
-        }
-        let beams = banner.getElementsByClassName("combatready-beam") as HTMLCollectionOf<HTMLElement>;
-
-        // Labels over effects
-        banner.appendChild(label);
-
-        // Inject into DOM Body
-        body.appendChild(cover);
-        body.appendChild(banner);
         body.appendChild(timebar);
         // Ajust due to DOM elements
-        banner.style.width = `calc(100% - ${sidebar.offsetWidth}px)`;
         timebar.style.width = `calc(100% - ${sidebar.offsetWidth}px)`;
 
         // element statics
         CombatReady.READY = true;
-        CombatReady.BANNER = banner;
-        CombatReady.CHEVRONS = chevrons;
-        CombatReady.BEAMS = beams;
-        CombatReady.LABEL = label;
-        CombatReady.COVER = cover;
         CombatReady.SOCKET = "module.combatready";
         // timer
         CombatReady.TIMEBAR = timebar;
@@ -210,6 +171,8 @@ export class CombatReady {
         CombatReady.TIMECURRENT = 0;
         CombatReady.TIMEMAX = 20;
         CombatReady.INTERVAL_IDS = [];
+        CombatReady.TIMEFILL.style.backgroundColor = <string>getGame().settings.get(MODULE_NAME, "timercolor");
+        addClass(CombatReady.TIMEBAR, "combatready-timebar-" + getGame().settings.get(MODULE_NAME, "timebarlocation"));
         // sound statics
         CombatReady.TURN_SOUND = { file: "modules/combatready/sounds/turn.wav", setting: "turnsound" };
         CombatReady.NEXT_SOUND = { file: "modules/combatready/sounds/next.wav", setting: "nextsound" };
@@ -217,28 +180,6 @@ export class CombatReady {
         CombatReady.EXPIRE_SOUND = { file: "modules/combatready/sounds/notime.wav", setting: "expiresound" };
         CombatReady.ACK_SOUND = { file: "modules/combatready/sounds/ack.wav", setting: "acksound" };
         CombatReady.TICK_SOUND = { file: "modules/combatready/sounds/clocktick.mp3", setting: "ticksound" };
-        // language specific fonts
-        switch (getGame().i18n.lang) {
-            case "en":
-                addClass(label, "speedp");
-                label.style["font-size"] = "124px";
-                //label.style.top = "15px";
-                break;
-            case "ko":
-                addClass(label, "bmhannapro");
-                label.style["font-size"] = "100px";
-                break;
-            case "ja":
-                addClass(label, "genshingothicbold");
-                label.style["font-size"] = "100px";
-                break;
-            default:
-                addClass(label, "ethnocentric");
-                label.style["font-size"] = "90px";
-                break;
-        }
-
-        registerSettings();
 
         // init socket
         getGame().socket?.on(CombatReady.SOCKET, (data) => {
@@ -253,39 +194,7 @@ export class CombatReady {
                     CombatReady.timerStart();
             }
         });
-    }
-
-    static onClickTurnBanner(ev) {
-        document.removeEventListener("click", CombatReady.onClickTurnBanner);
-        CombatReady.stopAnimate();
-        // play an acknowledgement sound!
-        CombatReady.playSound(CombatReady.ACK_SOUND);
-    }
-    static onClickNextBanner(ev) {
-        document.removeEventListener("click", CombatReady.onClickNextBanner);
-        // kill next label anim if the user is fast
-        let anims = gsap.getTweensOf(CombatReady.LABEL);
-        for (let tween of anims) {
-            tween.kill();
-        }
-
-        // hide cover, but keep the beams to let the user know their turn is coming up!
-        addClass(CombatReady.BANNER, "combatready-bannerdisable");
-
-        gsap.to(CombatReady.LABEL, 0.5, {
-            opacity: 0.3,
-            onComplete: function () {
-                if (getGame().settings.get("combatready", "disablenextuplingering")) {
-                    CombatReady.BANNER.style.display = "none";
-                }
-            },
-        });
-        gsap.to(CombatReady.COVER, 0.5, {
-            opacity: 0,
-            onComplete: function () {
-                CombatReady.COVER.style.display = "none";
-            },
-        });
+        currentTheme.initialize();
     }
 
     /**
@@ -295,37 +204,7 @@ export class CombatReady {
         if (!CombatReady.READY) {
             CombatReady.init();
         }
-        if (<string>getGame().settings.get("combatready", "animationstyle") !== "None") {
-            for (let e of CombatReady.CHEVRONS) e.style.left = "-200px";
-            for (let e of CombatReady.BEAMS) {
-                e.style.left = "-200px";
-                e.style.animation = "none";
-            }
-
-            CombatReady.LABEL.style.opacity = "0";
-            CombatReady.LABEL.textContent = getGame().i18n.localize("CombatReady.Turn");
-
-            removeClass(CombatReady.BANNER, "combatready-bannerdisable");
-
-            CombatReady.BANNER.style.display = "flex";
-            CombatReady.COVER.style.display = "block";
-            document.removeEventListener("click", CombatReady.onClickNextBanner);
-            document.removeEventListener("click", CombatReady.onClickTurnBanner);
-            document.addEventListener("click", CombatReady.onClickTurnBanner);
-
-            if (<string>getGame().settings.get("combatready", "animationstyle") == "Complete") {
-                gsap.to(CombatReady.CHEVRONS, {
-                    left: "100%",
-                    stagger: {
-                        repeat: -1,
-                        each: 3,
-                    },
-                    ease: "ease",
-                });
-                gsap.to(CombatReady.COVER, 2, { opacity: 0.75 });
-            }
-            gsap.to(CombatReady.LABEL, 1, { delay: 2, opacity: 1 });
-        }
+        currentTheme.onYourTurn();
         // play a sound, meep meep!
         CombatReady.playSound(CombatReady.TURN_SOUND);
     }
@@ -341,67 +220,9 @@ export class CombatReady {
         if (!CombatReady.READY) {
             CombatReady.init();
         }
-        if (<string>getGame().settings.get("combatready", "animationstyle") !== "None") {
-            for (let e of CombatReady.CHEVRONS) e.style.left = "-200px";
-            if (<string>getGame().settings.get("combatready", "animationstyle") == "Complete") {
-
-
-                // Randomize our beams
-                for (let beam of CombatReady.BEAMS) {
-                    let width = Math.floor(Math.random() * 100) + 30;
-                    let time = Math.floor(Math.random() * 1.5 * 100) / 100 + 2.0;
-                    let delay = Math.floor(Math.random() * 3 * 100) / 100 + 0.01;
-                    let toffset = Math.floor(Math.random() * 90) + 10;
-                    let iheight = Math.floor(Math.random() * 3) + 2;
-
-                    beam.style.cssText += `animation: speedbeam ${time}s linear ${delay}s infinite; top: ${toffset}%; width: ${width}px; height: ${iheight}; left: ${-width}px;`;
-                }
-
-                gsap.to(CombatReady.COVER, 2, { opacity: 0.75 });
-            }
-            removeClass(CombatReady.BANNER, "combatready-bannerdisable");
-            CombatReady.BANNER.style.display = "flex";
-            CombatReady.COVER.style.display = "block";
-            CombatReady.BANNER.style.display = "flex";
-            CombatReady.COVER.style.display = "block";
-            document.removeEventListener("click", CombatReady.onClickTurnBanner);
-            document.removeEventListener("click", CombatReady.onClickNextBanner);
-            document.addEventListener("click", CombatReady.onClickNextBanner);
-            CombatReady.LABEL.style.opacity = "0";
-            CombatReady.LABEL.textContent = getGame().i18n.localize("CombatReady.Next");
-            gsap.to(CombatReady.LABEL, 1, { delay: 2, opacity: 1 });
-        }
+        currentTheme.onNextUp();
         // play a sound, beep beep!
         CombatReady.playSound(CombatReady.NEXT_SOUND);
-    }
-
-    /**
-     * Stop it
-     */
-    static stopAnimate() {
-        let anims = gsap.getTweensOf(CombatReady.CHEVRONS);
-        for (let tween of anims) {
-            tween.kill();
-        }
-        anims = gsap.getTweensOf(CombatReady.LABEL);
-        for (let tween of anims) {
-            tween.kill();
-        }
-        anims = gsap.getTweensOf(CombatReady.COVER);
-        for (let tween of anims) {
-            tween.kill();
-        }
-
-        for (let e of CombatReady.BEAMS) e.style.animation = "none";
-
-        CombatReady.BANNER.style.display = "none";
-        removeClass(CombatReady.BANNER, "combatready-bannerdisable");
-        gsap.to(CombatReady.COVER, 0.5, {
-            opacity: 0,
-            onComplete: function () {
-                CombatReady.COVER.style.display = "none";
-            },
-        });
     }
 
     /**
@@ -412,7 +233,7 @@ export class CombatReady {
 
         if (curCombat && curCombat.started) {
             let entry = curCombat.combatant;
-            CombatReady.stopAnimate();
+            currentTheme.clean();
             if (<boolean>getGame().settings.get("combatready", "wrapitupdialog")) {
                 if (getGame().user?.isGM && entry.players.length > 0) {
                     CombatReady.showWrapItUpDialog();

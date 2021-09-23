@@ -1,0 +1,66 @@
+{{! This partial is based on the foundry settings partial}}
+{{#*inline "settingPartial"}}
+	<div class="form-group">
+		<label>{{this.name}}</label>
+		<div class="form-fields">
+			{{#if this.isCheckbox}}
+				<input type="checkbox" name="{{this.id}}" data-dtype="Boolean" {{checked this.value}} />
+			{{else if this.isSelect}}
+				<select name="{{this.id}}">
+					{{#select this.value}}
+						{{#each this.choices as |name k|}}
+							<option value="{{k}}">{{localize name}}</option>
+						{{/each}}
+					{{/select}}
+				</select>
+			{{else if this.isRange}}
+				<input type="range" name="{{this.id}}" data-dtype="Number" value="{{ this.value }}"
+					min="{{ this.range.min }}" max="{{ this.range.max }}" step="{{ this.range.step }}" />
+				<span class="range-value">{{this.value}}</span>
+			{{else if this.isColor}}
+                <button name="{{this.id}}" value="{{this.value}}" data-dtype="{{this.type}}" is="colorpicker-button"></button>
+			{{else if this.isMultiline}}
+				<textarea name="{{this.id}}" data-dtype="{{this.type}}">{{this.value}}</textarea>
+			{{else}}
+				<input type="text" name="{{this.id}}" value="{{this.value}}" data-dtype="{{this.type}}" />
+			{{/if}}
+		</div>
+		<p class="notes">{{this.hint}}</p>
+	</div>
+{{/inline}}
+
+
+
+<form class="flexcol combatready-animations" autocomplete="off">
+	<section class="content">
+		<div class="settings-list">
+			<h2 class="module-header">{{localize "combatReady.settings.themeSettings.name"}}</h2>
+			{{#if this.isGM}}
+				{{#with this.selectedTheme}}
+					{{> settingPartial}}
+				{{/with}}
+			{{else}}
+				<div class="form-group"><label>{{localize "combatReady.settings.themes.activeTheme.name"}}</label>
+                <div class="form-fields" style="justify-content: flex-start;"><b>{{this.selectedAnimationName}}</b></div></div>
+				<p class="notes">{{localize "combatReady.settings.themes.activeTheme.hint"}}</p>
+			{{/if}}
+			<h2 class="module-header">{{localize "combatReady.themes.themesettings"}}</h2>
+			{{#each this.themes}}
+				<div class="combatready-animations-settings" id="combatready.animations.{{this.id}}" {{#unless this.isSelected}}style="display:none"{{/unless}}>
+					{{#if this.hasSettings}}
+						{{#each settings}}
+							{{> settingPartial}}
+						{{/each}}
+					{{else}}
+						<p>{{localize "combatReady.themes.noSettings"}}</p>
+					{{/if}}
+				</div>
+			{{/each}}
+	</section>
+
+	<footer class="sheet-footer flexrow">
+		<button type="submit" name="submit">
+			<i class="far fa-save"></i> {{localize 'SETTINGS.Save'}}
+		</button>
+	</footer>
+</form>
