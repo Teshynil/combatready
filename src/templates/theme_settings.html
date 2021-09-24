@@ -39,6 +39,19 @@
 				{{#with this.selectedTheme}}
 					{{> settingPartial}}
 				{{/with}}
+			<h2 class="module-header">{{localize "combatReady.settings.themeTesting.name"}}</h2>
+				<button type="button">
+					<i class="fas fa-magic"></i>
+					<label>{{localize "combatReady.settings.themeTesting.testNextUp"}}</label>
+				</button>
+				<button type="button">
+					<i class="fas fa-magic"></i>
+					<label>{{localize "combatReady.settings.themeTesting.testYourTurn"}}</label>
+				</button>
+				<button type="button">
+					<i class="fas fa-magic"></i>
+					<label>{{localize "combatReady.settings.themeTesting.testRoundChange"}}</label>
+				</button>
 			{{else}}
 				<div class="form-group"><label>{{localize "combatReady.settings.themes.activeTheme.name"}}</label>
                 <div class="form-fields" style="justify-content: flex-start;"><b>{{this.selectedAnimationName}}</b></div></div>

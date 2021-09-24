@@ -71,6 +71,12 @@
 				"hint": "Change the animation settings",
 				"button": "Animation Settings"
 			},
+			"themeTesting": {
+				"name": "Animation Testing",
+				"testNextUp": "Test NextUp Animation",
+				"testYourTurn": "Test YourTurn Animation",
+				"testRoundChange": "Test RoundChange Animation"
+			},
 			"text": {
 				"everyone": "Everyone",
 				"onlyPlayers": "All Players except GM or Assistants",
