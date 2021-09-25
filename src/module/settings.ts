@@ -1,4 +1,4 @@
-import { extend } from "jquery";
+import { each, extend } from "jquery";
 import { CombatReadyAnimationTheme } from "./themes";
 import { getDefaultTheme, updateAnimation, currentTheme, availableThemes } from "./api";
 import { CombatReady } from "./combatReady";
@@ -241,18 +241,19 @@ class ThemeSettings extends FormApplication {
         data.isGM = getGame().user?.isGM
         const selectedTheme = currentTheme.id
 
-        data.themes = Object.values(availableThemes).map(theme => {
-            const animation: any = {}
-            animation.id = theme.id
-            animation.hasSettings = theme instanceof CombatReadyAnimationTheme
-            if (animation.hasSettings)
-                animation.settings = enumerateThemeSettings(theme)
-            let dotPosition = animation.id.indexOf(".")
-            if (dotPosition === -1)
-                dotPosition = animation.id.length
-            animation.selectTitle = theme.id
-            animation.isSelected = animation.id === selectedTheme
-            return animation
+        data.themes = Object.values(availableThemes).map(iTheme => {
+            const theme: any = {}
+            theme.id = iTheme.id
+            theme.hasSettings = iTheme instanceof CombatReadyAnimationTheme
+            if (theme.hasSettings)
+                theme.settings = enumerateThemeSettings(iTheme)
+            theme.testing = Object.entries(iTheme.animationsImplemented).map(test => {
+                return test[1] ? { id: test[0],name:`combatReady.settings.theme.test.${test[0]}`} : null
+            });
+            theme.hasTesting = theme.testing.length > 0
+            theme.selectTitle = iTheme.id
+            theme.isSelected = theme.id === selectedTheme
+            return theme
         })
         data.selectedThemeName = data.themes.find(theme => theme.isSelected).selectTitle
 
@@ -300,12 +301,13 @@ class ThemeSettings extends FormApplication {
         updateAnimation()
     }
 
-    activateListeners(html) {
+    activateListeners(html: JQuery) {
         super.activateListeners(html)
-        html.find("select[name=themes]").change(this.onAnimationChange.bind(this))
+        html.find("select[name=themes]").on("change", this.onThemeSelectedChange.bind(this))
+        html.find("button#combatready\\.").on("change", this.onThemeSelectedChange.bind(this))
     }
 
-    onAnimationChange(event) {
+    onThemeSelectedChange(event) {
         // Hide all module settings
         document.querySelectorAll(".combatready-themes-settings").forEach(element => (<HTMLElement>element).style.display = "none");
         // Show the settings block for the currently selected module

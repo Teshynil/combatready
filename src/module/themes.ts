@@ -8,7 +8,12 @@ import { currentTheme } from "./api";
 
 export class CombatReadyAnimationTheme {
     public id: string;
-
+    public animationsImplemented = {
+        onChangeRound: false,
+        onChangeTurn: false,
+        onYourTurn: false,
+        onNextUp: false
+    };
     public initialize() {
         throw new Error("A CombatReadyAnimations must implement the initialize function")
     }
@@ -71,6 +76,12 @@ export class CombatReadyAnimationTheme {
 }
 
 export class NativeAnimationTheme extends CombatReadyAnimationTheme {
+    public animationsImplemented = {
+        onChangeRound: false,
+        onChangeTurn: false,
+        onYourTurn: true,
+        onNextUp: true
+    };
     public BANNER: HTMLDivElement;
     public CHEVRONS: HTMLCollectionOf<HTMLElement>;
     public BEAMS: HTMLCollectionOf<HTMLElement>;
