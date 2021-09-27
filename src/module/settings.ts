@@ -36,9 +36,9 @@ export const registerSettings = () => {
         onChange: updateAnimation,
     })
     getGame().settings.registerMenu(MODULE_NAME, "themeSettings", {
-        name: "combatReady.settings.themeSettings.name",
-        hint: "combatReady.settings.themeSettings.hint",
-        label: "combatReady.settings.themeSettings.button",
+        name: "combatReady.settings.themes.themeSettings.name",
+        hint: "combatReady.settings.themes.themeSettings.hint",
+        label: "combatReady.settings.themes.themeSettings.button",
         icon: "fas fa-magic",
         type: ThemeSettings,
         restricted: true,
@@ -165,6 +165,15 @@ export const registerSettings = () => {
         default: "Everyone",
         type: String,
     });
+    getGame().settings.register(MODULE_NAME, "ticksoundfile", {
+        name: "combatReady.settings.tickSoundFile.name",
+        hint: "combatReady.settings.tickSoundFile.hint",
+        scope: "world",
+        config: true,
+        default: "modules/combatready/sounds/clocktick.mp3",
+        filePicker: 'audio',
+        onChange: (value) => { CombatReady.TICK_SOUND.file = value }
+    });
     getGame().settings.register(MODULE_NAME, "expiresound", {
         name: "combatReady.settings.expireSound.name",
         hint: "combatReady.settings.expireSound.hint",
@@ -181,6 +190,15 @@ export const registerSettings = () => {
         default: "Everyone",
         type: String,
     });
+    getGame().settings.register(MODULE_NAME, "expiresoundfile", {
+        name: "combatReady.settings.expireSoundFile.name",
+        hint: "combatReady.settings.expireSoundFile.hint",
+        scope: "world",
+        config: true,
+        default: "modules/combatready/sounds/notime.wav",
+        filePicker: 'audio',
+        onChange: (value) => { CombatReady.EXPIRE_SOUND.file = value }
+    });
     getGame().settings.register(MODULE_NAME, "roundsound", {
         name: "combatReady.settings.roundSound.name",
         hint: "combatReady.settings.roundSound.hint",
@@ -194,6 +212,42 @@ export const registerSettings = () => {
         },
         default: "Everyone",
         type: String,
+    });
+    getGame().settings.register(MODULE_NAME, "roundsoundfile", {
+        name: "combatReady.settings.roundSoundFile.name",
+        hint: "combatReady.settings.roundSoundFile.hint",
+        scope: "world",
+        config: true,
+        default: "modules/combatready/sounds/round.wav",
+        filePicker: 'audio',
+        onChange: (value) => { CombatReady.ROUND_SOUND.file = value }
+    });
+    getGame().settings.register(MODULE_NAME, "acksoundfile", {
+        name: "combatReady.settings.ackSoundFile.name",
+        hint: "combatReady.settings.ackSoundFile.hint",
+        scope: "world",
+        config: true,
+        default: "modules/combatready/sounds/ack.wav",
+        filePicker: 'audio',
+        onChange: (value) => { CombatReady.ACK_SOUND.file = value }
+    });
+    getGame().settings.register(MODULE_NAME, "nextsoundfile", {
+        name: "combatReady.settings.nextSoundFile.name",
+        hint: "combatReady.settings.nextSoundFile.hint",
+        scope: "world",
+        config: true,
+        default: "modules/combatready/sounds/next.wav",
+        filePicker: 'audio',
+        onChange: (value) => { CombatReady.NEXT_SOUND.file = value }
+    });
+    getGame().settings.register(MODULE_NAME, "turnsoundfile", {
+        name: "combatReady.settings.turnSoundFile.name",
+        hint: "combatReady.settings.turnSoundFile.hint",
+        scope: "world",
+        config: true,
+        default: "modules/combatready/sounds/turn.wav",
+        filePicker: 'audio',
+        onChange: (value) => { CombatReady.TURN_SOUND.file = value }
     });
     getGame().settings.register(MODULE_NAME, "tickonlast", {
         name: "combatReady.settings.tickOnLast.name",
@@ -230,7 +284,7 @@ class ThemeSettings extends FormApplication {
     static get defaultOptions() {
         return mergeObject(super.defaultOptions, {
             id: "combatready-theme-settings",
-            title: getGame().i18n.localize("combatReady.settings.themeSettings.name"),
+            title: getGame().i18n.localize("combatReady.settings.themes.themeSettings.name"),
             template: "modules/combatready/templates/theme_settings.html",
             width: 600,
         })
@@ -247,10 +301,6 @@ class ThemeSettings extends FormApplication {
             theme.hasSettings = iTheme instanceof CombatReadyAnimationTheme
             if (theme.hasSettings)
                 theme.settings = enumerateThemeSettings(iTheme)
-            theme.testing = Object.entries(iTheme.animationsImplemented).map(test => {
-                return test[1] ? { id: test[0],name:`combatReady.settings.theme.test.${test[0]}`} : null
-            });
-            theme.hasTesting = theme.testing.length > 0
             theme.selectTitle = iTheme.id
             theme.isSelected = theme.id === selectedTheme
             return theme
@@ -258,9 +308,9 @@ class ThemeSettings extends FormApplication {
         data.selectedThemeName = data.themes.find(theme => theme.isSelected).selectTitle
 
         data.selectedTheme = {
-            id: "themes",
-            name: getGame().i18n.localize("combatReady.themes.animationtheme.name"),
-            hint: getGame().i18n.localize("combatReady.themes.animationtheme.hint"),
+            id: "selectedTheme",
+            name: getGame().i18n.localize("combatReady.settings.themes.selectTheme.name"),
+            hint: getGame().i18n.localize("combatReady.settings.themes.selectTheme.hint"),
             type: String,
             choices: data.themes.reduce((choices, themes) => {
                 choices[themes.id] = themes.selectTitle
@@ -273,19 +323,25 @@ class ThemeSettings extends FormApplication {
         }
         return data
     }
+    async _onSubmit(event: SubmitEvent, { updateData = {}, preventClose = false, preventRender = false }: FormApplication.OnSubmitOptions = {}): Promise<Partial<Record<string, unknown>>> {
+        if ((<HTMLButtonElement>event.submitter).name == "apply") {
+            preventClose = true;
+        }
+        return super._onSubmit(event, { updateData, preventClose, preventRender });
+    }
 
-    async _updateObject(event: Event, formData: object) {
+    async _updateObject(event: SubmitEvent, formData: object) {
         //@ts-ignore
-        const selectedAnimations = getGame().user?.isGM ? formData.animations : getGame().settings.get(MODULE_NAME, "themes")
+        const selectedTheme = getGame().user?.isGM ? formData.selectedTheme : getGame().settings.get(MODULE_NAME, "selectedTheme")
         for (let [key, value] of Object.entries(formData)) {
 
-            if (key !== "themes" && !key.startsWith(selectedAnimations))
+            if (key !== "selectedTheme" && !key.startsWith(selectedTheme))
                 continue
 
 
             let setting
-            if (key === "themes")
-                setting = "themes"
+            if (key === "selectedTheme")
+                setting = "selectedTheme"
             else
                 setting = `themes.${key}`
 
@@ -303,15 +359,40 @@ class ThemeSettings extends FormApplication {
 
     activateListeners(html: JQuery) {
         super.activateListeners(html)
-        html.find("select[name=themes]").on("change", this.onThemeSelectedChange.bind(this))
-        html.find("button#combatready\\.").on("change", this.onThemeSelectedChange.bind(this))
+        html.find("select[name=selectedTheme]").on("change", this.onThemeSelectedChange.bind(this))
+        html.find("button#combatready\\.theme\\.test\\.yourTurn").on("click", this.onThemeTestClick.bind(this))
+        html.find("button#combatready\\.theme\\.test\\.nextUp").on("click", this.onThemeTestClick.bind(this))
+        html.find("button#combatready\\.theme\\.test\\.nextRound").on("click", this.onThemeTestClick.bind(this))
+    }
+
+    onThemeTestClick(event) {
+        switch (event.currentTarget.value) {
+            case "yourTurn":
+                setTimeout(() => {
+                    currentTheme.yourTurnAnimation();
+                }, 64);
+                break;
+            case "nextUp":
+                setTimeout(() => {
+                    currentTheme.nextUpAnimation();
+                }, 64);
+                break;
+            case "nextRound":
+                setTimeout(() => {
+                    currentTheme.nextRoundAnimation();
+                }, 64);
+                break;
+
+            default:
+                break;
+        }
     }
 
     onThemeSelectedChange(event) {
         // Hide all module settings
-        document.querySelectorAll(".combatready-themes-settings").forEach(element => (<HTMLElement>element).style.display = "none");
+        document.querySelectorAll(".combatready-theme-settings").forEach(element => (<HTMLElement>element).style.display = "none");
         // Show the settings block for the currently selected module
-        (<HTMLElement>document.getElementById(`combatready.themes.${event.currentTarget.value}`)).style.display = "";
+        (<HTMLElement>document.getElementById(`combatready.theme.${event.currentTarget.value}`)).style.display = "";
 
         // Recalculate window height
         (<HTMLElement>this.element[0]).style.height = ""

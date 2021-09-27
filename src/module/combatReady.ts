@@ -174,12 +174,12 @@ export class CombatReady {
         CombatReady.TIMEFILL.style.backgroundColor = <string>getGame().settings.get(MODULE_NAME, "timercolor");
         addClass(CombatReady.TIMEBAR, "combatready-timebar-" + getGame().settings.get(MODULE_NAME, "timebarlocation"));
         // sound statics
-        CombatReady.TURN_SOUND = { file: "modules/combatready/sounds/turn.wav", setting: "turnsound" };
-        CombatReady.NEXT_SOUND = { file: "modules/combatready/sounds/next.wav", setting: "nextsound" };
-        CombatReady.ROUND_SOUND = { file: "modules/combatready/sounds/round.wav", setting: "roundsound" };
-        CombatReady.EXPIRE_SOUND = { file: "modules/combatready/sounds/notime.wav", setting: "expiresound" };
-        CombatReady.ACK_SOUND = { file: "modules/combatready/sounds/ack.wav", setting: "acksound" };
-        CombatReady.TICK_SOUND = { file: "modules/combatready/sounds/clocktick.mp3", setting: "ticksound" };
+        CombatReady.TURN_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "turnsoundfile"), setting: "turnsound" };
+        CombatReady.NEXT_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "nextsoundfile"), setting: "nextsound" };
+        CombatReady.ROUND_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "roundsoundfile"), setting: "roundsound" };
+        CombatReady.EXPIRE_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "expiresoundfile"), setting: "expiresound" };
+        CombatReady.ACK_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "acksoundfile"), setting: "acksound" };
+        CombatReady.TICK_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "ticksoundfile"), setting: "ticksound" };
 
         // init socket
         getGame().socket?.on(CombatReady.SOCKET, (data) => {
@@ -194,7 +194,6 @@ export class CombatReady {
                     CombatReady.timerStart();
             }
         });
-        currentTheme.initialize();
     }
 
     /**
@@ -204,7 +203,7 @@ export class CombatReady {
         if (!CombatReady.READY) {
             CombatReady.init();
         }
-        currentTheme.onYourTurn();
+        currentTheme.yourTurnAnimation();
         // play a sound, meep meep!
         CombatReady.playSound(CombatReady.TURN_SOUND);
     }
@@ -220,7 +219,7 @@ export class CombatReady {
         if (!CombatReady.READY) {
             CombatReady.init();
         }
-        currentTheme.onNextUp();
+        currentTheme.nextUpAnimation();
         // play a sound, beep beep!
         CombatReady.playSound(CombatReady.NEXT_SOUND);
     }
@@ -233,7 +232,7 @@ export class CombatReady {
 
         if (curCombat && curCombat.started) {
             let entry = curCombat.combatant;
-            currentTheme.clean();
+            currentTheme.cleanAnimations();
             if (<boolean>getGame().settings.get("combatready", "wrapitupdialog")) {
                 if (getGame().user?.isGM && entry.players.length > 0) {
                     CombatReady.showWrapItUpDialog();

@@ -66,16 +66,29 @@
 				"name": "Timer location",
 				"hint": "Select the location of the timer"
 			},
-			"themeSettings": {
-				"name": "Animation Settings",
-				"hint": "Change the animation settings",
-				"button": "Animation Settings"
+			"tickSoundFile": {
+				"name": "Ticking sound file",
+				"hint": "Select the sound file you would like to use for the timer ticking, if is invalid it will return to the default"
 			},
-			"themeTesting": {
-				"name": "Animation Testing",
-				"testNextUp": "Test NextUp Animation",
-				"testYourTurn": "Test YourTurn Animation",
-				"testRoundChange": "Test RoundChange Animation"
+			"expireSoundFile": {
+				"name": "Expire sound file",
+				"hint": "Select the sound file you would like to use for the ticking sound, if is invalid it will return to the default"
+			},
+			"roundSoundFile": {
+				"name": "Round sound file",
+				"hint": "Select the sound file you would like to use for the ticking sound, if is invalid it will return to the default"
+			},
+			"nextSoundFile": {
+				"name": "NextUp sound file",
+				"hint": "Select the sound file you would like to use for the ticking sound, if is invalid it will return to the default"
+			},
+			"turnSoundFile": {
+				"name": "YourTurn sound file",
+				"hint": "Select the sound file you would like to use for the ticking sound, if is invalid it will return to the default"
+			},
+			"ackSoundFile": {
+				"name": "Acknowledge sound file",
+				"hint": "Select the sound file you would like to use for the ticking sound, if is invalid it will return to the default"
 			},
 			"text": {
 				"everyone": "Everyone",
@@ -87,6 +100,25 @@
 				"top": "Top",
 				"sidebar": "Sidebar",
 				"bottom": "Bottom"
+			},
+			"themes": {
+				"themeSettings": {
+					"name": "Animation Theme Settings",
+					"hint": "Change the animation settings",
+					"button": "Animation Settings"
+				},
+				"testing": {
+					"name": "Animation Testing",
+					"nextUp": "Test NextUp Animation",
+					"yourTurn": "Test YourTurn Animation",
+					"roundChange": "Test RoundChange Animation",
+					"hint": "To properly test an animation, first you need to apply any pending changes to it."
+				},
+				"noSettings": "This theme has no settings",
+				"selectTheme": {
+					"name": "Selected Animation Theme",
+					"hint": "Select the animation theme you would like to use for the alerts."
+				}
 			}
 		},
 		"themes": {
@@ -122,12 +154,6 @@
 						"none": "No animations"
 					}
 				}
-			},
-			"themesettings": "Animation Theme settings",
-			"noSettings": "This theme has no settings",
-			"animationtheme": {
-				"name": "Selected Animation Theme",
-				"hint": "Select the animation theme you would like to use for the alerts."
 			}
 		}
 	}

@@ -70,10 +70,6 @@
 		{
 			"name": "colorsettings",
 			"manifest": "https://raw.githubusercontent.com/ardittristan/VTTColorSettings/master/module.json"
-		},
-		{
-			"name": "acelib",
-			"manifest": "https://github.com/arcanistzed/acelib/releases/latest/download/module.json"
 		}
 	],
 	"packs": [],

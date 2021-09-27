@@ -9,20 +9,20 @@ export function initApi() {
     setupTheme(CombatReadyTheme)
     setupTheme(new NativeAnimationTheme("testeo"))
 }
-function setupTheme(themes) {
-    if (themes instanceof CombatReadyAnimationTheme) {
-        for (const setting of themes.settings) {
+function setupTheme(theme) {
+    if (theme instanceof CombatReadyAnimationTheme) {
+        for (const setting of theme.settings) {
             setting.setting.config = false
             if (setting.setting.type == "Color") {
                 //@ts-ignore
-                new window.Ardittristan.ColorSetting(MODULE_NAME, `themes.${themes.id}.setting.${setting.id}`, setting.setting);
+                new window.Ardittristan.ColorSetting(MODULE_NAME, `themes.${theme.id}.setting.${setting.id}`, setting.setting);
             } else {
-                getGame().settings.register(MODULE_NAME, `themes.${themes.id}.setting.${setting.id}`, setting.setting)
+                getGame().settings.register(MODULE_NAME, `themes.${theme.id}.setting.${setting.id}`, setting.setting)
             }
         }
     }
 
-    availableThemes[themes.id] = themes;
+    availableThemes[theme.id] = theme;
     (<ClientSettings.CompleteSetting>getGame().settings.settings.get(MODULE_NAME + ".selectedTheme")).default = getDefaultTheme()
     updateAnimation();
 }
@@ -33,6 +33,12 @@ export function getDefaultTheme() {
 
 export function updateAnimation() {
     const selectedTheme = <String>getGame().settings.get(MODULE_NAME, "selectedTheme")
+    try {
+        currentTheme.destroy();
+    } catch (error) {
+    }
     //@ts-ignore
     currentTheme = availableThemes[selectedTheme] ?? availableThemes[<String>getGame().settings?.settings?.get(MODULE_NAME + ".themes").default]
+
+    currentTheme.initialize();
 }

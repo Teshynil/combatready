@@ -34,7 +34,6 @@
 <form class="flexcol combatready-animations" autocomplete="off">
 	<section class="content">
 		<div class="settings-list">
-			<h2 class="module-header">{{localize "combatReady.settings.themeSettings.name"}}</h2>
 			{{#if this.isGM}}
 			{{#with this.selectedTheme}}
 			{{> settingPartial}}
@@ -46,29 +45,22 @@
 			</div>
 			<p class="notes">{{localize "combatReady.settings.themes.activeTheme.hint"}}</p>
 			{{/if}}
-			<h2 class="module-header">{{localize "combatReady.themes.themesettings"}}</h2>
 			{{#each this.themes}}
-			<div class="combatready-theme-settings" id="combatready.theme.{{this.id}}" {{#unless
-				this.isSelected}}style="display:none" {{/unless}}>
-				{{#if this.hasTesting}}
-				{{#each testing}}
-				<div class="form-group">
-					<label>{{localize this.name }}</label>
-					<div class="form-fields">
-						<button type="button" id="combatready.theme.test.{{this.id}}">
-							<i class="fas fa-magic"></i>
-							<label>{{localize this.name }}</label>
-						</button>
-					</div>
+			<div class="combatready-theme-settings" id="combatready.theme.{{this.id}}" {{#unless this.isSelected}}style="display:none" {{/unless}}>
+				<h2 class="module-header">{{localize "combatReady.settings.themes.testing.name"}}</h2>
+				<div class="flexrow">
+					<button type="button" id="combatready.theme.test.yourTurn" value="yourTurn"><i class="fas fa-magic"></i><label>{{localize "combatReady.settings.themes.testing.yourTurn" }}</label></button>
+					<button type="button" id="combatready.theme.test.nextUp" value="nextUp"><i class="fas fa-magic"></i><label>{{localize "combatReady.settings.themes.testing.nextUp" }}</label></button>
+					<button type="button" id="combatready.theme.test.roundChange" value="nextRound"><i class="fas fa-magic"></i><label>{{localize "combatReady.settings.themes.testing.roundChange" }}</label></button>
 				</div>
-				{{/each}}
-				{{/if}}
+				<p class="notes">{{localize "combatReady.settings.themes.testing.hint" }}</p>
+				<h2 class="module-header">{{localize "combatReady.settings.themes.themeSettings.name"}}</h2>
 				{{#if this.hasSettings}}
 				{{#each settings}}
 				{{> settingPartial}}
 				{{/each}}
 				{{else}}
-				<p>{{localize "combatReady.themes.noSettings"}}</p>
+				<p>{{localize "combatReady.settings.themes.noSettings"}}</p>
 				{{/if}}
 			</div>
 			{{/each}}
@@ -77,6 +69,9 @@
 	<footer class="sheet-footer flexrow">
 		<button type="submit" name="submit">
 			<i class="far fa-save"></i> {{localize 'SETTINGS.Save'}}
+		</button>
+		<button type="submit" name="apply">
+			<i class="far fa-check-circle"></i> {{localize 'combatReady.themes.ApplyChanges'}}
 		</button>
 	</footer>
 </form>

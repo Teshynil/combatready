@@ -20,7 +20,7 @@ export const initHooks = () => {
      */
     Hooks.on("deleteCombat", async function () {
         await CombatReady.timerStop();
-        currentTheme.clean();
+        currentTheme.cleanAnimations();
         CombatReady.toggleCheck();
     });
 
@@ -44,7 +44,7 @@ export const initHooks = () => {
         let combat = getCombats().get(parentId);
 
         if (combat) {
-            currentTheme.clean();
+            currentTheme.cleanAnimations();
         }
         CombatReady.toggleCheck();
     });

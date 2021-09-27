@@ -1,6 +1,6 @@
 //@ts-ignore
 import { gsap } from "/scripts/greensock/esm/all.js";
-import { extend } from "jquery"
+import { each, extend } from "jquery"
 import { CombatReady } from "./combatReady";
 import { addClass, removeClass } from "./helpers";
 import { getGame, MODULE_NAME } from "./settings";
@@ -8,14 +8,12 @@ import { currentTheme } from "./api";
 
 export class CombatReadyAnimationTheme {
     public id: string;
-    public animationsImplemented = {
-        onChangeRound: false,
-        onChangeTurn: false,
-        onYourTurn: false,
-        onNextUp: false
-    };
+
     public initialize() {
-        throw new Error("A CombatReadyAnimations must implement the initialize function")
+        throw new Error("A CombatReadyTheme must implement the initialize function")
+    }
+    public destroy() {
+        throw new Error("A CombatReadyTheme must implement the destroy function")
     }
     public onChangeRound() {
         return;
@@ -23,13 +21,16 @@ export class CombatReadyAnimationTheme {
     public onChangeTurn() {
         return;
     }
-    public onYourTurn() {
+    public yourTurnAnimation() {
         return;
     }
-    public onNextUp() {
+    public nextUpAnimation() {
         return;
     }
-    public clean() {
+    public nextRoundAnimation() {
+        return;
+    }
+    public cleanAnimations() {
         return;
     }
     public adjustWidth(width: Number) {
@@ -76,12 +77,6 @@ export class CombatReadyAnimationTheme {
 }
 
 export class NativeAnimationTheme extends CombatReadyAnimationTheme {
-    public animationsImplemented = {
-        onChangeRound: false,
-        onChangeTurn: false,
-        onYourTurn: true,
-        onNextUp: true
-    };
     public BANNER: HTMLDivElement;
     public CHEVRONS: HTMLCollectionOf<HTMLElement>;
     public BEAMS: HTMLCollectionOf<HTMLElement>;
@@ -133,27 +128,40 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
         // language specific fonts
         switch (getGame().i18n.lang) {
             case "en":
-                label.style.fontFamily = '"Speedp", "Signika", "Palatino Linotype", serif';
-                label.style.fontSize = "124px";
+                this.LABEL.style.fontFamily = '"Speedp", "Signika", "Palatino Linotype", serif';
+                this.LABEL.style.fontSize = "124px";
                 break;
             case "ko":
-                label.style.fontFamily = '"BMHannaPro", "Signika", "Palatino Linotype", serif';
-                label.style.fontSize = "100px";
+                this.LABEL.style.fontFamily = '"BMHannaPro", "Signika", "Palatino Linotype", serif';
+                this.LABEL.style.fontSize = "100px";
                 break;
             case "ja":
-                label.style.fontFamily = '"GenShinGothicBold", "Signika", "Palatino Linotype", serif';
-                label.style["font-size"] = "100px";
+                this.LABEL.style.fontFamily = '"GenShinGothicBold", "Signika", "Palatino Linotype", serif';
+                this.LABEL.style["font-size"] = "100px";
                 break;
             default:
-                label.style.fontFamily = '"Ethnocentric", "Signika", "Palatino Linotype", serif';
-                label.style["font-size"] = "90px";
+                this.LABEL.style.fontFamily = '"Ethnocentric", "Signika", "Palatino Linotype", serif';
+                this.LABEL.style["font-size"] = "90px";
                 break;
         }
+    }
+    public destroy() {
+        this.BANNER.remove();
+        for (let idx = 0; idx < this.CHEVRONS.length; idx++) {
+            const element = this.CHEVRONS[idx];
+            element.remove();
+        }
+        for (let idx = 0; idx < this.BEAMS.length; idx++) {
+            const element = this.BEAMS[idx];
+            element.remove();
+        }
+        this.LABEL.remove();
+        this.COVER.remove();
     }
 
     onClickTurnBanner(ev) {
         document.removeEventListener("click", (<NativeAnimationTheme>currentTheme).onClickTurnBanner);
-        (<NativeAnimationTheme>currentTheme).clean();
+        (<NativeAnimationTheme>currentTheme).cleanAnimations();
     }
     onClickNextBanner(ev) {
         document.removeEventListener("click", (<NativeAnimationTheme>currentTheme).onClickNextBanner);
@@ -182,7 +190,7 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
         });
     }
 
-    clean() {
+    cleanAnimations() {
         let anims = gsap.getTweensOf(this.CHEVRONS);
         for (let tween of anims) {
             tween.kill();
@@ -207,7 +215,7 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
             onComplete: x,
         });
     }
-    onNextUp() {
+    nextUpAnimation() {
         if (this.getSetting("animationstyle") !== "None") {
             for (let e of this.CHEVRONS) e.style.left = "-200px";
             if (this.getSetting("animationstyle") == "Complete") {
@@ -239,7 +247,7 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
             gsap.to(this.LABEL, 1, { delay: 2, opacity: 1 });
         }
     }
-    onYourTurn() {
+    yourTurnAnimation() {
         if (this.getSetting("animationstyle") !== "None") {
             for (let e of this.CHEVRONS) e.style.left = "-200px";
             for (let e of this.BEAMS) {
@@ -344,18 +352,7 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
                     },
                     type: String,
                 }
-            },
-            {
-                id: "disablenextuplingering",
-                setting: {
-                    name: "combatReady.themes.native.settings.disableNextUpLingering.name",
-                    hint: "combatReady.themes.native.settings.disableNextUpLingering.hint",
-                    scope: "world",
-                    config: true,
-                    default: false,
-                    type: Boolean,
-                }
-            },
+            }
         ]
     }
 }
