@@ -1,19 +1,55 @@
 //@ts-ignore
 import { gsap } from "/scripts/greensock/esm/all.js";
-import { each, extend } from "jquery"
-import { CombatReady } from "./combatReady";
-import { addClass, removeClass } from "./helpers";
-import { getGame, MODULE_NAME } from "./settings";
+import { getCanvas, getCombats, getGame, MODULE_NAME } from "./settings";
 import { currentTheme } from "./api";
+import { CombatReady } from "./combatReady";
 
 export class CombatReadyAnimationTheme {
     public id: string;
+    public testMode: boolean;
+    public data: { currentCombat: Combat, currentCombatant: Combatant, nextCombatant: Combatant, round: number };
 
     public initialize() {
         throw new Error("A CombatReadyTheme must implement the initialize function")
     }
     public destroy() {
         throw new Error("A CombatReadyTheme must implement the destroy function")
+    }
+    /**
+     * Prefill the data variable with data which would be useful
+     * The default behaviour is to get the current combat, current combatant, next combatant and round number
+     * This function is called on demand by your themes, use it as you would like.
+     */
+    public prepare() {
+        if (!this.testMode) {
+            let curCombat = getCombats().active as Combat;
+            let curCombatant = curCombat.combatant;
+            let nxtturn = ((curCombat.turn || 0) + 1) % curCombat.turns.length;
+            let nxtCombatant = curCombat.turns[nxtturn];
+            this.data = {
+                currentCombat: curCombat,
+                currentCombatant: curCombatant,
+                nextCombatant: nxtCombatant,
+                round: curCombat.round
+            };
+        } else {//In case the test mode is active use the selected token as combatant if none selected use the on
+            //@ts-ignore
+            var testCombat = new Combat();
+            //@ts-ignore
+            let selectedToken = (<Token>(getCanvas().tokens?.objects?.children.find(e => e._controlled)))?.id ?? '';
+            var testCombatant = new Combatant({ tokenId: selectedToken }, { parent: testCombat });
+            if (selectedToken == "") testCombatant.data.name = <string>getGame().user?.name;
+            this.data = {
+                currentCombat: testCombat,
+                currentCombatant: testCombatant,
+                nextCombatant: testCombatant,
+                round: 1
+            }
+        }
+    }
+    public playAcknowledge() {
+        CombatReady.playSound(CombatReady.ACK_SOUND);
+        return;
     }
     public onChangeRound() {
         return;
@@ -88,23 +124,23 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
 
         // Build HTML to Inject
         let cover = document.createElement("div");
-        addClass(cover, "combatready-boardcover");
+        $(cover).addClass("combatready-boardcover");
 
         let banner = document.createElement("div");
         let label = document.createElement("div");
-        addClass(banner, "combatready-container");
-        addClass(label, "combatready-label");
+        $(banner).addClass("combatready-container");
+        $(label).addClass("combatready-label");
         // chevrons
         for (let idx = 0; idx < 6; ++idx) {
             let chevron = document.createElement("div");
-            addClass(chevron, "combatready-chevron");
+            $(chevron).addClass("combatready-chevron");
             banner.appendChild(chevron);
         }
         let chevrons = banner.getElementsByClassName("combatready-chevron") as HTMLCollectionOf<HTMLElement>;
         // beams
         for (let idx = 0; idx < 40; ++idx) {
             let beam = document.createElement("div");
-            addClass(beam, "combatready-beam");
+            $(beam).addClass("combatready-beam");
             banner.appendChild(beam);
         }
         let beams = banner.getElementsByClassName("combatready-beam") as HTMLCollectionOf<HTMLElement>;
@@ -161,6 +197,7 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
 
     onClickTurnBanner(ev) {
         document.removeEventListener("click", (<NativeAnimationTheme>currentTheme).onClickTurnBanner);
+        (<NativeAnimationTheme>currentTheme).playAcknowledge();
         (<NativeAnimationTheme>currentTheme).cleanAnimations();
     }
     onClickNextBanner(ev) {
@@ -172,7 +209,7 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
         }
 
         // hide cover, but keep the beams to let the user know their turn is coming up!
-        addClass((<NativeAnimationTheme>currentTheme).BANNER, "combatready-bannerdisable");
+        $((<NativeAnimationTheme>currentTheme).BANNER).addClass("combatready-bannerdisable");
 
         gsap.to((<NativeAnimationTheme>currentTheme).LABEL, 0.5, {
             opacity: 0.3,
@@ -207,20 +244,19 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
         for (let e of this.BEAMS) e.style.animation = "none";
 
         this.BANNER.style.display = "none";
-        removeClass(this.BANNER, "combatready-bannerdisable");
+        $(this.BANNER).removeClass("combatready-bannerdisable");
         const x = (_this) => { this.COVER.style.display = "none"; }
         x.bind(this);
-        gsap.to(this.COVER, 0.5, {
+        gsap.to(this.COVER, 0.1, {
             opacity: 0,
             onComplete: x,
         });
     }
     nextUpAnimation() {
+        this.prepare();
         if (this.getSetting("animationstyle") !== "None") {
             for (let e of this.CHEVRONS) e.style.left = "-200px";
             if (this.getSetting("animationstyle") == "Complete") {
-
-
                 // Randomize our beams
                 for (let beam of this.BEAMS) {
                     let width = Math.floor(Math.random() * 100) + 30;
@@ -232,22 +268,29 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
                     beam.style.cssText += `animation: speedbeam ${time}s linear ${delay}s infinite; top: ${toffset}%; width: ${width}px; height: ${iheight}; left: ${-width}px;`;
                 }
 
-                gsap.to(this.COVER, 2, { opacity: 0.75 });
+                gsap.to(this.COVER, 2, { display: "block", opacity: 0.75 });
             }
-            removeClass(this.BANNER, "combatready-bannerdisable");
-            this.BANNER.style.display = "flex";
-            this.COVER.style.display = "block";
+            $(this.BANNER).removeClass("combatready-bannerdisable");
             this.BANNER.style.display = "flex";
             this.COVER.style.display = "block";
             document.removeEventListener("click", this.onClickTurnBanner);
             document.removeEventListener("click", this.onClickNextBanner);
             document.addEventListener("click", this.onClickNextBanner);
             this.LABEL.style.opacity = "0";
-            this.LABEL.textContent = getGame().i18n.localize("combatReady.text.next");
+            if (this.getSetting("customtextfornextup") != "") {
+                let html = this.getSetting("customtextfornextup");
+                let label = Handlebars.compile(html);
+                this.LABEL.innerHTML = label({ name: this.data.currentCombatant.name });
+            } else if (this.getSetting("usecombatantnameassubtitle") == "NextUp" || this.getSetting("usecombatantnameassubtitle") == "Both") {
+                this.LABEL.innerHTML = `<span>${getGame().i18n.localize("combatReady.text.next")}</span><span>${this.data.currentCombatant.name}</span>`;
+            } else {
+                this.LABEL.textContent = getGame().i18n.localize("combatReady.text.next");
+            }
             gsap.to(this.LABEL, 1, { delay: 2, opacity: 1 });
         }
     }
     yourTurnAnimation() {
+        this.prepare();
         if (this.getSetting("animationstyle") !== "None") {
             for (let e of this.CHEVRONS) e.style.left = "-200px";
             for (let e of this.BEAMS) {
@@ -256,9 +299,18 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
             }
 
             this.LABEL.style.opacity = "0";
-            this.LABEL.textContent = getGame().i18n.localize("combatReady.text.turn");
 
-            removeClass(this.BANNER, "combatready-bannerdisable");
+            if (this.getSetting("customtextforyourturn") != "") {
+                let html = this.getSetting("customtextforyourturn");
+                let label = Handlebars.compile(html);
+                this.LABEL.innerHTML = label({ name: this.data.currentCombatant.name });
+            } else if (this.getSetting("usecombatantnameassubtitle") == "YourTurn" || this.getSetting("usecombatantnameassubtitle") == "Both") {
+                this.LABEL.innerHTML = `<span>${getGame().i18n.localize("combatReady.text.turn")}</span><span>${this.data.currentCombatant.name}</span>`;
+            } else {
+                this.LABEL.textContent = getGame().i18n.localize("combatReady.text.turn");
+            }
+
+            $(this.BANNER).removeClass("combatready-bannerdisable");
 
             this.BANNER.style.display = "flex";
             this.COVER.style.display = "block";
@@ -275,7 +327,7 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
                     },
                     ease: "ease",
                 });
-                gsap.to(this.COVER, 2, { opacity: 0.75 });
+                gsap.to(this.COVER, 2, { display: "block", opacity: 0.75 });
             }
             gsap.to(this.LABEL, 1, { delay: 2, opacity: 1 });
         }

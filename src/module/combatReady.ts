@@ -1,7 +1,4 @@
-//@ts-ignore
-import { gsap } from "/scripts/greensock/esm/all.js";
-import { addClass, removeClass } from "./helpers";
-import { getCombats, getGame, MODULE_NAME, registerSettings } from "./settings";
+import { getCombats, getGame, MODULE_NAME } from "./settings";
 import { currentTheme } from "./api";
 
 export const volume = () => {
@@ -154,8 +151,8 @@ export class CombatReady {
 
         let timebar = document.createElement("div");
         let timefill = document.createElement("div");
-        addClass(timebar, "combatready-timebar");
-        addClass(timefill, "combatready-timebar-fill");
+        $(timebar).addClass("combatready-timebar");
+        $(timefill).addClass("combatready-timebar-fill");
         timebar.appendChild(timefill);
 
         body.appendChild(timebar);
@@ -172,7 +169,7 @@ export class CombatReady {
         CombatReady.TIMEMAX = 20;
         CombatReady.INTERVAL_IDS = [];
         CombatReady.TIMEFILL.style.backgroundColor = <string>getGame().settings.get(MODULE_NAME, "timercolor");
-        addClass(CombatReady.TIMEBAR, "combatready-timebar-" + getGame().settings.get(MODULE_NAME, "timebarlocation"));
+        $(CombatReady.TIMEBAR).addClass("combatready-timebar-" + getGame().settings.get(MODULE_NAME, "timebarlocation"));
         // sound statics
         CombatReady.TURN_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "turnsoundfile"), setting: "turnsound" };
         CombatReady.NEXT_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "nextsoundfile"), setting: "nextsound" };

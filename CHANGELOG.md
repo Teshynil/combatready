@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## [2.0.0] 2021-10-07
+
+* Change all sounds included in the module in order to avoid any copyright problems
+* Added option to customize all the sounds used in the module
+* Reestructure all the localization files to use json properly
+* Implement an API for future use
+* Added support to custom animations themes
+* Added option to test the animations
+* Added option in the native theme to use the combatant name in the alert
+* Added option in the native theme  to use custom HTML for the alerts
+
 ## [1.4.1] 2021-09-18
 
 * Fix of unpause sometimes does not continue timer

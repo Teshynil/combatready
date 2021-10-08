@@ -112,9 +112,10 @@
 					"nextUp": "Test NextUp Animation",
 					"yourTurn": "Test YourTurn Animation",
 					"roundChange": "Test RoundChange Animation",
-					"hint": "To properly test an animation, first you need to apply any pending changes to it."
+					"hint": "To properly test an animation, first you need to apply any pending changes to it. Aditionally you should select a token in the Canvas, if none selected the module would use your user name for the tests."
 				},
 				"noSettings": "This theme has no settings",
+				"applyChanges": "Apply Changes",
 				"selectTheme": {
 					"name": "Selected Animation Theme",
 					"hint": "Select the animation theme you would like to use for the alerts."
@@ -142,11 +143,11 @@
 					},
 					"customTextForNextUp": {
 						"name": "Advanced Setting: Custom text for NextUp animation",
-						"hint": "For advanced users only: Use a custom text for the animation, this will override any localization. You can use the variable {name} in the text to insert the combatant name. It supports HTML the parent container use flex in column mode"
+						"hint": "For advanced users only: Use a custom text for the animation, this will override any localization. You can use the variable {{name}} in the text to insert the combatant name. It supports HTML the parent container use flex in column mode"
 					},
 					"customTextForYourTurn": {
 						"name": "Advanced Setting: Custom text for YourTurn animation",
-						"hint": "For advanced users only: Use a custom text for the animation, this will override any localization. You can use the variable {name} in the text to insert the combatant name. It supports HTML the parent container use flex in column mode"
+						"hint": "For advanced users only: Use a custom text for the animation, this will override any localization. You can use the variable {{name}} in the text to insert the combatant name. It supports HTML the parent container use flex in column mode"
 					},
 					"text": {
 						"complete": "All animations",

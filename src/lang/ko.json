@@ -1,16 +1,161 @@
 {
-	"CombatReady.Turn": "당신의 턴",
-	"CombatReady.Next": "다음 차례",
-	"CombatReady.TimeMax": "턴당 최대 시간",
-	"CombatReady.TimeMaxHint": "분 단위의 턴당 시간, 최대치는 30분이다.",
-	"CombatReady.DisableNextUp": "'다음 차례' 알림 사용 안 함",
-	"CombatReady.DisableNextUpHint": "다음 차례에 대한 알림을 제거한다",
-	"CombatReady.DisableTimer": "타이머 비활성화",
-	"CombatReady.DisableTimerHint": "화면 하단의 타이머 기능을 완전히 비활성화 한다",
-	"CombatReady.ShowEndTurnDialog": "턴 종료 대화상자 표시",
-	"CombatReady.ShowEndTurnDialogHint": "플레이어가 현재 턴을 끝낼 수 있는 버튼을 제공하는 대화상자를 표시한다",
-	"CombatReady.TickSound": "시계 소리",
-	"CombatReady.TickSoundHint": "플레이어의 턴에서 시간이 부족할 때 똑딱거리는 소리를 만든다",
-	"CombatReady.Volume": "볼륨",
-	"CombatReady.VolumeHint": "모듈의 전체적 볼륨 설정"
+	"combatReady": {
+		"text": {
+			"wrapItUp": "Wrap it up",
+			"turn": "당신의 턴",
+			"next": "다음 차례"
+		},
+		"settings": {
+			"timeMax": {
+				"name": "턴당 최대 시간",
+				"hint": "분 단위의 턴당 시간, 최대치는 30분이다."
+			},
+			"disableNextUp": {
+				"name": "'다음 차례' 알림 사용 안 함",
+				"hint": "다음 차례에 대한 알림을 제거한다"
+			},
+			"disableNextUpOnLastTurn": {
+				"name": "Disable 'Next Up' on round change",
+				"hint": "Remove notification about your next turn if it involves a round change"
+			},
+			"disableTimer": {
+				"name": "타이머 비활성화",
+				"hint": "화면 하단의 타이머 기능을 완전히 비활성화 한다"
+			},
+			"disableTimerGM": {
+				"name": "Disable timer for the GM",
+				"hint": "Disable timer feature at bottom of the screen for GM npc´s"
+			},
+			"showEndTurnDialog": {
+				"name": "턴 종료 대화상자 표시",
+				"hint": "플레이어가 현재 턴을 끝낼 수 있는 버튼을 제공하는 대화상자를 표시한다"
+			},
+			"showWrapItUpDialog": {
+				"name": "Show a Wrap It Up Dialog",
+				"hint": "Displays a Dialog to the GM on players turn that provides a button to start the timer, this will prevent the timer autostart"
+			},
+			"tickSound": {
+				"name": "시계 소리",
+				"hint": "플레이어의 턴에서 시간이 부족할 때 똑딱거리는 소리를 만든다"
+			},
+			"expireSound": {
+				"name": "Expire Sound",
+				"hint": "Create an expire sound for the selected players when the current player's turn is out of time"
+			},
+			"roundSound": {
+				"name": "Round Sound",
+				"hint": "Create an sound audible for the selected players when the round increases"
+			},
+			"volume": {
+				"name": "볼륨",
+				"hint": "모듈의 전체적 볼륨 설정"
+			},
+			"tickOnLast": {
+				"name": "Tick on last seconds",
+				"hint": "Set the last seconds remaining for the ticking to start"
+			},
+			"autoEndOnTimer": {
+				"name": "Auto end turn",
+				"hint": "Ends the current turn if the timer runs out of time (Don´t apply to NPC)"
+			},
+			"timerColor": {
+				"name": "Color of the timer",
+				"hint": "Select the color of the timer"
+			},
+			"timeBarLocation": {
+				"name": "Timer location",
+				"hint": "Select the location of the timer"
+			},
+			"tickSoundFile": {
+				"name": "Ticking sound file",
+				"hint": "Select the sound file you would like to use for the timer ticking, if is invalid it will return to the default"
+			},
+			"expireSoundFile": {
+				"name": "Expire sound file",
+				"hint": "Select the sound file you would like to use for the ticking sound, if is invalid it will return to the default"
+			},
+			"roundSoundFile": {
+				"name": "Round sound file",
+				"hint": "Select the sound file you would like to use for the ticking sound, if is invalid it will return to the default"
+			},
+			"nextSoundFile": {
+				"name": "NextUp sound file",
+				"hint": "Select the sound file you would like to use for the ticking sound, if is invalid it will return to the default"
+			},
+			"turnSoundFile": {
+				"name": "YourTurn sound file",
+				"hint": "Select the sound file you would like to use for the ticking sound, if is invalid it will return to the default"
+			},
+			"ackSoundFile": {
+				"name": "Acknowledge sound file",
+				"hint": "Select the sound file you would like to use for the ticking sound, if is invalid it will return to the default"
+			},
+			"text": {
+				"everyone": "Everyone",
+				"onlyPlayers": "All Players except GM or Assistants",
+				"currentCombatant": "Current Player or GM if NPC",
+				"GM": "GM and Assistants",
+				"GMAndPlayer": "GM, Assistants and the Current player",
+				"none": "Nobody",
+				"top": "Top",
+				"sidebar": "Sidebar",
+				"bottom": "Bottom"
+			},
+			"themes": {
+				"themeSettings": {
+					"name": "Animation Theme Settings",
+					"hint": "Change the animation settings",
+					"button": "Animation Settings"
+				},
+				"testing": {
+					"name": "Animation Testing",
+					"nextUp": "Test NextUp Animation",
+					"yourTurn": "Test YourTurn Animation",
+					"roundChange": "Test RoundChange Animation",
+					"hint": "To properly test an animation, first you need to apply any pending changes to it. Aditionally you should select a token in the Canvas, if none selected the module would use your user name for the tests."
+				},
+				"noSettings": "This theme has no settings",
+				"applyChanges": "Apply Changes",
+				"selectTheme": {
+					"name": "Selected Animation Theme",
+					"hint": "Select the animation theme you would like to use for the alerts."
+				}
+			}
+		},
+		"themes": {
+			"native": {
+				"settings": {
+					"disableNextUpLingering": {
+						"name": "Hide 'Next Up' notification on click",
+						"hint": "Remove the Next Up text whe the player clicks it"
+					},
+					"animationStyle": {
+						"name": "Set the animation settings",
+						"hint": "Choose how much animation the module will render"
+					},
+					"useCombatantNameAsSubtitle": {
+						"name": "Combatant name as Subtitle",
+						"hint": "Use the token combatant name for a second line subtitle",
+						"neither": "Don`t use it",
+						"nextUp": "Use it in the NextUp animation",
+						"yourTurn": "Use it in the YourTurn animation",
+						"both": "Use it in Both animations"
+					},
+					"customTextForNextUp": {
+						"name": "Advanced Setting: Custom text for NextUp animation",
+						"hint": "For advanced users only: Use a custom text for the animation, this will override any localization. You can use the variable {{name}} in the text to insert the combatant name. It supports HTML the parent container use flex in column mode"
+					},
+					"customTextForYourTurn": {
+						"name": "Advanced Setting: Custom text for YourTurn animation",
+						"hint": "For advanced users only: Use a custom text for the animation, this will override any localization. You can use the variable {{name}} in the text to insert the combatant name. It supports HTML the parent container use flex in column mode"
+					},
+					"text": {
+						"complete": "All animations",
+						"reduced": "Just the text",
+						"none": "No animations"
+					}
+				}
+			}
+		}
+	}
 }

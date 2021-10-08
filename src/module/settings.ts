@@ -2,7 +2,6 @@ import { each, extend } from "jquery";
 import { CombatReadyAnimationTheme } from "./themes";
 import { getDefaultTheme, updateAnimation, currentTheme, availableThemes } from "./api";
 import { CombatReady } from "./combatReady";
-import { addClass, removeClass } from "./helpers";
 export const MODULE_NAME = "combatready";
 
 export function getCanvas(): Canvas {
@@ -94,10 +93,10 @@ export const registerSettings = () => {
         },
         type: String,
         onChange: (value) => {
-            removeClass(CombatReady.TIMEBAR, "combatready-timebar-top");
-            removeClass(CombatReady.TIMEBAR, "combatready-timebar-sidebar");
-            removeClass(CombatReady.TIMEBAR, "combatready-timebar-bottom");
-            addClass(CombatReady.TIMEBAR, "combatready-timebar-" + value);
+            $(CombatReady.TIMEBAR).removeClass("combatready-timebar-top");
+            $(CombatReady.TIMEBAR).removeClass("combatready-timebar-sidebar");
+            $(CombatReady.TIMEBAR).removeClass("combatready-timebar-bottom");
+            $(CombatReady.TIMEBAR).addClass("combatready-timebar-" + value);
             CombatReady.adjustWidth();
         }
     });
@@ -170,7 +169,7 @@ export const registerSettings = () => {
         hint: "combatReady.settings.tickSoundFile.hint",
         scope: "world",
         config: true,
-        default: "modules/combatready/sounds/clocktick.mp3",
+        default: "modules/combatready/sounds/ticksound_clocktick.ogg",
         filePicker: 'audio',
         onChange: (value) => { CombatReady.TICK_SOUND.file = value }
     });
@@ -195,7 +194,7 @@ export const registerSettings = () => {
         hint: "combatReady.settings.expireSoundFile.hint",
         scope: "world",
         config: true,
-        default: "modules/combatready/sounds/notime.wav",
+        default: "modules/combatready/sounds/expiresound_dundundun.ogg",
         filePicker: 'audio',
         onChange: (value) => { CombatReady.EXPIRE_SOUND.file = value }
     });
@@ -218,7 +217,7 @@ export const registerSettings = () => {
         hint: "combatReady.settings.roundSoundFile.hint",
         scope: "world",
         config: true,
-        default: "modules/combatready/sounds/round.wav",
+        default: "modules/combatready/sounds/roundsound_Deep_Whoosh_2.ogg",
         filePicker: 'audio',
         onChange: (value) => { CombatReady.ROUND_SOUND.file = value }
     });
@@ -227,7 +226,7 @@ export const registerSettings = () => {
         hint: "combatReady.settings.ackSoundFile.hint",
         scope: "world",
         config: true,
-        default: "modules/combatready/sounds/ack.wav",
+        default: "modules/combatready/sounds/acksound_pin.ogg",
         filePicker: 'audio',
         onChange: (value) => { CombatReady.ACK_SOUND.file = value }
     });
@@ -236,7 +235,7 @@ export const registerSettings = () => {
         hint: "combatReady.settings.nextSoundFile.hint",
         scope: "world",
         config: true,
-        default: "modules/combatready/sounds/next.wav",
+        default: "modules/combatready/sounds/nextup_storm.ogg",
         filePicker: 'audio',
         onChange: (value) => { CombatReady.NEXT_SOUND.file = value }
     });
@@ -245,7 +244,7 @@ export const registerSettings = () => {
         hint: "combatReady.settings.turnSoundFile.hint",
         scope: "world",
         config: true,
-        default: "modules/combatready/sounds/turn.wav",
+        default: "modules/combatready/sounds/yourturnsound_movieswell.ogg",
         filePicker: 'audio',
         onChange: (value) => { CombatReady.TURN_SOUND.file = value }
     });
@@ -366,26 +365,24 @@ class ThemeSettings extends FormApplication {
     }
 
     onThemeTestClick(event) {
-        switch (event.currentTarget.value) {
-            case "yourTurn":
-                setTimeout(() => {
+        currentTheme.testMode = true;
+        setTimeout(() => {
+            switch (event.currentTarget.value) {
+                case "yourTurn":
                     currentTheme.yourTurnAnimation();
-                }, 64);
-                break;
-            case "nextUp":
-                setTimeout(() => {
+                    break;
+                case "nextUp":
                     currentTheme.nextUpAnimation();
-                }, 64);
-                break;
-            case "nextRound":
-                setTimeout(() => {
+                    break;
+                case "nextRound":
                     currentTheme.nextRoundAnimation();
-                }, 64);
-                break;
+                    break;
 
-            default:
-                break;
-        }
+                default:
+                    break;
+            }
+            currentTheme.testMode = false;
+        }, 64);
     }
 
     onThemeSelectedChange(event) {

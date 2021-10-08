@@ -40,10 +40,18 @@ The next list is the sources for the sounds included with the module, the name w
 |License|[Creative Commons - Attribution 3.0 Unported](https://creativecommons.org/licenses/by/3.0/)|
 |Modifications|Reduced to 5 second long and converted to 44100hz vorbis ogg |
 
-| rounyourturnsound_movieswell.ogg | |
+| yourturnsound_movieswell.ogg | |
 |---|---|
 |Original name|Movie Swell 2|
 |Author|[jordivburgel](https://freesound.org/people/jordivburgel/)|
 |Source|https://freesound.org/people/jordivburgel/sounds/218524/|
 |License|[Creative Commons - Universal Public Domain Dedication](https://creativecommons.org/publicdomain/zero/1.0/)|
 |Modifications|Converted to 44100hz vorbis ogg |
+
+| acksound_pin.ogg | |
+|---|---|
+|Original name|pin.wav|
+|Author|[pera](https://freesound.org/people/pera/)|
+|Source|https://freesound.org/people/pera/sounds/36165/|
+|License|[Creative Commons - Universal Public Domain Dedication](https://creativecommons.org/publicdomain/zero/1.0/)|
+|Modifications|Reduced to 3 second long and converted to 44100hz vorbis ogg |

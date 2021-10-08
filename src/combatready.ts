@@ -1,7 +1,6 @@
 import { CombatReadyAnimationTheme, NativeAnimationTheme } from "./module/themes";
 import { initApi } from "./module/api";
 import { CombatReady } from "./module/combatReady";
-import { addClass, removeClass } from "./module/helpers";
 import { initHooks } from "./module/hooks";
 import { getGame, registerSettings } from "./module/settings";
 

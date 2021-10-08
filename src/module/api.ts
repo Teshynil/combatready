@@ -1,13 +1,14 @@
 import { NativeAnimationTheme, CombatReadyAnimationTheme } from "./themes";
 import { getGame, MODULE_NAME } from "./settings";
 
-export const availableThemes: Array<CombatReadyAnimationTheme> = []
+export const availableThemes: Array<CombatReadyAnimationTheme> = [];
 export let currentTheme: CombatReadyAnimationTheme;
+export const CombatReadyApi: { setupTheme: Function } = { setupTheme };
 
 export function initApi() {
-    const CombatReadyTheme = new NativeAnimationTheme("native")
-    setupTheme(CombatReadyTheme)
-    setupTheme(new NativeAnimationTheme("testeo"))
+    //@ts-ignore
+    window.CombatReady = CombatReadyApi;
+    setupTheme(new NativeAnimationTheme("native"))
 }
 function setupTheme(theme) {
     if (theme instanceof CombatReadyAnimationTheme) {

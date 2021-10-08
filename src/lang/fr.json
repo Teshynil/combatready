@@ -66,6 +66,30 @@
 				"name": "Position du compte-à-rebours",
 				"hint": "Sélectionner la position du compte-à-rebours"
 			},
+			"tickSoundFile": {
+				"name": "Ticking sound file",
+				"hint": "Select the sound file you would like to use for the timer ticking, if is invalid it will return to the default"
+			},
+			"expireSoundFile": {
+				"name": "Expire sound file",
+				"hint": "Select the sound file you would like to use for the ticking sound, if is invalid it will return to the default"
+			},
+			"roundSoundFile": {
+				"name": "Round sound file",
+				"hint": "Select the sound file you would like to use for the ticking sound, if is invalid it will return to the default"
+			},
+			"nextSoundFile": {
+				"name": "NextUp sound file",
+				"hint": "Select the sound file you would like to use for the ticking sound, if is invalid it will return to the default"
+			},
+			"turnSoundFile": {
+				"name": "YourTurn sound file",
+				"hint": "Select the sound file you would like to use for the ticking sound, if is invalid it will return to the default"
+			},
+			"ackSoundFile": {
+				"name": "Acknowledge sound file",
+				"hint": "Select the sound file you would like to use for the ticking sound, if is invalid it will return to the default"
+			},
 			"text": {
 				"everyone": "Tout le monde",
 				"onlyPlayers": "Tous les joueurs sauf le MJ et les Assistants",
@@ -76,22 +100,60 @@
 				"top": "En haut",
 				"sidebar": "Barre latérale",
 				"bottom": "En bas"
+			},
+			"themes": {
+				"themeSettings": {
+					"name": "Animation Theme Settings",
+					"hint": "Change the animation settings",
+					"button": "Animation Settings"
+				},
+				"testing": {
+					"name": "Animation Testing",
+					"nextUp": "Test NextUp Animation",
+					"yourTurn": "Test YourTurn Animation",
+					"roundChange": "Test RoundChange Animation",
+					"hint": "To properly test an animation, first you need to apply any pending changes to it. Aditionally you should select a token in the Canvas, if none selected the module would use your user name for the tests."
+				},
+				"noSettings": "This theme has no settings",
+				"applyChanges": "Apply Changes",
+				"selectTheme": {
+					"name": "Selected Animation Theme",
+					"hint": "Select the animation theme you would like to use for the alerts."
+				}
 			}
 		},
-		"baseAnimation": {
-			"settings": {
-				"disableNextUpLingering": {
-					"name": "Cacher la notification 'Prochain Tour' avec le clic",
-					"hint": "Cache le message de Prochain Tour lorsque le joueur clique dessus"
-				},
-				"animationStyle": {
-					"name": "Set the animation settings",
-					"hint": "Choose how much animation the module will render"
-				},
-				"text": {
-					"complete": "Toutes les animations",
-					"reduced": "Juste le texte",
-					"none": "Aucune animation"
+		"themes": {
+			"native": {
+				"settings": {
+					"disableNextUpLingering": {
+						"name": "Cacher la notification 'Prochain Tour' avec le clic",
+						"hint": "Cache le message de Prochain Tour lorsque le joueur clique dessus"
+					},
+					"animationStyle": {
+						"name": "Set the animation settings",
+						"hint": "Choose how much animation the module will render"
+					},
+					"useCombatantNameAsSubtitle": {
+						"name": "Combatant name as Subtitle",
+						"hint": "Use the token combatant name for a second line subtitle",
+						"neither": "Don`t use it",
+						"nextUp": "Use it in the NextUp animation",
+						"yourTurn": "Use it in the YourTurn animation",
+						"both": "Use it in Both animations"
+					},
+					"customTextForNextUp": {
+						"name": "Advanced Setting: Custom text for NextUp animation",
+						"hint": "For advanced users only: Use a custom text for the animation, this will override any localization. You can use the variable {{name}} in the text to insert the combatant name. It supports HTML the parent container use flex in column mode"
+					},
+					"customTextForYourTurn": {
+						"name": "Advanced Setting: Custom text for YourTurn animation",
+						"hint": "For advanced users only: Use a custom text for the animation, this will override any localization. You can use the variable {{name}} in the text to insert the combatant name. It supports HTML the parent container use flex in column mode"
+					},
+					"text": {
+						"complete": "Toutes les animations",
+						"reduced": "Juste le texte",
+						"none": "Aucune animation"
+					}
 				}
 			}
 		}
