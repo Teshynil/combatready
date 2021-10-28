@@ -1,13 +1,31 @@
 //@ts-ignore
 import { gsap } from "/scripts/greensock/esm/all.js";
 import { getCanvas, getCombats, getGame, MODULE_NAME } from "./settings";
-import { currentTheme } from "./api";
+import { availableThemes, currentTheme } from "./api";
 import { CombatReady } from "./combatReady";
+import { CombatReadySubSettings, enumerateSettings, SettingsAwareEntity } from "./settingsAwareEntity";
 
-export class CombatReadyAnimationTheme {
-    public id: string;
+export class CombatReadyAnimationTheme extends SettingsAwareEntity {
+    override type = "themes";
     public testMode: boolean;
-    public data: { currentCombat: Combat, currentCombatant: Combatant, nextCombatant: Combatant, round: number };
+    public data: {
+        currentCombat: Combat,
+        currentCombatant: Combatant,
+        nextCombatant: Combatant,
+        round: number,
+        currentTexts: {
+            name: string,
+            combatantName: string,
+            actorName: string,
+            playerName: string
+        },
+        nextTexts: {
+            name: string,
+            combatantName: string,
+            actorName: string,
+            playerName: string
+        }
+    };
 
     public initialize() {
         throw new Error("A CombatReadyTheme must implement the initialize function")
@@ -26,11 +44,46 @@ export class CombatReadyAnimationTheme {
             let curCombatant = curCombat.combatant;
             let nxtturn = ((curCombat.turn || 0) + 1) % curCombat.turns.length;
             let nxtCombatant = curCombat.turns[nxtturn];
+            let name = "";
+            let combatantName = curCombatant.name;
+            let playerName = <string>getGame().user?.name;
+            let actorName = curCombatant.actor?.name ?? playerName;
+            let nxtName = "";
+            let nxtCombatantName = nxtCombatant.name;
+            let nxtPlayerName = <string>getGame().user?.name;
+            let nxtActorName = nxtCombatant.actor?.name ?? playerName;
+            switch (this.getSetting("combatantnameorigin")) {
+                case "LinkedActor":
+                    name = actorName;
+                    nxtName = nxtActorName;
+                    break;
+                case "CurrentPlayer":
+                    name = playerName;
+                    nxtName = nxtPlayerName;
+                    break;
+                case "Combatant":
+                default:
+                    name = combatantName;
+                    nxtName = nxtCombatantName;
+                    break;
+            }
             this.data = {
                 currentCombat: curCombat,
                 currentCombatant: curCombatant,
                 nextCombatant: nxtCombatant,
-                round: curCombat.round
+                round: curCombat.round,
+                currentTexts: {
+                    name: name,
+                    combatantName: combatantName,
+                    actorName: actorName,
+                    playerName: playerName
+                },
+                nextTexts: {
+                    name: nxtName,
+                    combatantName: nxtCombatantName,
+                    actorName: nxtActorName,
+                    playerName: nxtPlayerName
+                }
             };
         } else {//In case the test mode is active use the selected token as combatant if none selected use the on
             //@ts-ignore
@@ -39,11 +92,39 @@ export class CombatReadyAnimationTheme {
             let selectedToken = (<Token>(getCanvas().tokens?.objects?.children.find(e => e._controlled)))?.id ?? '';
             var testCombatant = new Combatant({ tokenId: selectedToken }, { parent: testCombat });
             if (selectedToken == "") testCombatant.data.name = <string>getGame().user?.name;
+            let name = "";
+            let combatantName = testCombatant.name;
+            let playerName = <string>getGame().user?.name;
+            let actorName = testCombatant.actor?.name ?? playerName;
+            switch (this.getSetting("combatantnameorigin")) {
+                case "LinkedActor":
+                    name = actorName;
+                    break;
+                case "CurrentPlayer":
+                    name = playerName;
+                    break;
+                case "Combatant":
+                default:
+                    name = combatantName;
+                    break;
+            }
             this.data = {
                 currentCombat: testCombat,
                 currentCombatant: testCombatant,
                 nextCombatant: testCombatant,
-                round: 1
+                round: 1,
+                currentTexts: {
+                    name: name,
+                    combatantName: combatantName,
+                    actorName: actorName,
+                    playerName: playerName
+                },
+                nextTexts: {
+                    name: name,
+                    combatantName: combatantName,
+                    actorName: actorName,
+                    playerName: playerName
+                }
             }
         }
     }
@@ -69,50 +150,22 @@ export class CombatReadyAnimationTheme {
     public cleanAnimations() {
         return;
     }
-    public adjustWidth(width: Number) {
+    public adjustWidth() {
         return;
     }
 
-    /**
-     * Returns an array of configuration options for this module. The settings will be shown in the Animation Settings of Combat Ready.
-     * Each configuration option is an object that has the same attributes as a native foundry setting passed to `game.settings.register`,
-     * except for these exceptions:
-     * - id: A string that identifies the setting. Must be unique for each setting returned. This id will be used to fetch the setting.
-     *
-     * Implementing this method is optional and only needs to be done if you want to provide customizability for your animations
-     */
+
     get settings(): Array<{ id: string, setting: any }> {
         return []
     }
 
-    /**
-     * Returns the value that is currently set for the setting registered with the provided settingId.
-     *
-     * This function shouldn't be overridden by speed provider implementations. It can be called to fetch speed provider specific settings.
-     */
-    getSetting(settingId: string) {
-        try {
-            return getGame().settings.get(MODULE_NAME, `themes.${this.id}.setting.${settingId}`)
-        }
-        catch (e) {
-            if (this.settings.some(setting => setting.id === settingId)) {
-                throw e
-            }
-            throw new Error(`Combat Ready | "${settingId}" is not a registered setting for "${this.id}". If you're the module/system developer, please add it to the return values of your Animations "get settings()" function.`)
-        }
-    }
-
-    /**
-     * Constructs a new instance of he speed provider
-     *
-     * This function should neither be called or overridden by speed provider implementations
-     */
     constructor(id) {
-        this.id = id
+        super(id);
     }
 }
 
 export class NativeAnimationTheme extends CombatReadyAnimationTheme {
+    name = "CombatReady";
     public BANNER: HTMLDivElement;
     public CHEVRONS: HTMLCollectionOf<HTMLElement>;
     public BEAMS: HTMLCollectionOf<HTMLElement>;
@@ -130,10 +183,14 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
         let label = document.createElement("div");
         $(banner).addClass("combatready-container");
         $(label).addClass("combatready-label");
+        label.style.color = <string>this.getSetting("fontcolor");
         // chevrons
         for (let idx = 0; idx < 6; ++idx) {
             let chevron = document.createElement("div");
             $(chevron).addClass("combatready-chevron");
+            $(chevron).addClass("fas");
+            $(chevron).addClass("fa-chevron-right");
+            chevron.style.color = <string>this.getSetting("arrowscolor");
             banner.appendChild(chevron);
         }
         let chevrons = banner.getElementsByClassName("combatready-chevron") as HTMLCollectionOf<HTMLElement>;
@@ -180,19 +237,21 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
                 this.LABEL.style["font-size"] = "90px";
                 break;
         }
+        this.ready = true;
     }
     public destroy() {
-        this.BANNER.remove();
-        for (let idx = 0; idx < this.CHEVRONS.length; idx++) {
+        for (let idx = 0; idx < this.CHEVRONS?.length ?? 0; idx++) {
             const element = this.CHEVRONS[idx];
             element.remove();
         }
-        for (let idx = 0; idx < this.BEAMS.length; idx++) {
+        for (let idx = 0; idx < this.BEAMS?.length ?? 0; idx++) {
             const element = this.BEAMS[idx];
             element.remove();
         }
-        this.LABEL.remove();
-        this.COVER.remove();
+        this.BANNER?.remove();
+        this.LABEL?.remove();
+        this.COVER?.remove();
+        this.ready = false;
     }
 
     onClickTurnBanner(ev) {
@@ -228,6 +287,7 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
     }
 
     cleanAnimations() {
+        if (!this.ready) return;
         let anims = gsap.getTweensOf(this.CHEVRONS);
         for (let tween of anims) {
             tween.kill();
@@ -253,6 +313,7 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
         });
     }
     nextUpAnimation() {
+        if (!this.ready) return;
         this.prepare();
         if (this.getSetting("animationstyle") !== "None") {
             for (let e of this.CHEVRONS) e.style.left = "-200px";
@@ -267,8 +328,9 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
 
                     beam.style.cssText += `animation: speedbeam ${time}s linear ${delay}s infinite; top: ${toffset}%; width: ${width}px; height: ${iheight}; left: ${-width}px;`;
                 }
-
-                gsap.to(this.COVER, 2, { display: "block", opacity: 0.75 });
+                this.COVER.style.display = "block";
+                this.COVER.style.opacity = "0";
+                gsap.to(this.COVER, 2, { opacity: 0.75 });
             }
             $(this.BANNER).removeClass("combatready-bannerdisable");
             this.BANNER.style.display = "flex";
@@ -280,16 +342,18 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
             if (this.getSetting("customtextfornextup") != "") {
                 let html = this.getSetting("customtextfornextup");
                 let label = Handlebars.compile(html);
-                this.LABEL.innerHTML = label({ name: this.data.currentCombatant.name });
+                this.LABEL.innerHTML = label({ name: this.data.nextTexts.name, actor: this.data.nextTexts.actorName, player: this.data.nextTexts.playerName, combatant: this.data.nextTexts.combatantName });
             } else if (this.getSetting("usecombatantnameassubtitle") == "NextUp" || this.getSetting("usecombatantnameassubtitle") == "Both") {
-                this.LABEL.innerHTML = `<span>${getGame().i18n.localize("combatReady.text.next")}</span><span>${this.data.currentCombatant.name}</span>`;
+                this.LABEL.innerHTML = `<span>${getGame().i18n.localize("combatReady.text.next")}</span><span>${this.data.nextTexts.name}</span>`;
             } else {
                 this.LABEL.textContent = getGame().i18n.localize("combatReady.text.next");
             }
+            this.LABEL.style.opacity = "0";
             gsap.to(this.LABEL, 1, { delay: 2, opacity: 1 });
         }
     }
     yourTurnAnimation() {
+        if (!this.ready) return;
         this.prepare();
         if (this.getSetting("animationstyle") !== "None") {
             for (let e of this.CHEVRONS) e.style.left = "-200px";
@@ -303,9 +367,9 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
             if (this.getSetting("customtextforyourturn") != "") {
                 let html = this.getSetting("customtextforyourturn");
                 let label = Handlebars.compile(html);
-                this.LABEL.innerHTML = label({ name: this.data.currentCombatant.name });
+                this.LABEL.innerHTML = label({ name: this.data.currentTexts.name, actor: this.data.currentTexts.actorName, player: this.data.currentTexts.playerName, combatant: this.data.currentTexts.combatantName });
             } else if (this.getSetting("usecombatantnameassubtitle") == "YourTurn" || this.getSetting("usecombatantnameassubtitle") == "Both") {
-                this.LABEL.innerHTML = `<span>${getGame().i18n.localize("combatReady.text.turn")}</span><span>${this.data.currentCombatant.name}</span>`;
+                this.LABEL.innerHTML = `<span>${getGame().i18n.localize("combatReady.text.turn")}</span><span>${this.data.currentTexts.name}</span>`;
             } else {
                 this.LABEL.textContent = getGame().i18n.localize("combatReady.text.turn");
             }
@@ -328,11 +392,16 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
                     ease: "ease",
                 });
                 gsap.to(this.COVER, 2, { display: "block", opacity: 0.75 });
+                gsap.to(this.LABEL, 1, { delay: 1, opacity: 1 });
+            } else {
+                gsap.to(this.COVER, 2, { display: "block", opacity: 0.75 });
+                gsap.to(this.LABEL, 1, { delay: 0, opacity: 1 });
             }
-            gsap.to(this.LABEL, 1, { delay: 2, opacity: 1 });
         }
     }
-    adjustWidth(width: Number) {
+    adjustWidth() {
+        let sidebar = document.getElementById("sidebar") as HTMLElement;
+        let width = sidebar.offsetWidth;
         this.BANNER.style.width = `calc(100% - ${width}px)`;
     }
     get settings() {
@@ -346,6 +415,22 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
                     config: true,
                     default: false,
                     type: Boolean,
+                }
+            },
+            {
+                id: "combatantnameorigin",
+                setting: {
+                    name: "combatReady.themes.native.settings.combatantNameOrigin.name",
+                    hint: "combatReady.themes.native.settings.combatantNameOrigin.hint",
+                    scope: "world",
+                    config: true,
+                    default: "None",
+                    choices: {
+                        "LinkedActor": "combatReady.themes.native.settings.combatantNameOrigin.linkedActor",
+                        "CurrentPlayer": "combatReady.themes.native.settings.combatantNameOrigin.currentPlayer",
+                        "Combatant": "combatReady.themes.native.settings.combatantNameOrigin.combatant"
+                    },
+                    type: String,
                 }
             },
             {
@@ -390,6 +475,36 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
                 }
             },
             {
+                id: "arrowscolor",
+                setting: {
+                    name: "combatReady.themes.native.settings.arrowsColor.name",
+                    hint: "combatReady.themes.native.settings.arrowsColor.hint",
+                    label: "Color Picker",
+                    default: "#6fcf6f",
+                    scope: "world",
+                    type: "Color",
+                    onChange: (value) => {
+                        //@ts-ignore
+                        for (let e of currentTheme.CHEVRONS) e.style.color = value;
+                    }
+                }
+            },
+            {
+                id: "fontcolor",
+                setting: {
+                    name: "combatReady.themes.native.settings.fontColor.name",
+                    hint: "combatReady.themes.native.settings.fontColor.hint",
+                    label: "Color Picker",
+                    default: "#ffffff",
+                    scope: "world",
+                    type: "Color",
+                    onChange: (value) => {
+                        //@ts-ignore
+                        currentTheme.LABEL.style.color = value;
+                    }
+                }
+            },
+            {
                 id: "animationstyle",
                 setting: {
                     name: "combatReady.themes.native.settings.animationStyle.name",
@@ -406,5 +521,77 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
                 }
             }
         ]
+    }
+}
+
+export class ThemeSubSettings extends CombatReadySubSettings {
+    override type = "themes";
+    static get defaultOptions() {
+        return mergeObject(super.defaultOptions, {
+            id: "combatready-themes-settings",
+            title: getGame().i18n.localize("combatReady.settings.themes.settings.name"),
+            template: "modules/combatready/templates/themes_settings.html"
+        })
+    }
+    getData(options: Application.RenderOptions): FormApplication.Data<{}, FormApplication.Options> | Promise<FormApplication.Data<{}, FormApplication.Options>> {
+        const data: any = {}
+        data.isGM = getGame().user?.isGM
+        const selectedTheme = currentTheme.id
+
+        data.themes = Object.values(availableThemes).map(iTheme => {
+            const theme: any = {}
+            theme.id = iTheme.id
+            theme.hasSettings = iTheme instanceof CombatReadyAnimationTheme
+            if (theme.hasSettings)
+                theme.settings = enumerateSettings(iTheme)
+            theme.selectTitle = `${iTheme.id} | ${iTheme.name}`;
+            if (iTheme.id == "native") theme.selectTitle = iTheme.name;
+            theme.isSelected = theme.id === selectedTheme
+            return theme
+        })
+        data.selectedThemeName = data.themes.find(theme => theme.isSelected).selectTitle
+
+        data.selectedTheme = {
+            id: "selectedTheme",
+            name: getGame().i18n.localize("combatReady.settings.themes.selectTheme.name"),
+            hint: getGame().i18n.localize("combatReady.settings.themes.selectTheme.hint"),
+            type: String,
+            choices: data.themes.reduce((choices, themes) => {
+                choices[themes.id] = themes.selectTitle
+                return choices
+            }, {}),
+            value: selectedTheme,
+            isCheckbox: false,
+            isSelect: true,
+            isRange: false,
+        }
+        return data
+    }
+    activateListeners(html: JQuery) {
+        super.activateListeners(html)
+        html.find("button#combatready\\.themes\\.test\\.yourTurn").on("click", this.onThemeTestClick.bind(this))
+        html.find("button#combatready\\.themes\\.test\\.nextUp").on("click", this.onThemeTestClick.bind(this))
+        html.find("button#combatready\\.themes\\.test\\.nextRound").on("click", this.onThemeTestClick.bind(this))
+    }
+
+    onThemeTestClick(event) {
+        currentTheme.testMode = true;
+        setTimeout(() => {
+            switch (event.currentTarget.value) {
+                case "yourTurn":
+                    currentTheme.yourTurnAnimation();
+                    break;
+                case "nextUp":
+                    currentTheme.nextUpAnimation();
+                    break;
+                case "nextRound":
+                    currentTheme.nextRoundAnimation();
+                    break;
+
+                default:
+                    break;
+            }
+            currentTheme.testMode = false;
+        }, 64);
     }
 }

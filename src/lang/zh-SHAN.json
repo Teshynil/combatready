@@ -1,16 +1,4 @@
 {
-	"CombatReady.Turn": "",
-	"CombatReady.Next": "",
-	"CombatReady.TimeMax": "",
-	"CombatReady.TimeMaxHint": "",
-	"CombatReady.ShowEndTurnDialog": "",
-	"CombatReady.ShowEndTurnDialogHint": "",
-	"CombatReady.TickSound": "",
-	"CombatReady.TickSoundHint": "",
-	"CombatReady.Volume": "",
-	"CombatReady.VolumeHint": ""
-}
-{
 	"combatReady": {
 		"text": {
 			"wrapItUp": "Wrap it up",
@@ -70,14 +58,6 @@
 				"name": "Auto end turn",
 				"hint": "Ends the current turn if the timer runs out of time (Don´t apply to NPC)"
 			},
-			"timerColor": {
-				"name": "Color of the timer",
-				"hint": "Select the color of the timer"
-			},
-			"timeBarLocation": {
-				"name": "Timer location",
-				"hint": "Select the location of the timer"
-			},
 			"tickSoundFile": {
 				"name": "Ticking sound file",
 				"hint": "Select the sound file you would like to use for the timer ticking, if is invalid it will return to the default"
@@ -108,13 +88,10 @@
 				"currentCombatant": "Current Player or GM if NPC",
 				"GM": "GM and Assistants",
 				"GMAndPlayer": "GM, Assistants and the Current player",
-				"none": "Nobody",
-				"top": "Top",
-				"sidebar": "Sidebar",
-				"bottom": "Bottom"
+				"none": "Nobody"
 			},
 			"themes": {
-				"themeSettings": {
+				"settings": {
 					"name": "Animation Theme Settings",
 					"hint": "Change the animation settings",
 					"button": "Animation Settings"
@@ -131,6 +108,19 @@
 				"selectTheme": {
 					"name": "Selected Animation Theme",
 					"hint": "Select the animation theme you would like to use for the alerts."
+				}
+			},
+			"timers": {
+				"settings": {
+					"name": "Timer Settings",
+					"hint": "Change the timer settings",
+					"button": "Timer Settings"
+				},
+				"noSettings": "This timer has no settings",
+				"applyChanges": "Apply Changes",
+				"selectTimer": {
+					"name": "Selected Timer",
+					"hint": "Select the timer you would like to use."
 				}
 			}
 		},
@@ -153,18 +143,52 @@
 						"yourTurn": "Use it in the YourTurn animation",
 						"both": "Use it in Both animations"
 					},
+					"combatantNameOrigin": {
+						"name": "Name Source",
+						"hint": "Select the source for the combatant name (used in the subtitle and the custom text {{name}} variable)",
+						"linkedActor": "Linked Actor to token",
+						"currentPlayer": "Player",
+						"combatant": "Combatant"
+					},
 					"customTextForNextUp": {
 						"name": "Advanced Setting: Custom text for NextUp animation",
-						"hint": "For advanced users only: Use a custom text for the animation, this will override any localization. You can use the variable {{name}} in the text to insert the combatant name. It supports HTML the parent container use flex in column mode"
+						"hint": "For advanced users only: Use a custom text for the animation, this will override any localization. You can use the variable {{name}} in the text to insert the name from the selected source also available {{combatant}}, {{player}}, {{actor}} as variables. It supports HTML the parent container use flex in column mode"
 					},
 					"customTextForYourTurn": {
 						"name": "Advanced Setting: Custom text for YourTurn animation",
-						"hint": "For advanced users only: Use a custom text for the animation, this will override any localization. You can use the variable {{name}} in the text to insert the combatant name. It supports HTML the parent container use flex in column mode"
+						"hint": "For advanced users only: Use a custom text for the animation, this will override any localization. You can use the variable {{name}} in the text to insert the name from the selected source also available {{combatant}}, {{player}}, {{actor}} as variables. It supports HTML the parent container use flex in column mode"
+					},
+					"arrowsColor": {
+						"name": "Color of the arrows",
+						"hint": "Select the color of the arrows from the YourTurn Animation"
+					},
+					"fontColor": {
+						"name": "Color of the font",
+						"hint": "Select the color of the font used in the texts"
 					},
 					"text": {
 						"complete": "All animations",
 						"reduced": "Just the text",
 						"none": "No animations"
+					}
+				}
+			}
+		},
+		"timers": {
+			"native": {
+				"settings": {
+					"timerColor": {
+						"name": "Color of the timer",
+						"hint": "Select the color of the timer"
+					},
+					"timeBarLocation": {
+						"name": "Timer location",
+						"hint": "Select the location of the timer",
+						"text": {
+							"top": "Top",
+							"sidebar": "Sidebar",
+							"bottom": "Bottom"
+						}
 					}
 				}
 			}

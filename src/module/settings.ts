@@ -1,7 +1,9 @@
 import { each, extend } from "jquery";
-import { CombatReadyAnimationTheme } from "./themes";
-import { getDefaultTheme, updateAnimation, currentTheme, availableThemes } from "./api";
+import { CombatReadyAnimationTheme, ThemeSubSettings } from "./themes";
+import { getDefaultTheme, updateAnimation, currentTheme, availableThemes, getDefaultTimer, updateTimer, currentTimer, availableTimers } from "./api";
 import { CombatReady } from "./combatReady";
+import { SettingsAwareEntity } from "./settingsAwareEntity";
+import { CombatReadyTimer, TimerSubSettings } from "./timers";
 export const MODULE_NAME = "combatready";
 
 export function getCanvas(): Canvas {
@@ -26,6 +28,12 @@ export function getCombats(): CombatEncounters {
 }
 
 export const registerSettings = () => {
+    getGame().settings.register(MODULE_NAME, "masteroftime", {
+        scope: "world",
+        config: false,
+        default: "",
+        type: String
+    })
     // This setting will be modified by the api if modules register to it
     getGame().settings.register(MODULE_NAME, "selectedTheme", {
         scope: "world",
@@ -34,12 +42,27 @@ export const registerSettings = () => {
         default: getDefaultTheme(),
         onChange: updateAnimation,
     })
+    getGame().settings.register(MODULE_NAME, "selectedTimer", {
+        scope: "world",
+        config: false,
+        type: String,
+        default: getDefaultTimer(),
+        onChange: updateTimer,
+    })
     getGame().settings.registerMenu(MODULE_NAME, "themeSettings", {
-        name: "combatReady.settings.themes.themeSettings.name",
-        hint: "combatReady.settings.themes.themeSettings.hint",
-        label: "combatReady.settings.themes.themeSettings.button",
+        name: "combatReady.settings.themes.settings.name",
+        hint: "combatReady.settings.themes.settings.hint",
+        label: "combatReady.settings.themes.settings.button",
         icon: "fas fa-magic",
-        type: ThemeSettings,
+        type: ThemeSubSettings,
+        restricted: true,
+    })
+    getGame().settings.registerMenu(MODULE_NAME, "timerSettings", {
+        name: "combatReady.settings.timers.settings.name",
+        hint: "combatReady.settings.timers.settings.hint",
+        label: "combatReady.settings.timers.settings.button",
+        icon: "fas fa-clock",
+        type: TimerSubSettings,
         restricted: true,
     })
     getGame().settings.register(MODULE_NAME, "timemax", {
@@ -69,36 +92,6 @@ export const registerSettings = () => {
         config: true,
         default: false,
         type: Boolean,
-    });
-    //@ts-ignore
-    new window.Ardittristan.ColorSetting(MODULE_NAME, "timercolor", {
-        name: "combatReady.settings.timerColor.name",
-        hint: "combatReady.settings.timerColor.hint",
-        label: "Color Picker",
-        restricted: true,
-        defaultColor: "#B71703ff",
-        scope: "world",
-        onChange: (value) => { CombatReady.TIMEFILL.style.backgroundColor = value }
-    });
-    getGame().settings.register(MODULE_NAME, "timebarlocation", {
-        name: "combatReady.settings.timeBarLocation.name",
-        hint: "combatReady.settings.timeBarLocation.hint",
-        scope: "world",
-        config: true,
-        default: "bottom",
-        choices: {
-            "top": "combatReady.settings.text.top",
-            "sidebar": "combatReady.settings.text.sidebar",
-            "bottom": "combatReady.settings.text.bottom"
-        },
-        type: String,
-        onChange: (value) => {
-            $(CombatReady.TIMEBAR).removeClass("combatready-timebar-top");
-            $(CombatReady.TIMEBAR).removeClass("combatready-timebar-sidebar");
-            $(CombatReady.TIMEBAR).removeClass("combatready-timebar-bottom");
-            $(CombatReady.TIMEBAR).addClass("combatready-timebar-" + value);
-            CombatReady.adjustWidth();
-        }
     });
     getGame().settings.register(MODULE_NAME, "disablenextuponlastturn", {
         name: "combatReady.settings.disableNextUpOnLastTurn.name",
@@ -278,149 +271,3 @@ export const registerSettings = () => {
         type: Number,
     });
 };
-
-class ThemeSettings extends FormApplication {
-    static get defaultOptions() {
-        return mergeObject(super.defaultOptions, {
-            id: "combatready-theme-settings",
-            title: getGame().i18n.localize("combatReady.settings.themes.themeSettings.name"),
-            template: "modules/combatready/templates/theme_settings.html",
-            width: 600,
-        })
-    }
-
-    getData(options: Application.RenderOptions): FormApplication.Data<{}, FormApplication.Options> | Promise<FormApplication.Data<{}, FormApplication.Options>> {
-        const data: any = {}
-        data.isGM = getGame().user?.isGM
-        const selectedTheme = currentTheme.id
-
-        data.themes = Object.values(availableThemes).map(iTheme => {
-            const theme: any = {}
-            theme.id = iTheme.id
-            theme.hasSettings = iTheme instanceof CombatReadyAnimationTheme
-            if (theme.hasSettings)
-                theme.settings = enumerateThemeSettings(iTheme)
-            theme.selectTitle = iTheme.id
-            theme.isSelected = theme.id === selectedTheme
-            return theme
-        })
-        data.selectedThemeName = data.themes.find(theme => theme.isSelected).selectTitle
-
-        data.selectedTheme = {
-            id: "selectedTheme",
-            name: getGame().i18n.localize("combatReady.settings.themes.selectTheme.name"),
-            hint: getGame().i18n.localize("combatReady.settings.themes.selectTheme.hint"),
-            type: String,
-            choices: data.themes.reduce((choices, themes) => {
-                choices[themes.id] = themes.selectTitle
-                return choices
-            }, {}),
-            value: selectedTheme,
-            isCheckbox: false,
-            isSelect: true,
-            isRange: false,
-        }
-        return data
-    }
-    async _onSubmit(event: SubmitEvent, { updateData = {}, preventClose = false, preventRender = false }: FormApplication.OnSubmitOptions = {}): Promise<Partial<Record<string, unknown>>> {
-        if ((<HTMLButtonElement>event.submitter).name == "apply") {
-            preventClose = true;
-        }
-        return super._onSubmit(event, { updateData, preventClose, preventRender });
-    }
-
-    async _updateObject(event: SubmitEvent, formData: object) {
-        //@ts-ignore
-        const selectedTheme = getGame().user?.isGM ? formData.selectedTheme : getGame().settings.get(MODULE_NAME, "selectedTheme")
-        for (let [key, value] of Object.entries(formData)) {
-
-            if (key !== "selectedTheme" && !key.startsWith(selectedTheme))
-                continue
-
-
-            let setting
-            if (key === "selectedTheme")
-                setting = "selectedTheme"
-            else
-                setting = `themes.${key}`
-
-            // Get the old setting value
-            const oldValue = getGame().settings.get(MODULE_NAME, setting)
-
-            // Only update the setting if it has been changed (this leaves the default in place if it hasn't been touched)
-            if (value !== oldValue)
-                getGame().settings.set(MODULE_NAME, setting, value)
-        }
-
-        // Activate the configured speed provider
-        updateAnimation()
-    }
-
-    activateListeners(html: JQuery) {
-        super.activateListeners(html)
-        html.find("select[name=selectedTheme]").on("change", this.onThemeSelectedChange.bind(this))
-        html.find("button#combatready\\.theme\\.test\\.yourTurn").on("click", this.onThemeTestClick.bind(this))
-        html.find("button#combatready\\.theme\\.test\\.nextUp").on("click", this.onThemeTestClick.bind(this))
-        html.find("button#combatready\\.theme\\.test\\.nextRound").on("click", this.onThemeTestClick.bind(this))
-    }
-
-    onThemeTestClick(event) {
-        currentTheme.testMode = true;
-        setTimeout(() => {
-            switch (event.currentTarget.value) {
-                case "yourTurn":
-                    currentTheme.yourTurnAnimation();
-                    break;
-                case "nextUp":
-                    currentTheme.nextUpAnimation();
-                    break;
-                case "nextRound":
-                    currentTheme.nextRoundAnimation();
-                    break;
-
-                default:
-                    break;
-            }
-            currentTheme.testMode = false;
-        }, 64);
-    }
-
-    onThemeSelectedChange(event) {
-        // Hide all module settings
-        document.querySelectorAll(".combatready-theme-settings").forEach(element => (<HTMLElement>element).style.display = "none");
-        // Show the settings block for the currently selected module
-        (<HTMLElement>document.getElementById(`combatready.theme.${event.currentTarget.value}`)).style.display = "";
-
-        // Recalculate window height
-        (<HTMLElement>this.element[0]).style.height = ""
-        this.position.height = null
-    }
-}
-
-function enumerateThemeSettings(theme: CombatReadyAnimationTheme) {
-    const settings: any = []
-    for (const setting of theme.settings) {
-        try {
-            if (setting.setting.scope === "world" && !getGame().user?.isGM)
-                continue
-            let s: any = duplicate(setting.setting);
-            s.id = `${theme.id}.setting.${setting.id}`
-            s.name = getGame().i18n.localize(<string>setting.setting.name)
-            s.hint = getGame().i18n.localize(<string>setting.setting.hint)
-            s.value = theme.getSetting(setting.id)
-            s.type = setting.setting.type instanceof Function ? setting.setting.type.name : "String"
-            s.isCheckbox = setting.setting.type === Boolean
-            s.isSelect = setting.setting.choices !== undefined
-            s.isRange = (setting.setting.type === Number) && setting.setting.range
-            s.isColor = (setting.setting.type === "Color")
-            s.isMultiline = (setting.setting.multiline)
-            settings.push(s)
-        }
-        catch (e) {
-            console.warn(`CombatReady | The following error occured while rendering setting "${setting.id}" of module/system "${this.id}. It won't be displayed.`)
-            console.error(e)
-        }
-    }
-
-    return settings;
-}

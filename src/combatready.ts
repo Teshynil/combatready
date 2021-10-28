@@ -1,10 +1,19 @@
-import { CombatReadyAnimationTheme, NativeAnimationTheme } from "./module/themes";
+import { CombatReadyTimer } from "./module/timers";
+import { CombatReadyAnimationTheme } from "./module/themes";
 import { initApi } from "./module/api";
 import { CombatReady } from "./module/combatReady";
 import { initHooks } from "./module/hooks";
-import { getGame, registerSettings } from "./module/settings";
+import { getGame, MODULE_NAME, registerSettings } from "./module/settings";
 
-
+Hooks.once('socketlib.ready', () => {
+  //@ts-ignore
+  CombatReady.SOCKET = socketlib.registerModule(MODULE_NAME);
+  CombatReady.SOCKET.register('timerTick', CombatReady.timerTick);
+  CombatReady.SOCKET.register('timerStart', CombatReady.timerStart);
+  CombatReady.SOCKET.register('timerStop', CombatReady.timerStop);
+  CombatReady.SOCKET.register('timerPause', CombatReady.timerPause);
+  CombatReady.SOCKET.register('timerResume', CombatReady.timerResume);
+});
 /**
  * Ready hook
  */
@@ -16,10 +25,22 @@ Hooks.on("ready", function () {
   initHooks();
   registerSettings();
   initApi();
+  let masteroftime = <string>getGame().settings.get(MODULE_NAME, "masteroftime");
+  if (getGame().users?.find((user) => user.active && user.id == masteroftime) == undefined) {//Master of time not found seting first gm on list of connected players
+    masteroftime = getGame().users?.find((user) => user.active && user.isGM)?.id ?? "";
+    if (masteroftime !== "") {
+      getGame().settings.set(MODULE_NAME, "masteroftime", masteroftime);
+    } else {
+      ui?.notifications?.notify('Please make sure there is a GM connected and reload the page.', "error");
+      return;
+    }
+  }
+  CombatReady.MASTEROFTIME = masteroftime;
+  //if master of time connected do noting all is good
   CombatReady.init();
-  let timemax = (Number)(getGame().settings.get("combatready", "timemax")) ?? 3;
+  let timemax = (Number)(getGame().settings.get(MODULE_NAME, "timemax")) ?? 3;
   CombatReady.setTimeMax(timemax * 60);
-  Hooks.callAll("combatready.ready", CombatReadyAnimationTheme);
+  Hooks.callAll("combatready.ready", { CombatReadyAnimationTheme, CombatReadyTimer });
   //check if it's our turn! since we're ready
   CombatReady.toggleCheck();
 });

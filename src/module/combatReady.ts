@@ -1,5 +1,5 @@
 import { getCombats, getGame, MODULE_NAME } from "./settings";
-import { currentTheme } from "./api";
+import { currentTheme, currentTimer } from "./api";
 
 export const volume = () => {
     return (Number)(getGame().settings.get("combatready", "volume")) / 100.0;
@@ -8,10 +8,8 @@ export const volume = () => {
 export class CombatReady {
     public static EndTurnDialog: Array<Dialog> = [];
     public static WrapItUpDialog: Array<Dialog> = [];
-    public static READY: boolean;
-    public static SOCKET: string;
-    public static TIMEBAR: HTMLDivElement;
-    public static TIMEFILL: HTMLDivElement;
+    public static READY: boolean = false;
+    public static SOCKET: any;
     public static TIMECURRENT: number;
     public static TIMEMAX: number;
     public static INTERVAL_IDS: Array<{ name, id }>;
@@ -21,6 +19,7 @@ export class CombatReady {
     public static EXPIRE_SOUND: { file: string, setting: string };
     public static ACK_SOUND: { file: string, setting: string };
     public static TICK_SOUND: { file: string, setting: string };
+    public static MASTEROFTIME: string;
 
     static playSound(sound: { file: string, setting: string }): void {
         let curCombat = getCombats().active as StoredDocument<Combat>;
@@ -49,7 +48,7 @@ export class CombatReady {
                 }
                 break;
             case "Player":
-                if ((entry.actor?.isOwner && !getGame().user?.isGM) || entry.players.length == 0 && getGame().user?.isGM) {
+                if (((entry?.actor?.isOwner ?? false) && !getGame().user?.isGM) || (entry?.players.length == 0 ?? false) && getGame().user?.isGM) {
                     AudioHelper.play({ src: sound.file, volume: volume() });
                 }
                 break;
@@ -58,6 +57,10 @@ export class CombatReady {
                 AudioHelper.play({ src: sound.file, volume: volume() });
                 break;
         }
+    }
+    static isMasterOfTime(user: User | StoredDocument<User> | null) {
+        if (user == null) return false;
+        return user.isGM && user.id == CombatReady.MASTEROFTIME;
     }
     static async closeEndTurnDialog() {
         // go through all dialogs that we've opened and closed them
@@ -131,45 +134,15 @@ export class CombatReady {
         });
     }
     static adjustWidth() {
-        let sidebar = document.getElementById("sidebar") as HTMLElement;
-        let width = sidebar.offsetWidth;
-        if (getGame().settings.get(MODULE_NAME, "timebarlocation") == "sidebar") {
-            CombatReady.TIMEBAR.style.width = `100%`;
-        } else {
-            if (getGame().settings.get(MODULE_NAME, "timebarlocation") == "bottom" && width == 30) width = 0;
-            currentTheme.adjustWidth(width);
-            CombatReady.TIMEBAR.style.width = `calc(100% - ${width}px)`;
-        }
+        currentTheme.adjustWidth();
+        currentTimer.adjustWidth();
     }
     /**
      * JQuery stripping
      */
     static init() {
-
-        let body = document.getElementsByTagName("body")[0] as HTMLElement;
-        let sidebar = document.getElementById("sidebar") as HTMLElement;
-
-        let timebar = document.createElement("div");
-        let timefill = document.createElement("div");
-        $(timebar).addClass("combatready-timebar");
-        $(timefill).addClass("combatready-timebar-fill");
-        timebar.appendChild(timefill);
-
-        body.appendChild(timebar);
-        // Ajust due to DOM elements
-        timebar.style.width = `calc(100% - ${sidebar.offsetWidth}px)`;
-
-        // element statics
         CombatReady.READY = true;
-        CombatReady.SOCKET = "module.combatready";
-        // timer
-        CombatReady.TIMEBAR = timebar;
-        CombatReady.TIMEFILL = timefill;
-        CombatReady.TIMECURRENT = 0;
-        CombatReady.TIMEMAX = 20;
         CombatReady.INTERVAL_IDS = [];
-        CombatReady.TIMEFILL.style.backgroundColor = <string>getGame().settings.get(MODULE_NAME, "timercolor");
-        $(CombatReady.TIMEBAR).addClass("combatready-timebar-" + getGame().settings.get(MODULE_NAME, "timebarlocation"));
         // sound statics
         CombatReady.TURN_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "turnsoundfile"), setting: "turnsound" };
         CombatReady.NEXT_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "nextsoundfile"), setting: "nextsound" };
@@ -177,20 +150,6 @@ export class CombatReady {
         CombatReady.EXPIRE_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "expiresoundfile"), setting: "expiresound" };
         CombatReady.ACK_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "acksoundfile"), setting: "acksound" };
         CombatReady.TICK_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "ticksoundfile"), setting: "ticksound" };
-
-        // init socket
-        getGame().socket?.on(CombatReady.SOCKET, (data) => {
-            if (!getGame().user?.isGM) {
-                if (data.timetick) CombatReady.TIMECURRENT = data.timetick;
-                // if not ticking, start doing so to match the GM
-                if (
-                    !CombatReady.INTERVAL_IDS.some((e) => {
-                        return e.name === "clock";
-                    })
-                )
-                    CombatReady.timerStart();
-            }
-        });
     }
 
     /**
@@ -237,7 +196,9 @@ export class CombatReady {
                     CombatReady.closeWrapItUpDialog();
                 }
             } else {
-                CombatReady.timerStart();
+                if (CombatReady.isMasterOfTime(getGame().user)) {
+                    CombatReady.timerStart();
+                }
             }
             // next combatant
             let nxtturn = (curCombat.turn || 0) + 1;
@@ -272,7 +233,8 @@ export class CombatReady {
     /**
      *
      */
-    static async timerTick() {
+    static async timerTick(TIMECURRENT: number | null = null) {
+        if (!CombatReady.READY) return;
         let curCombat = getCombats().active as StoredDocument<Combat>;
         let entry = curCombat.combatant;
         if (getGame().settings.get("combatready", "disabletimer")) {
@@ -281,30 +243,28 @@ export class CombatReady {
         if (getGame().settings.get("combatready", "disabletimerGM")) {
             if (entry.players.length == 0) return;
         }
-
-        // If we're GM, we run the clock
-        if (getGame().user?.isGM) {
+        if (CombatReady.isMasterOfTime(getGame().user)) {
             CombatReady.TIMECURRENT++;
-            getGame().socket?.emit(
-                CombatReady.SOCKET,
-                {
-                    senderId: getGame().user?.id,
-                    type: "Number",
-                    timetick: CombatReady.TIMECURRENT,
-                },
-                (resp) => { }
-            );
+            CombatReady.SOCKET.executeForOthers('timerTick', CombatReady.TIMECURRENT);
+        } else {
+            if (TIMECURRENT == null) {
+                CombatReady.TIMECURRENT++;
+            } else {
+                CombatReady.TIMECURRENT = TIMECURRENT;
+            }
         }
 
         // If we're in the last seconds defined we tick
         if (CombatReady.TIMEMAX - CombatReady.TIMECURRENT <= <Number>getGame().settings.get(MODULE_NAME, "tickonlast")) {
             CombatReady.playSound(CombatReady.TICK_SOUND);
         }
-        let width = (CombatReady.TIMECURRENT / CombatReady.TIMEMAX) * 100;
+        let width = (CombatReady.TIMECURRENT * 100) / CombatReady.TIMEMAX;
         if (width > 100) {
-            await CombatReady.timerStop();
+            if (CombatReady.isMasterOfTime(getGame().user)) {
+                await CombatReady.timerStop();
+            }
             if (<boolean>getGame().settings.get(MODULE_NAME, "autoendontimer")) {
-                if (getGame().user?.isGM) {//run only from the GM side
+                if (CombatReady.isMasterOfTime(getGame().user)) {//run only from the GM side
                     if (entry.players.length > 0) {//run only if the actor has owners
                         getCombats().active?.nextTurn();
                     }
@@ -312,8 +272,7 @@ export class CombatReady {
             }
             CombatReady.playSound(CombatReady.EXPIRE_SOUND);
         } else {
-            CombatReady.TIMEFILL.style.transition = "";
-            CombatReady.TIMEFILL.style.width = `${width}%`;
+            currentTimer.tick();
         }
     }
 
@@ -328,98 +287,85 @@ export class CombatReady {
      *
      */
     static async timerStart() {
-        CombatReady.TIMEBAR.style.display = "block";
-        if (getGame().user?.isGM) {
-            // push GM time
-            CombatReady.TIMECURRENT = 0;
-            getGame().socket?.emit(CombatReady.SOCKET, {
-                senderId: getGame().user?.id,
-                type: "Number",
-                timetick: CombatReady.TIMECURRENT,
-            });
-            /*setTimeout(async () => {
-                await getGame().settings.set("combatready", "timeractive", true);
-            }, 300);*/
-        }
-
-        for (let idx = CombatReady.INTERVAL_IDS.length - 1; idx >= 0; --idx) {
-            let interval = CombatReady.INTERVAL_IDS[idx];
-            if (interval.name === "clock") {
-                CombatReady.TIMEFILL.style.width = "0%";
-                CombatReady.TIMEFILL.style.transition = "none";
-                // be content with a reset clock
-                return;
+        if (!CombatReady.READY) return;
+        CombatReady.TIMECURRENT = 0;
+        if (CombatReady.isMasterOfTime(getGame().user)) {
+            CombatReady.SOCKET.executeForOthers('timerStart');
+            if (!getGame().paused) {
+                for (let idx = CombatReady.INTERVAL_IDS.length - 1; idx >= 0; --idx) {
+                    let interval = CombatReady.INTERVAL_IDS[idx];
+                    if (interval.name === "clock") {
+                        window.clearInterval(interval.id);
+                        CombatReady.INTERVAL_IDS.splice(idx, 1);
+                        break;
+                    }
+                }
+                // If not a GM, and the actor is hidden, don't show it
+                CombatReady.INTERVAL_IDS.push({
+                    name: "clock",
+                    id: window.setInterval(CombatReady.timerTick, 1000),
+                });
             }
         }
-
-        if (!getGame().paused) {
-            // If not a GM, and the actor is hidden, don't show it
-            CombatReady.TIMEFILL.style.width = "0%";
-            CombatReady.TIMEFILL.style.transition = "none";
-            CombatReady.INTERVAL_IDS.push({
-                name: "clock",
-                id: window.setInterval(CombatReady.timerTick, 1000),
-            });
-        }
+        currentTimer.start();
     }
 
     /**
      *
      */
     static async timerStop() {
-        for (let idx = CombatReady.INTERVAL_IDS.length - 1; idx >= 0; --idx) {
-            let interval = CombatReady.INTERVAL_IDS[idx];
-            if (interval.name === "clock") {
-                window.clearInterval(interval.id);
-                CombatReady.INTERVAL_IDS.splice(idx, 1);
-                break;
+        if (!CombatReady.READY) return;
+        if (CombatReady.isMasterOfTime(getGame().user)) {
+            for (let idx = CombatReady.INTERVAL_IDS.length - 1; idx >= 0; --idx) {
+                let interval = CombatReady.INTERVAL_IDS[idx];
+                if (interval.name === "clock") {
+                    window.clearInterval(interval.id);
+                    CombatReady.INTERVAL_IDS.splice(idx, 1);
+                    break;
+                }
             }
+            CombatReady.SOCKET.executeForOthers('timerStop');
         }
         // kill paused bar
         CombatReady.TIMECURRENT = 0;
-        CombatReady.TIMEBAR.style.display = "none";
-        /*if (getGame().user?.isGM) {
-            setTimeout(async () => {
-                await getGame().settings.set("combatready", "timeractive", false);
-            }, 300);
-        }*/
+        currentTimer.stop();
     }
 
     /**
      *
      */
     static timerPause() {
-        for (let idx = CombatReady.INTERVAL_IDS.length - 1; idx >= 0; --idx) {
-            let interval = CombatReady.INTERVAL_IDS[idx];
-            if (interval.name === "clock") {
-                window.clearInterval(interval.id);
-                CombatReady.INTERVAL_IDS.splice(idx, 1);
-                break;
+        if (!CombatReady.READY) return;
+        if (CombatReady.isMasterOfTime(getGame().user)) {
+            CombatReady.SOCKET.executeForOthers('timerPause');
+            for (let idx = CombatReady.INTERVAL_IDS.length - 1; idx >= 0; --idx) {
+                let interval = CombatReady.INTERVAL_IDS[idx];
+                if (interval.name === "clock") {
+                    window.clearInterval(interval.id);
+                    CombatReady.INTERVAL_IDS.splice(idx, 1);
+                    break;
+                }
             }
         }
+        currentTimer.pause();
     }
 
     /**
      *
      */
     static timerResume() {
-        for (let idx = CombatReady.INTERVAL_IDS.length - 1; idx >= 0; --idx) {
-            let interval = CombatReady.INTERVAL_IDS[idx];
-            if (interval.name === "clock") return;
-        }
-
-        // push GM time
-        if (getGame().user?.isGM)
-            getGame().socket?.emit(CombatReady.SOCKET, {
-                senderId: getGame().user?.id,
-                type: "Number",
-                timetick: CombatReady.TIMECURRENT,
+        if (!CombatReady.READY) return;
+        if (CombatReady.isMasterOfTime(getGame().user)) {
+            for (let idx = CombatReady.INTERVAL_IDS.length - 1; idx >= 0; --idx) {
+                let interval = CombatReady.INTERVAL_IDS[idx];
+                if (interval.name === "clock") return;
+            }
+            CombatReady.INTERVAL_IDS.push({
+                name: "clock",
+                id: window.setInterval(CombatReady.timerTick, 1000),
             });
-
-        //if (getGame().settings.get("combatready", "timeractive"))
-        CombatReady.INTERVAL_IDS.push({
-            name: "clock",
-            id: window.setInterval(CombatReady.timerTick, 1000),
-        });
+            CombatReady.SOCKET.executeForOthers('timerResume');
+        }
+        currentTimer.resume();
     }
 }

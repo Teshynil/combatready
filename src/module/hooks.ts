@@ -1,17 +1,20 @@
 import { getCombats, getGame, MODULE_NAME } from "./settings";
 import { CombatReady, volume } from "./combatReady";
 import { currentTheme } from "./api";
+import { CombatReadyTimer } from "./timers";
 export const initHooks = () => {
     /**
      * Toggle pause
      */
     Hooks.on("pauseGame", function () {
-        if (getGame().combats?.active == undefined) return;
-        if (getGame().paused) {
-            CombatReady.timerPause();
-        }
-        else {
-            CombatReady.timerResume();
+        if (!(getGame().combat?.started ?? false)) return;
+        if (CombatReady.isMasterOfTime(getGame().user)) {
+            if (getGame().paused) {
+                CombatReady.timerPause();
+            }
+            else {
+                CombatReady.timerResume();
+            }
         }
     });
 
@@ -19,7 +22,9 @@ export const initHooks = () => {
      * Handle combatant removal
      */
     Hooks.on("deleteCombat", async function () {
-        await CombatReady.timerStop();
+        if (CombatReady.isMasterOfTime(getGame().user)) {
+            await CombatReady.timerStop();
+        }
         currentTheme.cleanAnimations();
         CombatReady.toggleCheck();
     });
@@ -74,13 +79,17 @@ export const initHooks = () => {
      * Combat update hook
      */
     Hooks.on("updateCombat", async function (data, delta) {
-        if (Object.keys(delta).some((k) => k === "turn")) {
-            await CombatReady.timerStop();
+        if (CombatReady.isMasterOfTime(getGame().user)) {
+            if (Object.keys(delta).some((k) => k === "turn")) {
+                await CombatReady.timerStop();
+            }
+            if (Object.keys(delta).some((k) => k === "active")) {
+                if (delta["active"] == false) {
+                    await CombatReady.timerStop();
+                }
+            }
         }
         CombatReady.toggleCheck();
-
-        console.log("update combat", data);
-
         if (Object.keys(delta).some((k) => k === "round")) {
             if (delta["turn"] == 0) {
                 CombatReady.nextRound();
