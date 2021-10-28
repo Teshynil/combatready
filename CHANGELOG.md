@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## [3.0.0] 2021-10-28
+* [BREAKING CHANGES] If anyone was working using the api, now its changed to allow timer modules *Tutorial coming soon*
+
+* Add option to get the name for the animations from different sources and bug fixing
+> Takes care of #12 
+* Add option to change color for the chevrons and the text for the animations
+* Now in "Just Text" mode the text appears sooner
+* Now the timer config are in a submenu
+* Added support for custom timers
+* Added dependency to socketlib 
+* Reworked all the socket calls
+* Change how the timer renders
+> Takes care of #13 
+
 ## [2.0.0] 2021-10-07
 
 * Change all sounds included in the module in order to avoid any copyright problems
