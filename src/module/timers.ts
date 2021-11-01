@@ -85,7 +85,7 @@ export class NativeTimer extends CombatReadyTimer {
         this.TIMEFILL.style.transition = "none";
     }
     public pause() {
-        if (!this.ready) return;        
+        if (!this.ready) return;
         this.TIMEBAR.style.display = "block";
     }
     public resume() {
@@ -95,7 +95,8 @@ export class NativeTimer extends CombatReadyTimer {
     public tick() {
         if (!this.ready) return;
         this.TIMEBAR.style.display = "block";
-        let width = (CombatReady.TIMECURRENT / CombatReady.TIMEMAX) * 100;
+        //@ts-ignore
+        let width = (window.CombatReady.getCurrentTime() / window.CombatReady.getMaxTime()) * 100;
         this.TIMEFILL.style.transition = "";
         this.TIMEFILL.style.width = `${width}%`;
     }
@@ -106,6 +107,7 @@ export class NativeTimer extends CombatReadyTimer {
             this.TIMEBAR.style.width = `100vh`;
         } else {
             if (<string>this.getSetting("timebarlocation") == "bottom" && width == 30) width = 0;
+            if ($(document.body).hasClass("mobile-improvements")) width = 0;
             this.TIMEBAR.style.width = `calc(100vw - ${width}px)`;
         }
 

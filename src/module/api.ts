@@ -2,18 +2,25 @@ import { NativeAnimationTheme, CombatReadyAnimationTheme } from "./themes";
 import { getGame, MODULE_NAME } from "./settings";
 import { CombatReadyTimer, NativeTimer } from "./timers";
 import { SettingsAwareEntity } from "./settingsAwareEntity";
+import { CombatReady } from "./combatReady";
 
 export const availableThemes: Array<CombatReadyAnimationTheme> = [];
 export const availableTimers: Array<CombatReadyTimer> = [];
 export let currentTheme: CombatReadyAnimationTheme;
 export let currentTimer: CombatReadyTimer;
-export const CombatReadyApi: { setupTheme: Function, setupTimer: Function } = { setupTheme, setupTimer };
+export const CombatReadyApi: { setupTheme: Function, setupTimer: Function, getCurrentTime: Function, getMaxTime: Function } = { setupTheme, setupTimer, getCurrentTime, getMaxTime };
 
 export function initApi() {
     //@ts-ignore
     window.CombatReady = CombatReadyApi;
     setupTheme(new NativeAnimationTheme("native"))
     setupTimer(new NativeTimer("native"));
+}
+function getCurrentTime() {
+    return CombatReady.TIMECURRENT;
+}
+function getMaxTime() {
+    return CombatReady.TIMEMAX;
 }
 function setupSettings(settingsAwareEntity) {
     if (settingsAwareEntity instanceof SettingsAwareEntity) {
@@ -33,7 +40,6 @@ function setupTheme(theme) {
     setupSettings(theme);
     availableThemes[theme.id] = theme;
     (<ClientSettings.CompleteSetting>getGame().settings.settings.get(MODULE_NAME + ".selectedTheme")).default = getDefaultTheme()
-    updateAnimation();
 }
 function setupTimer(timer) {
     if (availableTimers[timer.id] != undefined) {
@@ -42,7 +48,6 @@ function setupTimer(timer) {
     setupSettings(timer);
     availableTimers[timer.id] = timer;
     (<ClientSettings.CompleteSetting>getGame().settings.settings.get(MODULE_NAME + ".selectedTimer")).default = getDefaultTimer()
-    updateTimer();
 }
 export function getDefaultTheme() {
     const ThemeIds = Object.keys(availableThemes)
@@ -55,19 +60,23 @@ export function getDefaultTimer() {
 
 export async function updateAnimation() {
     const selectedTheme = <String>getGame().settings.get(MODULE_NAME, "selectedTheme")
+    currentTheme?.destroy();
     //@ts-ignore
     currentTheme = availableThemes[selectedTheme] ?? availableThemes[<String>getGame().settings?.settings?.get(MODULE_NAME + ".selectedTheme").default]
-    currentTheme.destroy();
-
-    await getGame().settings.set(MODULE_NAME, "selectedTheme", currentTheme.id);
-    currentTheme.initialize();
+    //@ts-ignore
+    if (availableThemes[selectedTheme] == undefined) {
+        await getGame().settings.set(MODULE_NAME, "selectedTheme", currentTheme.id);
+    }
+    currentTheme?.initialize();
 }
 export async function updateTimer() {
     const selectedTimer = <String>getGame().settings.get(MODULE_NAME, "selectedTimer")
+    currentTimer?.destroy();
     //@ts-ignore
     currentTimer = availableTimers[selectedTimer] ?? availableTimers[<String>getGame().settings?.settings?.get(MODULE_NAME + ".selectedTimer").default]
-    currentTimer.destroy();
-
-    await getGame().settings.set(MODULE_NAME, "selectedTimer", currentTimer.id);
-    currentTimer.initialize();
+    //@ts-ignore
+    if (availableTimers[selectedTimer] == undefined) {
+        await getGame().settings.set(MODULE_NAME, "selectedTimer", currentTimer.id);
+    }
+    currentTimer?.initialize();
 }

@@ -108,7 +108,7 @@ export class CombatReadySubSettings extends FormApplication {
 
             // Only update the setting if it has been changed (this leaves the default in place if it hasn't been touched)
             if (value !== oldValue)
-                getGame().settings.set(MODULE_NAME, setting, value)
+                await getGame().settings.set(MODULE_NAME, setting, value)
         }
         switch (this.type) {
             case "timers":

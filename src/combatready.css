@@ -192,6 +192,14 @@
 	top: calc(100% - 10px);
 }
 
+.mobile-improvements .combatready-timebar-bottom {
+	top: calc(100% - 10px - var(--navigationHeight));
+}
+
+.hide-hud .combatready-timebar-bottom {
+	top: calc(100% - 10px);
+}
+
 .combatready-timebar-fill {
 	display: flex;
 	flex-direction: row-reverse;

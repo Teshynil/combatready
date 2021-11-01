@@ -402,6 +402,7 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
     adjustWidth() {
         let sidebar = document.getElementById("sidebar") as HTMLElement;
         let width = sidebar.offsetWidth;
+        if ($(document.body).hasClass("mobile-improvements")) width = 0;
         this.BANNER.style.width = `calc(100% - ${width}px)`;
     }
     get settings() {

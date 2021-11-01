@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [3.1.0] 2021-10-31
+* Some bug fixing
+* Added compatibility with Simple-Mobile
+* Some corrections in the native Themes and Timers
+* New Package Related: [Combat Ready! Themes Pack](https://github.com/Teshynil/combatreadythemes) in which i will be adding some themes and timers for the module
+
 ## [3.0.0] 2021-10-28
 * [BREAKING CHANGES] If anyone was working using the api, now its changed to allow timer modules *Tutorial coming soon*
 

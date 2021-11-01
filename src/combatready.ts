@@ -1,6 +1,6 @@
 import { CombatReadyTimer } from "./module/timers";
 import { CombatReadyAnimationTheme } from "./module/themes";
-import { initApi } from "./module/api";
+import { CombatReadyApi, initApi, updateAnimation, updateTimer } from "./module/api";
 import { CombatReady } from "./module/combatReady";
 import { initHooks } from "./module/hooks";
 import { getGame, MODULE_NAME, registerSettings } from "./module/settings";
@@ -14,6 +14,8 @@ Hooks.once('socketlib.ready', () => {
   CombatReady.SOCKET.register('timerPause', CombatReady.timerPause);
   CombatReady.SOCKET.register('timerResume', CombatReady.timerResume);
 });
+Hooks.once("init", () => {
+});
 /**
  * Ready hook
  */
@@ -25,6 +27,7 @@ Hooks.on("ready", function () {
   initHooks();
   registerSettings();
   initApi();
+  Hooks.callAll("combatready.ready", CombatReadyAnimationTheme, CombatReadyTimer);
   let masteroftime = <string>getGame().settings.get(MODULE_NAME, "masteroftime");
   if (getGame().users?.find((user) => user.active && user.id == masteroftime) == undefined) {//Master of time not found seting first gm on list of connected players
     masteroftime = getGame().users?.find((user) => user.active && user.isGM)?.id ?? "";
@@ -37,10 +40,11 @@ Hooks.on("ready", function () {
   }
   CombatReady.MASTEROFTIME = masteroftime;
   //if master of time connected do noting all is good
+  updateAnimation();
+  updateTimer();
   CombatReady.init();
   let timemax = (Number)(getGame().settings.get(MODULE_NAME, "timemax")) ?? 3;
   CombatReady.setTimeMax(timemax * 60);
-  Hooks.callAll("combatready.ready", { CombatReadyAnimationTheme, CombatReadyTimer });
   //check if it's our turn! since we're ready
   CombatReady.toggleCheck();
 });
