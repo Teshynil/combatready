@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## [3.2.0] 2021-10-31
+## [3.2.0] 2021-11-02
 * Added option to automatic end the animations after N seconds
     > Feature suggested by [phanoko](https://www.reddit.com/user/phanoko/)
 
