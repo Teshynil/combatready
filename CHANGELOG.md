@@ -2,6 +2,7 @@
 
 ## [3.2.0] 2021-10-31
 * Added option to automatic end the animations after N seconds
+    > Feature suggested by [phanoko](https://www.reddit.com/user/phanoko/)
 
 ## [3.1.0] 2021-10-31
 * Some bug fixing
