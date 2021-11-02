@@ -337,7 +337,9 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
             this.COVER.style.display = "block";
             document.removeEventListener("click", this.onClickTurnBanner);
             document.removeEventListener("click", this.onClickNextBanner);
-            document.addEventListener("click", this.onClickNextBanner);
+            if (<number>this.getSetting("removeanimationsafter") < 0) {
+                document.addEventListener("click", this.onClickNextBanner);
+            }
             this.LABEL.style.opacity = "0";
             if (this.getSetting("customtextfornextup") != "") {
                 let html = this.getSetting("customtextfornextup");
@@ -349,7 +351,14 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
                 this.LABEL.textContent = getGame().i18n.localize("combatReady.text.next");
             }
             this.LABEL.style.opacity = "0";
-            gsap.to(this.LABEL, 1, { delay: 2, opacity: 1 });
+            gsap.to(this.LABEL, 1, {
+                delay: 2, opacity: 1,
+                onComplete: function () {
+                    if (<number>currentTheme.getSetting("removeanimationsafter") >= 0) {
+                        setTimeout(() => { currentTheme.cleanAnimations(); }, <number>currentTheme.getSetting("removeanimationsafter")*1000);
+                    }
+                }
+            });
         }
     }
     yourTurnAnimation() {
@@ -380,8 +389,14 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
             this.COVER.style.display = "block";
             document.removeEventListener("click", this.onClickNextBanner);
             document.removeEventListener("click", this.onClickTurnBanner);
-            document.addEventListener("click", this.onClickTurnBanner);
-
+            if (<number>this.getSetting("removeanimationsafter") < 0) {
+                document.addEventListener("click", this.onClickTurnBanner);
+            }
+            const x = () => {
+                if (<number>currentTheme.getSetting("removeanimationsafter") >= 0) {
+                    setTimeout(() => { currentTheme.cleanAnimations(); }, (<number>currentTheme.getSetting("removeanimationsafter")) * 1000);
+                }
+            }
             if (this.getSetting("animationstyle") == "Complete") {
                 gsap.to(this.CHEVRONS, {
                     left: "100%",
@@ -391,10 +406,10 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
                     },
                     ease: "ease",
                 });
-                gsap.to(this.COVER, 2, { display: "block", opacity: 0.75 });
+                gsap.to(this.COVER, 2, { display: "block", opacity: 0.75, onComplete: x });
                 gsap.to(this.LABEL, 1, { delay: 1, opacity: 1 });
             } else {
-                gsap.to(this.COVER, 2, { display: "block", opacity: 0.75 });
+                gsap.to(this.COVER, 2, { display: "block", opacity: 0.75, onComplete: x });
                 gsap.to(this.LABEL, 1, { delay: 0, opacity: 1 });
             }
         }
@@ -407,6 +422,17 @@ export class NativeAnimationTheme extends CombatReadyAnimationTheme {
     }
     get settings() {
         return [
+            {
+                id: "removeanimationsafter",
+                setting: {
+                    name: "combatReady.themes.native.settings.removeAnimationsAfter.name",
+                    hint: "combatReady.themes.native.settings.removeAnimationsAfter.hint",
+                    scope: "world",
+                    config: true,
+                    default: -1,
+                    type: Number,
+                }
+            },
             {
                 id: "disablenextuplingering",
                 setting: {

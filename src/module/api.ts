@@ -6,8 +6,8 @@ import { CombatReady } from "./combatReady";
 
 export const availableThemes: Array<CombatReadyAnimationTheme> = [];
 export const availableTimers: Array<CombatReadyTimer> = [];
-export let currentTheme: CombatReadyAnimationTheme;
-export let currentTimer: CombatReadyTimer;
+export var currentTheme: CombatReadyAnimationTheme;
+export var currentTimer: CombatReadyTimer;
 export const CombatReadyApi: { setupTheme: Function, setupTimer: Function, getCurrentTime: Function, getMaxTime: Function } = { setupTheme, setupTimer, getCurrentTime, getMaxTime };
 
 export function initApi() {

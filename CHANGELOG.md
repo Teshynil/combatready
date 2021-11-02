@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## [3.2.0] 2021-10-31
+* Added option to automatic end the animations after N seconds
+
 ## [3.1.0] 2021-10-31
 * Some bug fixing
 * Added compatibility with Simple-Mobile

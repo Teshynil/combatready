@@ -170,6 +170,10 @@
 						"complete": "All animations",
 						"reduced": "Just the text",
 						"none": "No animations"
+					},
+					"removeAnimationsAfter": {
+						"name": "Remove animations after N seconds",
+						"hint": "Time in seconds to wait before ending the animations, (Any negative value will disable this option)"
 					}
 				}
 			}
