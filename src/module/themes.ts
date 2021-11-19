@@ -1,5 +1,4 @@
-//@ts-ignore
-import { gsap } from "/scripts/greensock/esm/all.js";
+import { gsap } from "../combatready";
 import { getCanvas, getCombats, getGame, MODULE_NAME } from "./settings";
 import { availableThemes, currentTheme } from "./api";
 import { CombatReady } from "./combatReady";

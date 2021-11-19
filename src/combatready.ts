@@ -4,7 +4,6 @@ import { CombatReadyApi, initApi, updateAnimation, updateTimer } from "./module/
 import { CombatReady } from "./module/combatReady";
 import { initHooks } from "./module/hooks";
 import { getGame, MODULE_NAME, registerSettings } from "./module/settings";
-
 Hooks.once('socketlib.ready', () => {
   //@ts-ignore
   CombatReady.SOCKET = socketlib.registerModule(MODULE_NAME);
@@ -48,3 +47,6 @@ Hooks.on("ready", function () {
   //check if it's our turn! since we're ready
   CombatReady.toggleCheck();
 });
+//@ts-ignore
+const gmodule = await import(`../../../../${ROUTE_PREFIX}/scripts/greensock/esm/all.js`);
+export const gsap = gmodule.gsap;
