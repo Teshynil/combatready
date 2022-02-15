@@ -1,4 +1,8 @@
 # CHANGELOG
+## [4.0.0] 2022-02-15
+* Updated module.json for v9
+* API changes [BREAKING]
+* Added function to disable timer for hidden npc's
 
 ## [3.2.0] 2021-11-02
 * Added option to automatic end the animations after N seconds
