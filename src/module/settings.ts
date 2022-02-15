@@ -39,14 +39,14 @@ export const registerSettings = () => {
         scope: "world",
         config: false,
         type: String,
-        default: getDefaultTheme(),
+        default: "native",
         onChange: updateAnimation,
     })
     getGame().settings.register(MODULE_NAME, "selectedTimer", {
         scope: "world",
         config: false,
         type: String,
-        default: getDefaultTimer(),
+        default: "native",
         onChange: updateTimer,
     })
     getGame().settings.registerMenu(MODULE_NAME, "themeSettings", {
@@ -112,6 +112,14 @@ export const registerSettings = () => {
     getGame().settings.register(MODULE_NAME, "disabletimerGM", {
         name: "combatReady.settings.disableTimerGM.name",
         hint: "combatReady.settings.disableTimerGM.hint",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
+    getGame().settings.register(MODULE_NAME, "disabletimerOnHidden", {
+        name: "combatReady.settings.disableTimerOnHidden.name",
+        hint: "combatReady.settings.disableTimerOnHidden.hint",
         scope: "world",
         config: true,
         default: false,

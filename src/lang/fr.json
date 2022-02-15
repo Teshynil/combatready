@@ -26,6 +26,10 @@
 				"name": "Désactiver le compte-à-rebours pour le MJ",
 				"hint": "Désactive complètement l'option de compte-à-rebours en bas de l'écran pour les PNJ du MJ"
 			},
+			"disableTimerOnHidden": {
+				"name": "Disable timer for hidden npc",
+				"hint": "Disable timer feature GM npc´s that are currently hidden"
+			},
 			"showEndTurnDialog": {
 				"name": "Montrer le dialogue Fin du Tour",
 				"hint": "Montre un dialogue aux joueurs lors de leur tour leur permettant de finir leur tour actuel"

@@ -20,11 +20,15 @@
 			},
 			"disableTimer": {
 				"name": "Disable timer",
-				"hint": "Completely disable timer feature at bottom of the screen"
+				"hint": "Completely disable timer feature"
 			},
 			"disableTimerGM": {
 				"name": "Disable timer for the GM",
-				"hint": "Disable timer feature at bottom of the screen for GM npc´s"
+				"hint": "Disable timer feature for GM npc´s"
+			},
+			"disableTimerOnHidden": {
+				"name": "Disable timer for hidden npc",
+				"hint": "Disable timer feature GM npc´s that are currently hidden"
 			},
 			"showEndTurnDialog": {
 				"name": "Show End Turn Dialog",

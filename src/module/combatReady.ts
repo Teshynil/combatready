@@ -2,7 +2,7 @@ import { getCombats, getGame, MODULE_NAME } from "./settings";
 import { currentTheme, currentTimer } from "./api";
 
 export const volume = () => {
-    return (Number)(getGame().settings.get("combatready", "volume")) / 100.0;
+    return (Number)(getGame().settings.get(MODULE_NAME, "volume")) / 100.0;
 };
 
 export class CombatReady {
@@ -26,7 +26,7 @@ export class CombatReady {
         let entry = curCombat.combatant;
         let playTo = "Everyone";
         try {
-            playTo = <string>getGame().settings.get("combatready", sound.setting);
+            playTo = <string>getGame().settings.get(MODULE_NAME, sound.setting);
         } catch (e) { }
 
         switch (playTo) {
@@ -106,7 +106,7 @@ export class CombatReady {
     }
     static showWrapItUpDialog() {
         CombatReady.closeWrapItUpDialog().then(() => {
-            if (getGame().settings.get("combatready", "disabletimer")) {
+            if (getGame().settings.get(MODULE_NAME, "disabletimer")) {
                 return;
             }
             let d = new Dialog(
@@ -168,7 +168,7 @@ export class CombatReady {
      * Animate the "you're up next" prompt
      */
     static doAnimateNext() {
-        if (getGame().settings.get("combatready", "disablenextup")) {
+        if (getGame().settings.get(MODULE_NAME, "disablenextup")) {
             return;
         }
 
@@ -189,7 +189,7 @@ export class CombatReady {
         if (curCombat && curCombat.started) {
             let entry = curCombat.combatant;
             currentTheme.cleanAnimations();
-            if (<boolean>getGame().settings.get("combatready", "wrapitupdialog")) {
+            if (<boolean>getGame().settings.get(MODULE_NAME, "wrapitupdialog")) {
                 if (getGame().user?.isGM && entry.players.length > 0) {
                     CombatReady.showWrapItUpDialog();
                 } else {
@@ -201,9 +201,16 @@ export class CombatReady {
                 }
             }
             // next combatant
-            let nxtturn = (curCombat.turn || 0) + 1;
-            if (nxtturn > curCombat.turns.length - 1) nxtturn = 0;
+            let nxtturn = ((curCombat.turn || 0) + 1) % curCombat.turns.length;
             let nxtentry = curCombat.turns[nxtturn];
+            //@ts-ignore
+            if (getGame().settings.get("core", "combatTrackerConfig")?.skipDefeated ?? false) {
+                while (nxtentry.data.defeated) {
+                    if (nxtturn == curCombat.turn) break;// Avoid running infinitely
+                    nxtturn = (nxtturn + 1) % curCombat.turns.length;
+                    nxtentry = curCombat.turns[nxtturn];
+                }
+            }
 
             if (entry !== undefined) {
                 CombatReady.closeEndTurnDialog().then(() => {
@@ -212,10 +219,10 @@ export class CombatReady {
 
                     if (isActive) {
                         CombatReady.doAnimateTurn();
-                        if (<boolean>getGame().settings.get("combatready", "endturndialog"))
+                        if (<boolean>getGame().settings.get(MODULE_NAME, "endturndialog"))
                             CombatReady.showEndTurnDialog();
                     } else if (isNext) {
-                        if (nxtturn == 0 && <boolean>getGame().settings.get("combatready", "disablenextuponlastturn"))
+                        if (nxtturn == 0 && <boolean>getGame().settings.get(MODULE_NAME, "disablenextuponlastturn"))
                             return;
                         CombatReady.doAnimateNext();
                     }
@@ -237,11 +244,14 @@ export class CombatReady {
         if (!CombatReady.READY) return;
         let curCombat = getCombats().active as StoredDocument<Combat>;
         let entry = curCombat.combatant;
-        if (getGame().settings.get("combatready", "disabletimer")) {
+        if (getGame().settings.get(MODULE_NAME, "disabletimer")) {
             return;
         }
-        if (getGame().settings.get("combatready", "disabletimerGM")) {
+        if (getGame().settings.get(MODULE_NAME, "disabletimerGM")) {
             if (entry.players.length == 0) return;
+        }
+        if(getGame().settings.get(MODULE_NAME,"disabletimerOnHidden")){
+            if (entry.data.hidden && entry.players.length == 0) return;
         }
         if (CombatReady.isMasterOfTime(getGame().user)) {
             CombatReady.TIMECURRENT++;

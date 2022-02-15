@@ -42,6 +42,15 @@ export class CombatReadyAnimationTheme extends SettingsAwareEntity {
             let curCombat = getCombats().active as Combat;
             let curCombatant = curCombat.combatant;
             let nxtturn = ((curCombat.turn || 0) + 1) % curCombat.turns.length;
+            if (nxtturn > curCombat.turns.length - 1) nxtturn = 0;
+            //@ts-ignore
+            if(getGame().settings.get("core","combatTrackerConfig")?.skipDefeated??false){
+                while(curCombat.turns[nxtturn].data.defeated){
+                    if(nxtturn==curCombat.turn)break;// Avoid running infinitely
+                    nxtturn++;
+                    if (nxtturn > curCombat.turns.length - 1) nxtturn = 0;
+                }
+            }
             let nxtCombatant = curCombat.turns[nxtturn];
             let name = "";
             let combatantName = curCombatant.name;

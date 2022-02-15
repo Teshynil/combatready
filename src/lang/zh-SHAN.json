@@ -26,6 +26,10 @@
 				"name": "Disable timer for the GM",
 				"hint": "Disable timer feature at bottom of the screen for GM npc´s"
 			},
+			"disableTimerOnHidden": {
+				"name": "Disable timer for hidden npc",
+				"hint": "Disable timer feature GM npc´s that are currently hidden"
+			},
 			"showEndTurnDialog": {
 				"name": "显示结束回合对话框",
 				"hint": "在玩家的回合，显示一个对话框，玩家可以通过点击对话框中的按钮来结束当前回合。"

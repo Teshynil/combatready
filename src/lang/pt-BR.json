@@ -26,6 +26,10 @@
                 "name": "Disable timer for the GM",
                 "hint": "Disable timer feature at bottom of the screen for GM npc´s"
             },
+            "disableTimerOnHidden": {
+				"name": "Disable timer for hidden npc",
+				"hint": "Disable timer feature GM npc´s that are currently hidden"
+			},
             "showEndTurnDialog": {
                 "name": "Exibe mensagem de Fim de turno",
                 "hint": "Exibe um diálogo para os jogadores no turno que fornece um botão para encerrar o turno atual"

@@ -96,7 +96,7 @@ export class NativeTimer extends CombatReadyTimer {
         if (!this.ready) return;
         this.TIMEBAR.style.display = "block";
         //@ts-ignore
-        let width = (window.CombatReady.getCurrentTime() / window.CombatReady.getMaxTime()) * 100;
+        let width = (getGame().modules.get(MODULE_NAME)?.api?.getCurrentTime() / getGame().modules.get(MODULE_NAME)?.api?.getMaxTime()) * 100;
         this.TIMEFILL.style.transition = "";
         this.TIMEFILL.style.width = `${width}%`;
     }

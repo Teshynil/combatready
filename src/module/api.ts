@@ -3,17 +3,31 @@ import { getGame, MODULE_NAME } from "./settings";
 import { CombatReadyTimer, NativeTimer } from "./timers";
 import { SettingsAwareEntity } from "./settingsAwareEntity";
 import { CombatReady } from "./combatReady";
+import { debug } from "../combatready";
 
 export const availableThemes: Array<CombatReadyAnimationTheme> = [];
 export const availableTimers: Array<CombatReadyTimer> = [];
 export var currentTheme: CombatReadyAnimationTheme;
 export var currentTimer: CombatReadyTimer;
-export const CombatReadyApi: { setupTheme: Function, setupTimer: Function, getCurrentTime: Function, getMaxTime: Function } = { setupTheme, setupTimer, getCurrentTime, getMaxTime };
+export const CombatReadyApi: {
+    isActive: boolean,
+    setupTheme: Function,
+    setupTimer: Function,
+    getCurrentTime: Function,
+    getMaxTime: Function
+} = {
+    isActive: false,
+    setupTheme,
+    setupTimer,
+    getCurrentTime,
+    getMaxTime
+};
 
 export function initApi() {
     //@ts-ignore
-    window.CombatReady = CombatReadyApi;
-    setupTheme(new NativeAnimationTheme("native"))
+    getGame().modules.get(MODULE_NAME).api = CombatReadyApi;
+    debug("Setting default theme and timer");
+    setupTheme(new NativeAnimationTheme("native"));
     setupTimer(new NativeTimer("native"));
 }
 function getCurrentTime() {

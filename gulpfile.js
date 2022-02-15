@@ -8,13 +8,12 @@ const typescript = require('typescript');
 
 const ts = require('gulp-typescript');
 const less = require('gulp-less');
-const sass = require('gulp-sass');
+const sass = require('gulp-sass')(require('sass'));
 const git = require('gulp-git');
 const eslint = require('gulp-eslint');
 
 const argv = require('yargs').argv;
 
-sass.compiler = require('sass');
 
 function getConfig() {
   const configPath = path.resolve(process.cwd(), 'foundryconfig.json');

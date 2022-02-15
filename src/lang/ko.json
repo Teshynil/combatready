@@ -26,6 +26,10 @@
 				"name": "Disable timer for the GM",
 				"hint": "Disable timer feature at bottom of the screen for GM npc´s"
 			},
+			"disableTimerOnHidden": {
+				"name": "Disable timer for hidden npc",
+				"hint": "Disable timer feature GM npc´s that are currently hidden"
+			},
 			"showEndTurnDialog": {
 				"name": "턴 종료 대화상자 표시",
 				"hint": "플레이어가 현재 턴을 끝낼 수 있는 버튼을 제공하는 대화상자를 표시한다"
