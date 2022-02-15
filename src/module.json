@@ -80,12 +80,12 @@
 		"allowBugReporter": true
 	},
 	"packs": [],
-	"minimumCoreVersion": "0.8.6",
+	"minimumCoreVersion": "9",
 	"compatibleCoreVersion": "9",
 	"url": "https://github.com/Teshynil/combatready",
-	"download": "https://github.com/Teshynil/combatready/releases/download/3.3.0/combatready-v3.3.0.zip",
+	"download": "https://github.com/Teshynil/combatready/releases/download/4.0.0/combatready-v4.0.0.zip",
 	"manifest": "https://raw.githubusercontent.com/Teshynil/combatready/master/src/module.json",
-	"license": "https://github.com/Teshynil/combatready/blob/3.3.0/LICENSE",
-	"readme": "https://github.com/Teshynil/combatready/blob/3.3.0/README.md",
-	"changelog": "https://github.com/Teshynil/combatready/blob/3.3.0/CHANGELOG.md"
+	"license": "https://github.com/Teshynil/combatready/blob/4.0.0/LICENSE",
+	"readme": "https://github.com/Teshynil/combatready/blob/4.0.0/README.md",
+	"changelog": "https://github.com/Teshynil/combatready/blob/4.0.0/CHANGELOG.md"
 }
