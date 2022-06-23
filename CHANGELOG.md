@@ -1,4 +1,11 @@
 # CHANGELOG
+## [4.1.0] 2022-06-22
+* [BREAKING CHANGES] If anyone was working using the api, its now refactored.
+* Improved Readme
+* Expand in-code documentation
+* Improved code to allow better modularity
+* Added function to auto-pan to a token
+
 ## [4.0.0] 2022-02-15
 * Updated module.json for v9
 * API changes [BREAKING]

@@ -1,5 +1,5 @@
 import { CombatReadyTimer } from "./module/timers";
-import { CombatReadyAnimationTheme } from "./module/themes";
+import { CombatReadyAnimation } from "./module/animations";
 import { CombatReadyApi, initApi, updateAnimation, updateTimer } from "./module/api";
 import { CombatReady } from "./module/combatReady";
 import { initHooks } from "./module/hooks";
@@ -50,7 +50,7 @@ Hooks.on("ready", function () {
   log("Registering Main Hooks");
   initHooks();
   log("Calling Hook combatready.ready");
-  Hooks.callAll("combatready.ready", CombatReadyAnimationTheme, CombatReadyTimer);
+  Hooks.callAll("combatready.ready", CombatReadyAnimation, CombatReadyTimer);
   let masteroftime = <string>getGame().settings.get(MODULE_NAME, "masteroftime");
   if (getGame().users?.find((user) => user.active && user.id == masteroftime) == undefined) {//Master of time not found seting first gm on list of connected players
     masteroftime = getGame().users?.find((user) => user.active && user.isGM)?.id ?? "";

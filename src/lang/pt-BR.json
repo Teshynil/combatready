@@ -54,6 +54,10 @@
                 "name": "Volume",
                 "hint": "Defina o volume geral do módulo"
             },
+			"panToToken": {
+				"name": "Enable panning to combatants",
+				"hint": "Pan to the current combatant for the selected players, only auto select token for the token owner"
+			},
             "tickOnLast": {
                 "name": "Tick on last seconds",
                 "hint": "Set the last seconds remaining for the ticking to start"
@@ -94,7 +98,7 @@
                 "GMAndPlayer": "GM, Assistants and the Current player",
                 "none": "Nobody"
             },
-            "themes": {
+            "animations": {
                 "settings": {
                     "name": "Animation Theme Settings",
                     "hint": "Change the animation settings",
@@ -128,7 +132,7 @@
 				}
 			}
         },
-        "themes": {
+        "animations": {
             "native": {
                 "settings": {
                     "disableNextUpLingering": {

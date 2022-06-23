@@ -2,7 +2,7 @@
 	"name": "combatready",
 	"title": "Combat Ready!",
 	"description": "'<b><i>My Combat Tracker is Ready</i></b>' Combat ready indicator to remind players of their turn, as well as time taken. ",
-	"version": "4.0.0",
+	"version": "4.1.0",
 	"author": "Teshynil",
 	"authors": [
 		{
@@ -83,9 +83,9 @@
 	"minimumCoreVersion": "9",
 	"compatibleCoreVersion": "9",
 	"url": "https://github.com/Teshynil/combatready",
-	"download": "https://github.com/Teshynil/combatready/releases/download/4.0.0/combatready-v4.0.0.zip",
+	"download": "https://github.com/Teshynil/combatready/releases/download/4.1.0/combatready-v4.1.0.zip",
 	"manifest": "https://raw.githubusercontent.com/Teshynil/combatready/master/src/module.json",
-	"license": "https://github.com/Teshynil/combatready/blob/4.0.0/LICENSE",
-	"readme": "https://github.com/Teshynil/combatready/blob/4.0.0/README.md",
-	"changelog": "https://github.com/Teshynil/combatready/blob/4.0.0/CHANGELOG.md"
+	"license": "https://github.com/Teshynil/combatready/blob/4.1.0/LICENSE",
+	"readme": "https://github.com/Teshynil/combatready/blob/4.1.0/README.md",
+	"changelog": "https://github.com/Teshynil/combatready/blob/4.1.0/CHANGELOG.md"
 }

@@ -1,7 +1,7 @@
 //@ts-ignore
 import { gsap } from "/scripts/greensock/esm/all.js";
 import { getCanvas, getCombats, getGame, MODULE_NAME } from "./settings";
-import { availableTimers, currentTheme, currentTimer } from "./api";
+import { availableTimers, currentTimer } from "./api";
 import { CombatReady } from "./combatReady";
 import { CombatReadySubSettings, enumerateSettings, SettingsAwareEntity } from "./settingsAwareEntity";
 
@@ -44,7 +44,7 @@ export class NativeTimer extends CombatReadyTimer {
     name = "CombatReady";
     public TIMEBAR: HTMLDivElement;
     public TIMEFILL: HTMLDivElement;
-    public initialize() {
+    public initialize(): void {
         let body = document.getElementsByTagName("body")[0] as HTMLElement;
         let sidebar = document.getElementById("sidebar") as HTMLElement;
 
@@ -67,32 +67,32 @@ export class NativeTimer extends CombatReadyTimer {
         this.tick();//Do a tick to redraw in case is a reload;
         this.ready = true;
     }
-    public destroy() {
+    public destroy(): void {
         this.TIMEBAR?.remove();
         this.TIMEFILL?.remove();
         this.ready = false;
     }
-    public start() {
+    public start(): void {
         if (!this.ready) return;
         this.TIMEBAR.style.display = "block";
         this.TIMEFILL.style.width = "0%";
         this.TIMEFILL.style.transition = "none";
     }
-    public stop() {
+    public stop(): void {
         if (!this.ready) return;
         this.TIMEBAR.style.display = "none";
         this.TIMEFILL.style.width = "0%";
         this.TIMEFILL.style.transition = "none";
     }
-    public pause() {
+    public pause(): void {
         if (!this.ready) return;
         this.TIMEBAR.style.display = "block";
     }
-    public resume() {
+    public resume(): void {
         if (!this.ready) return;
         this.TIMEBAR.style.display = "block";
     }
-    public tick() {
+    public tick(): void {
         if (!this.ready) return;
         this.TIMEBAR.style.display = "block";
         //@ts-ignore
@@ -100,7 +100,7 @@ export class NativeTimer extends CombatReadyTimer {
         this.TIMEFILL.style.transition = "";
         this.TIMEFILL.style.width = `${width}%`;
     }
-    public adjustWidth() {
+    public adjustWidth(): void {
         let sidebar = document.getElementById("sidebar") as HTMLElement;
         let width = sidebar.offsetWidth;
         if (<string>this.getSetting("timebarlocation") == "sidebar") {
@@ -167,7 +167,7 @@ export class TimerSubSettings extends CombatReadySubSettings {
             template: "modules/combatready/templates/timers_settings.html"
         })
     }
-    getData(options: Application.RenderOptions): FormApplication.Data<{}, FormApplication.Options> | Promise<FormApplication.Data<{}, FormApplication.Options>> {
+    getData(options: Application.RenderOptions): FormApplication.Data<{}, FormApplicationOptions> | Promise<FormApplication.Data<{}, FormApplicationOptions>> {
         const data: any = {}
         data.isGM = getGame().user?.isGM
         const selectedTimer = currentTimer.id
@@ -183,7 +183,7 @@ export class TimerSubSettings extends CombatReadySubSettings {
             timer.isSelected = timer.id === selectedTimer
             return timer
         })
-        data.selectedTimerName = data.timers.find(theme => theme.isSelected).selectTitle
+        data.selectedTimerName = data.timers.find(timer => timer.isSelected).selectTitle
 
         data.selectedTimer = {
             id: "selectedTimer",

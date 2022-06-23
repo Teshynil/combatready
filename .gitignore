@@ -2,3 +2,4 @@ foundryconfig.json
 node_modules/
 dist/
 package/
+.vscode/settings.json

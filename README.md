@@ -1,47 +1,63 @@
-# Combat Ready module for FVTT,
+# Combat Ready module for FVTT
 
-Shows a graphic + sound for players a round just before a player's turn (Next Up) and
-during their turn.
+Shows an animation with sound to players to alert them about their next turn, also an alert when its now their turn.
 
-It uses a light-box style darkening of the canvas to catch their attention as
-well as an animated graphic + sound. The player then needs to click the banner to
-either acknowledge their turn is coming up, or take their turn. If they somehow 
-*still* don't know its their turn then that's a problem between chair and keyboard.
+Combat Ready is a system agnostic module about being ready for combat, it features:
 
-Note that for "Next UP" rather than having the graphic go away entirely, it just
-puts opacity on the banner as a constant reminder for the player to plan for
-their turn for when it does come up. Works with hidden combatants too, such that
-even if there's a block of hidden enemies you're working on as GM, they'll know
-when their turn is 'next' due to the graphic as to not catch them by surprise.
+* Timer for combatants
+* Alerts players when they are next in the combat
+* Alerts players when is their turn in combat
+* Plays a clock sound to remind them to hurry up in the lasts seconds of the timer
+* Plays an alert when their time runs out
+* Auto skip the turn if the time runs out
+* Timer on demand
+* When its their turn automatically pan to their token and select them (no more where i was?)
+* Allows to create themes for animations and timers, see: [Combat Ready Themes Set](https://github.com/Teshynil/combatreadythemes)
 
-The combat timer is simply a bar along the bottom of the screen. By default it is 
-configured for 3m, but this can be changed in the settings. When the bar
-reaches 3m, or the custom value, an 'expired' sound will play, but it does not 
-automatically advance the turn. Shame is good enough in my opinion. If you need 
-to pause the timer, it responds to FVTT's pause mechanic.
+**All features are customizables.**
 
-Combat Ready is currently spected to work with FVTT version 0.8.9
+Combat Ready is currently spected to work with FVTT version 9
 
 ## Note
 
-This module was made by Ken L. Then taken care by Jacob McAuley, later by Shawn Milligan now this is an attempt to give maitenance to the module.
+This module was originally made by Ken L. Then taken care by Jacob McAuley, later by Shawn Milligan now this is an attempt to give maitenance to the module and add features that i think are useful.
 
 ## Usage
 
 Just install it, start a combat and ejoy.
 
+Out of the box it just works
+
+If you want to customize your experience there are plenty of options to do so.
+
 For aditional settings see below.
 
-### Module
-![Combat](https://raw.githubusercontent.com/Teshynil/combatready/master/support/Combat.png)
-![NextUp](https://raw.githubusercontent.com/Teshynil/combatready/master/support/NextUp.png)
-![YourTurn](https://raw.githubusercontent.com/Teshynil/combatready/master/support/YourTurn.png)
-![Settings](https://raw.githubusercontent.com/Teshynil/combatready/master/support/Settings.png)
+### Previews
+#### Main Demo
+https://raw.githubusercontent.com/Teshynil/combatready/master/support/Main_demo.mp4
+
+*From left to right up to down: GM, Player 1, Player 2, Player 3*
+
+*Using the video theme from [Combat Ready Themes Set](https://github.com/Teshynil/combatreadythemes)*
+#### Time running out
+https://raw.githubusercontent.com/Teshynil/combatready/master/support/TimeRunsOut.mp4
+
+#### Wrapping it up
+https://raw.githubusercontent.com/Teshynil/combatready/master/support/WrapItUp.mp4
+*Setting that allows to not show a timer until you think your player is taking a bit too*
+
+#### Auto Skip
+https://raw.githubusercontent.com/Teshynil/combatready/master/support/AutoSkip.mp4
+*Setting that allows to auto skip the players turn if they run out of time*
 
 ## Installation Instructions
 
-Copy https://raw.githubusercontent.com/Teshynil/combatready/master/src/module.json into the module installer
-inside foundry when it asks for the manifest.
+### Foundry
+Just search for combatready and install from there
+
+### Manual
+
+Copy and paste https://raw.githubusercontent.com/Teshynil/combatready/master/src/module.json into the module installer inside foundry when it asks for the manifest.
 
 OR
 

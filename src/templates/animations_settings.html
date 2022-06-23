@@ -1,5 +1,8 @@
 {{! This partial is based on the foundry settings partial}}
 {{#*inline "settingPartial"}}
+{{#if this.isSeparator}}
+<h2>{{this.name}}</h2>
+{{else}}
 <div class="form-group">
 	<label>{{this.name}}</label>
 	{{#if this.isCheckbox}}
@@ -19,56 +22,63 @@
 	{{else if this.isColor}}
 	<input id="{{this.id}}" type="text" name="{{this.id}}" value="{{this.value}}" style="display: none;" />
 	<button id="{{this.id}}-button" name="{{this.id}}-button" value="{{this.value}}" data-responsive-color
-		data-dtype="{{this.type}}" is="colorpicker-button" for="{{this.id}}" form="combatready-themes">{{localize
+		data-dtype="{{this.type}}" is="colorpicker-button" for="{{this.id}}" form="combatready-animations">{{localize
 		name}}</button>
 	{{else if this.isMultiline}}
 	<textarea name="{{this.id}}" data-dtype="{{this.type}}">{{this.value}}</textarea>
+	{{else if this.isFilePicker}}
+	<div class="form-fields">
+		<button type="button" class="file-picker" data-type="{{this.filePicker}}" data-target="{{this.id}}"
+			title="Browse Files" tabindex="-1"><i class="fas fa-file-import fa-fw"></i></button>
+		<input type="text" name="{{this.id}}" value="{{this.value}}" data-dtype="String">
+	</div>
 	{{else}}
 	<input type="text" name="{{this.id}}" value="{{this.value}}" data-dtype="{{this.type}}" />
 	{{/if}}
 	<p class="notes">{{this.hint}}</p>
 </div>
+{{/if}}
 {{/inline}}
 
 
 
-<form class="flexcol combatready-themes" id="combatready-themes" autocomplete="off">
+<form class="flexcol combatready-animations" id="combatready-animations" autocomplete="off">
 	<section class="content">
 		<div class="settings-list">
 			{{#if this.isGM}}
-			{{#with this.selectedTheme}}
+			{{#with this.selectedAnimation}}
 			{{> settingPartial}}
 			{{/with}}
 			{{else}}
-			<div class="form-group"><label>{{localize "combatReady.settings.themes.activeTheme.name"}}</label>
+			<div class="form-group"><label>{{localize "combatReady.settings.animations.activeAnimation.name"}}</label>
 				<div class="form-fields" style="justify-content: flex-start;"><b>{{this.selectedAnimationName}}</b>
 				</div>
 			</div>
-			<p class="notes">{{localize "combatReady.settings.themes.activeTheme.hint"}}</p>
+			<p class="notes">{{localize "combatReady.settings.animations.activeAnimation.hint"}}</p>
 			{{/if}}
-			{{#each this.themes}}
-			<div class="combatready-themes-settings" id="combatready.themes.{{this.id}}" {{#unless
+			{{#each this.animations}}
+			<div class="combatready-animations-settings" id="combatready.animations.{{this.id}}" {{#unless
 				this.isSelected}}style="display:none" {{/unless}}>
-				<h2 class="module-header">{{localize "combatReady.settings.themes.testing.name"}}</h2>
+				<h2 class="module-header">{{localize "combatReady.settings.animations.testing.name"}}</h2>
 				<div class="flexrow">
-					<button type="button" id="combatready.themes.test.yourTurn" value="yourTurn"><i
-							class="fas fa-magic"></i><label>{{localize "combatReady.settings.themes.testing.yourTurn"
+					<button type="button" id="combatready.animations.test.yourTurn" value="yourTurn"><i
+							class="fas fa-magic"></i><label>{{localize "combatReady.settings.animations.testing.yourTurn"
 							}}</label></button>
-					<button type="button" id="combatready.themes.test.nextUp" value="nextUp"><i
-							class="fas fa-magic"></i><label>{{localize "combatReady.settings.themes.testing.nextUp"
+					<button type="button" id="combatready.animations.test.nextUp" value="nextUp"><i
+							class="fas fa-magic"></i><label>{{localize "combatReady.settings.animations.testing.nextUp"
 							}}</label></button>
-					<button type="button" id="combatready.themes.test.roundChange" value="nextRound"><i
-							class="fas fa-magic"></i><label>{{localize "combatReady.settings.themes.testing.roundChange"
+					<button type="button" id="combatready.animations.test.nextRound" value="nextRound"><i
+							class="fas fa-magic"></i><label>{{localize "combatReady.settings.animations.testing.roundChange"
 							}}</label></button>
 				</div>
-				<p class="notes">{{localize "combatReady.settings.themes.testing.hint" }}</p>
-				<h2 class="module-header">{{localize "combatReady.settings.themes.settings.name"}}</h2>
+				<p class="notes">{{localize "combatReady.settings.animations.testing.hint" }}</p>
+				<h2 class="module-header">{{localize "combatReady.settings.animations.settings.name"}}</h2>
 				{{#if this.hasSettings}}
 				{{#each settings}}
 				{{> settingPartial}}
 				{{/each}}
 				{{else}}
-				<p>{{localize "combatReady.settings.themes.noSettings"}}</p>
+				<p>{{localize "combatReady.settings.animations.noSettings"}}</p>
 				{{/if}}
 			</div>
 			{{/each}}
@@ -79,11 +89,11 @@
 			<i class="far fa-save"></i> {{localize 'SETTINGS.Save'}}
 		</button>
 		<button type="submit" name="apply">
-			<i class="far fa-check-circle"></i> {{localize 'combatReady.settings.themes.applyChanges'}}
+			<i class="far fa-check-circle"></i> {{localize 'combatReady.settings.animations.applyChanges'}}
 		</button>
 	</footer>
 	<script>
-		document.querySelectorAll('#combatready-themes button[is="colorpicker-button"]').forEach(e => {
+		document.querySelectorAll('#combatready-animations button[is="colorpicker-button"]').forEach(e => {
 			if (e.attributes.getNamedItem("for")?.value != undefined) {
 				let target = document.getElementById(e.attributes.getNamedItem("for")?.value);
 				if (target != undefined) {
@@ -92,7 +102,7 @@
 
 					});
 					e.addEventListener("click", function () {
-						document.getElementById("combatready-themes-settings").style.height = "";
+						document.getElementById("combatready-animations-settings").style.height = "";
 					});
 				}
 			}
