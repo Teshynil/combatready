@@ -1,5 +1,15 @@
 # Combat Ready module for FVTT
 
+[![Forge Installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fcombatready&colorB=006400&style=for-the-badge)](https://forge-vtt.com/bazaar#package=combatready) 
+
+![Foundry Core Compatible Version](https://img.shields.io/badge/dynamic/json.svg?url=https%3A%2F%2Fraw.githubusercontent.com%2FTeshynil%2Fcombatready%2Fmaster%2Fsrc%2Fmodule.json&label=Foundry%20Version&query=$.compatibleCoreVersion&colorB=orange&style=for-the-badge)
+
+![Latest Version](https://img.shields.io/badge/dynamic/json.svg?url=https%3A%2F%2Fraw.githubusercontent.com%2FTeshynil%2Fcombatready%2Fmaster%2Fsrc%2Fmodule.json&label=Latest%20Release&prefix=v&query=$.version&colorB=red&style=for-the-badge)
+
+[![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Fcombatready%2Fshield%2Fendorsements&style=for-the-badge)](https://www.foundryvtt-hub.com/package/combatready/)
+
+![GitHub all releases](https://img.shields.io/github/downloads/Teshynil/combatready/total?style=for-the-badge)
+
 Shows an animation with sound to players to alert them about their next turn, also an alert when its now their turn.
 
 Combat Ready is a system agnostic module about being ready for combat, it features:
@@ -34,20 +44,27 @@ For aditional settings see below.
 
 ### Previews
 #### Main Demo
-https://raw.githubusercontent.com/Teshynil/combatready/master/support/Main_demo.mp4
+
+
+https://user-images.githubusercontent.com/5714094/175188901-a303cd48-db3a-4362-a356-86a83c9ff5bb.mp4
+
+
 
 *From left to right up to down: GM, Player 1, Player 2, Player 3*
 
 *Using the video theme from [Combat Ready Themes Set](https://github.com/Teshynil/combatreadythemes)*
 #### Time running out
-https://raw.githubusercontent.com/Teshynil/combatready/master/support/TimeRunsOut.mp4
+https://user-images.githubusercontent.com/5714094/175188918-897daf07-bfd8-461b-bdb2-1057d19fda3e.mp4
 
 #### Wrapping it up
-https://raw.githubusercontent.com/Teshynil/combatready/master/support/WrapItUp.mp4
+https://user-images.githubusercontent.com/5714094/175188931-031c483d-46d6-4da3-92b2-b546d4811189.mp4
+
 *Setting that allows to not show a timer until you think your player is taking a bit too*
 
 #### Auto Skip
-https://raw.githubusercontent.com/Teshynil/combatready/master/support/AutoSkip.mp4
+https://user-images.githubusercontent.com/5714094/175188959-e0fb8b92-01be-4ccd-93c0-1e086c669fe8.mp4
+
+
 *Setting that allows to auto skip the players turn if they run out of time*
 
 ## Installation Instructions
