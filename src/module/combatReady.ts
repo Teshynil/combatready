@@ -193,16 +193,53 @@ export class CombatReady {
 		CombatReady.playSound(CombatReady.TURN_SOUND);
 	}
 
-	static doPanToToken(control: boolean): void {
-		getCanvas().animatePan({
-			x: CombatReady.DATA.currentCombatant.token?.object?.center.x,
-			y: CombatReady.DATA.currentCombatant.token?.object?.center.y,
-			duration: 250
-		}).then(() => {
-			if (control) {
-				CombatReady.DATA.currentCombatant.token?.object?.control();
+	static getCombatantToken(): Token | undefined {
+		//Check if this combat is unlinked
+		if (CombatReady.DATA.currentCombat.data.scene == null) {
+			//Get if this is a player token or an NPC token
+			let combatantIsLinked = CombatReady?.DATA?.currentCombatant?.token?.isLinked ?? false;
+			//Get the actor Id
+			let combatantActorId = CombatReady?.DATA?.currentCombatant?.actor?.id ?? null;
+			//Get the token name
+			let combatantTokenName = CombatReady?.DATA?.currentCombatant?.token?.name;
+			let combatantToken: Token | undefined;
+			let combatantsTokens: Token[] | undefined;
+			if (combatantIsLinked) {
+				combatantToken = getCanvas().tokens?.placeables.find((token) => {
+					return token?.actor?.id === combatantActorId ?? false;
+				});
+				if (combatantToken !== undefined) return combatantToken;
 			}
-		});
+			//If there is not a token that share the actorId is possible to be a placeholder token
+			//We retrieve the list of tokens that share the same name if only one is present that token we will return
+
+			combatantsTokens = getCanvas().tokens?.placeables.filter((token) => {
+				return token?.name === combatantTokenName ?? false;
+			});
+			if (combatantsTokens !== undefined) {
+				if ((combatantsTokens.length) == 1) {
+					return combatantsTokens[0];
+				}
+			}
+		} else {
+			return <Token>(CombatReady?.DATA?.currentCombatant?.token?.object);
+		}
+	}
+	static doPanToToken(control: boolean): void {
+		let token = CombatReady.getCombatantToken();
+		if (token !== undefined) {
+			let x = token.center.x ?? 0;
+			let y = token.center.y ?? 0;
+			getCanvas().animatePan({
+				x: x,
+				y: y,
+				duration: 250
+			}).then(() => {
+				if (control) {
+					CombatReady.getCombatantToken()?.control();
+				}
+			});
+		}
 	}
 
 	/**
@@ -276,7 +313,7 @@ export class CombatReady {
 						CombatReady.resolvePlayersPermission(panToTokenPerm, () => { CombatReady.doPanToToken(true) });
 					} else {
 						CombatReady.resolvePlayersPermission(panToTokenPerm, () => { CombatReady.doPanToToken(false) });
-						if(newRound){
+						if (newRound) {
 							CombatReady.nextRound();
 						}
 					}

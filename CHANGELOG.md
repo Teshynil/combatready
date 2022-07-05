@@ -1,4 +1,8 @@
 # CHANGELOG
+## [4.1.1] 2022-07-04
+* Added support for unlinked scenes auto-panning
+	> Feature suggested by [Alpacacin0](https://www.reddit.com/user/Alpacacin0/)
+
 ## [4.1.0] 2022-06-22
 * [BREAKING CHANGES] If anyone was working using the api, its now refactored.
 * Improved Readme
