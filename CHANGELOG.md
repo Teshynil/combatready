@@ -1,4 +1,11 @@
 # CHANGELOG
+## [4.2.0] 2022-07-08
+* Refactoring of code
+* Improving user detection & combatants update to avoid multiple animations launching when there are not needed
+* Prioritization of Selected Owned Character when there is multiple owners
+* Updated compatibility to FoundryVTT v10
+* It may throw warnings because is using both v10 & v9 module.json
+
 ## [4.1.1] 2022-07-04
 * Added support for unlinked scenes auto-panning
 	> Feature suggested by [Alpacacin0](https://www.reddit.com/user/Alpacacin0/)

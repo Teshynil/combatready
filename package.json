@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "combatready",
-  "version": "4.1.1",
+  "version": "4.2.0",
   "description": "",
   "scripts": {
     "package": "gulp clean && gulp build && gulp package",

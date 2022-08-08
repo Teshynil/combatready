@@ -1,11 +1,16 @@
 import { getCanvas, getCombats, getGame, MODULE_NAME } from "./settings";
 import { currentAnimation, currentTimer } from "./api";
 import { warn } from "../combatready";
+import { updateYield } from "typescript";
 
 export const volume = () => {
 	return (Number)(getGame().settings.get(MODULE_NAME, "volume")) / 100.0;
 };
-
+enum Difference {
+	Current = 1,
+	Next = 2,
+	Both = 3
+}
 export class CombatReady {
 	public static EndTurnDialog: Array<Dialog> = [];
 	public static WrapItUpDialog: Array<Dialog> = [];
@@ -25,25 +30,67 @@ export class CombatReady {
 	public static DATA: {
 		combats: CombatEncounters,
 		currentCombat: StoredDocument<Combat>,
-		currentCombatant: Combatant
+		currentCombatant: Combatant,
+		nextCombatant: Combatant
+	};
+	public static OLD_DATA: {
+		combats: CombatEncounters,
+		currentCombat: StoredDocument<Combat>,
+		currentCombatant: Combatant,
+		nextCombatant: Combatant
 	};
 
-	static fillData(): boolean {
+	/**
+	 * This function fills common used DATA through the module
+	 *
+	 * @static
+	 * @returns {[boolean, Difference]} the boolean indicates if the data was correctly filled and the Difference if it is necessary to update themes
+	 */
+	static fillData(): [boolean, Difference] {
 		let combats = getCombats();
 		if (combats == undefined) {
-			warn("Combats undefined failing fillData()"); return false;
+			warn("Combats undefined failing fillData()"); return [false, Difference.Both];
 		}
 		let curCombat = combats.active as StoredDocument<Combat>;
 		if (curCombat == undefined) {
-			warn("Current Combat undefined failing fillData()"); return false;
+			warn("Current Combat undefined failing fillData()"); return [false, Difference.Both];
 		}
-		let entry = curCombat.combatant;
-		if (entry == undefined) {
-			warn("Current Combatant undefined failing fillData()"); return false;
+		let curCombatant = curCombat.combatant;
+		if (curCombatant == undefined) {
+			warn("Current Combatant undefined failing fillData()"); return [false, Difference.Both];
 		}
-		CombatReady.DATA = { combats: combats, currentCombat: curCombat, currentCombatant: entry };
-		return true;
+		curCombatant = deepClone(curCombatant);
+
+		let nextTurn = ((curCombat.turn || 0) + 1) % curCombat.turns.length;
+		let nextCombatant = curCombat.turns[nextTurn];
+		if (nextCombatant == undefined) {
+			warn("Next Combatant undefined failing fillData()"); return [false, Difference.Both];
+		}
+		nextCombatant = deepClone(nextCombatant);
+		CombatReady.OLD_DATA = CombatReady.DATA;
+		CombatReady.DATA = { combats: combats, currentCombat: curCombat, currentCombatant: curCombatant, nextCombatant: nextCombatant };
+		let newState = Difference.Both;
+		if (CombatReady.OLD_DATA !== undefined) {
+			newState = CombatReady.checkForNewState();
+		}
+		return [true, newState];
 	}
+
+	/**
+	 * This functions verifies if the old Data is the same as the new data
+	 * This would mean that even if we change turns or rounds or delete a combatant there is not
+	 * necessary an update to the animations.
+	 *
+	 * @static
+	 * @returns {Boolean}
+	 */
+	static checkForNewState(): Difference {
+		let diff = 0;
+		diff |= (CombatReady.OLD_DATA.currentCombatant != CombatReady.DATA.currentCombatant) ? 1 : 0;
+		diff |= (CombatReady.OLD_DATA.nextCombatant != CombatReady.DATA.nextCombatant) ? 2 : 0;
+		return diff;
+	}
+
 	static resolvePlayersPermission(permString: string, callback: Function): void {
 		switch (permString) {
 			case "None":
@@ -78,7 +125,6 @@ export class CombatReady {
 		}
 	}
 	static playSound(sound: { file: string, setting: string }): void {
-		if (!CombatReady.fillData()) return;
 		let playTo = "Everyone";
 		try {
 			playTo = <string>getGame().settings.get(MODULE_NAME, sound.setting);
@@ -195,11 +241,14 @@ export class CombatReady {
 
 	static getCombatantToken(): Token | undefined {
 		//Check if this combat is unlinked
-		if (CombatReady.DATA.currentCombat.data.scene == null) {
+		let isUnlinked = getGame().release.isGenerationalChange("9.") ? CombatReady.DATA.currentCombat.scene == null : CombatReady.DATA.currentCombat.data.scene == null;
+		if (isUnlinked) {
 			//Get if this is a player token or an NPC token
 			let combatantIsLinked = CombatReady?.DATA?.currentCombatant?.token?.isLinked ?? false;
 			//Get the actor Id
 			let combatantActorId = CombatReady?.DATA?.currentCombatant?.actor?.id ?? null;
+			//Get the token Id
+			let combatantTokenId = CombatReady?.DATA?.currentCombatant?.token?.id ?? null;
 			//Get the token name
 			let combatantTokenName = CombatReady?.DATA?.currentCombatant?.token?.name;
 			let combatantToken: Token | undefined;
@@ -210,6 +259,11 @@ export class CombatReady {
 				});
 				if (combatantToken !== undefined) return combatantToken;
 			}
+			//Check if there is a token that shares the actorId (Player Tokens, tokens on the original scene before unlinked)
+			combatantToken = getCanvas().tokens?.placeables.find((token) => {
+				return token?.id === combatantTokenId ?? false;
+			});
+			if (combatantToken !== undefined) return combatantToken;
 			//If there is not a token that share the actorId is possible to be a placeholder token
 			//We retrieve the list of tokens that share the same name if only one is present that token we will return
 
@@ -236,7 +290,8 @@ export class CombatReady {
 				duration: 250
 			}).then(() => {
 				if (control) {
-					CombatReady.getCombatantToken()?.control();
+					//@ts-ignore
+					token.control();
 				}
 			});
 		}
@@ -258,19 +313,83 @@ export class CombatReady {
 		CombatReady.playSound(CombatReady.NEXT_SOUND);
 	}
 
+	static runAnimationForPlayer(combatant: Combatant): boolean {
+		if (combatant.actor !== null) {
+			let isSelectedCharacter = getGame().users?.filter(u => {
+				if (u.active && !u.isGM) {
+					//@ts-ignore
+					return combatant.actor == u.character;
+				}
+				return false;
+			});
+			let isCurrentUserCharacter = getGame().user?.character == combatant.actor;
+			let isOwned = combatant.actor.isOwner && !getGame().user?.isGM;
+			let runAnimation = isCurrentUserCharacter || isSelectedCharacter?.length == 0 && isOwned;
+			return runAnimation;
+		}
+		return false;
+	}
+	static async checkForCurrentTurnAnimation(): Promise<boolean> {
+		currentAnimation.cleanAnimations();
+		let closing = CombatReady.closeEndTurnDialog();
+		await closing;
+
+		let runAnimation = CombatReady.runAnimationForPlayer(CombatReady.DATA.currentCombatant);
+
+		let panToTokenPerm = <string>getGame().settings.get(MODULE_NAME, "pantotoken");
+		if (runAnimation) {
+			//replace with config dependant // Only to player whom token is
+			CombatReady.resolvePlayersPermission(panToTokenPerm, () => { CombatReady.doPanToToken(true) });
+			CombatReady.doAnimateTurn();
+			if (<boolean>getGame().settings.get(MODULE_NAME, "endturndialog"))
+				CombatReady.showEndTurnDialog();
+			return true;
+		} else if (getGame().user?.isGM) {
+			CombatReady.resolvePlayersPermission(panToTokenPerm, () => { CombatReady.doPanToToken(true) });
+		} else {
+			CombatReady.resolvePlayersPermission(panToTokenPerm, () => { CombatReady.doPanToToken(false) });
+		}
+		return false;
+	}
+	static async checkForNextTurnAnimation(): Promise<boolean> {
+		currentAnimation.cleanAnimations();
+		// next combatant
+		let nextTurn = ((CombatReady.DATA.currentCombat.turn || 0) + 1) % CombatReady.DATA.currentCombat.turns.length;
+		let nextCombatant = CombatReady.DATA.nextCombatant
+		//@ts-ignore
+		if (getGame().settings.get("core", "combatTrackerConfig")?.skipDefeated ?? false) {
+			while (nextCombatant.isDefeated) {
+				if (nextTurn == CombatReady.DATA.currentCombat.turn) break;// Avoid running infinitely
+				nextTurn = (nextTurn + 1) % CombatReady.DATA.currentCombat.turns.length;
+				nextCombatant = CombatReady.DATA.currentCombat.turns[nextTurn];
+			}
+		}
+
+		let closing = CombatReady.closeEndTurnDialog();
+		await closing;
+
+		let runAnimation = CombatReady.runAnimationForPlayer(CombatReady.DATA.nextCombatant);
+		if (runAnimation) {
+			if (nextTurn == 0 && <boolean>getGame().settings.get(MODULE_NAME, "disablenextuponlastturn"))
+				return false;
+			CombatReady.doAnimateNext();
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Check if the current combatant needs to be updated
 	 */
-	static toggleCheck(newRound: Boolean = false): void {
-		if (!CombatReady.fillData()) {
+	static async toggleCheck(newRound: Boolean = false): Promise<void> {
+		let result = CombatReady.fillData();
+		if (!result[0]) {
 			//Clean animations because we are in a possible invalid state
 			currentAnimation.cleanAnimations();
 			return;
 		};
-
+		let difference = result[1];
 		if (CombatReady.DATA.currentCombat && CombatReady.DATA.currentCombat.started) {
-			let entry = CombatReady.DATA.currentCombat.combatant;
-			currentAnimation.cleanAnimations();
 			if (<boolean>getGame().settings.get(MODULE_NAME, "wrapitupdialog")) {
 				if (getGame().user?.isGM && CombatReady.DATA.currentCombatant.players.length > 0) {
 					CombatReady.showWrapItUpDialog();
@@ -282,42 +401,18 @@ export class CombatReady {
 					CombatReady.timerStart();
 				}
 			}
-			// next combatant
-			let nextTurn = ((CombatReady.DATA.currentCombat.turn || 0) + 1) % CombatReady.DATA.currentCombat.turns.length;
-			let nextCombatant = CombatReady.DATA.currentCombat.turns[nextTurn];
-			//@ts-ignore
-			if (getGame().settings.get("core", "combatTrackerConfig")?.skipDefeated ?? false) {
-				while (nextCombatant.data.defeated) {
-					if (nextTurn == CombatReady.DATA.currentCombat.turn) break;// Avoid running infinitely
-					nextTurn = (nextTurn + 1) % CombatReady.DATA.currentCombat.turns.length;
-					nextCombatant = CombatReady.DATA.currentCombat.turns[nextTurn];
-				}
+			let animationRan = false;
+			let nextTurn;
+			if (difference & 1) {
+				animationRan = await CombatReady.checkForCurrentTurnAnimation();
 			}
+			if (difference & 2 && !animationRan) {
+				nextTurn = CombatReady.checkForNextTurnAnimation();
+			}
+			animationRan ||= await nextTurn;
 
-			if (entry !== undefined) {
-				CombatReady.closeEndTurnDialog().then(() => {
-					let isActive = CombatReady.DATA.currentCombatant.actor?.isOwner && !getGame().user?.isGM;
-					let isNext = nextCombatant.actor?.isOwner && !getGame().user?.isGM;
-					let panToTokenPerm = <string>getGame().settings.get(MODULE_NAME, "pantotoken");
-					if (isActive) {
-						//replace with config dependant // Only to player whom token is
-						CombatReady.resolvePlayersPermission(panToTokenPerm, () => { CombatReady.doPanToToken(true) });
-						CombatReady.doAnimateTurn();
-						if (<boolean>getGame().settings.get(MODULE_NAME, "endturndialog"))
-							CombatReady.showEndTurnDialog();
-					} else if (isNext) {
-						if (nextTurn == 0 && <boolean>getGame().settings.get(MODULE_NAME, "disablenextuponlastturn"))
-							return;
-						CombatReady.doAnimateNext();
-					} else if (getGame().user?.isGM) {
-						CombatReady.resolvePlayersPermission(panToTokenPerm, () => { CombatReady.doPanToToken(true) });
-					} else {
-						CombatReady.resolvePlayersPermission(panToTokenPerm, () => { CombatReady.doPanToToken(false) });
-						if (newRound) {
-							CombatReady.nextRound();
-						}
-					}
-				});
+			if (!animationRan && newRound) {
+				CombatReady.nextRound();
 			}
 		} else if (!CombatReady.DATA.currentCombat) {
 			CombatReady.closeEndTurnDialog();
@@ -326,15 +421,15 @@ export class CombatReady {
 	}
 
 	static nextRound(): void {
+		let roundSoundPerm = <string>getGame().settings.get(MODULE_NAME, "roundsound");
 		currentAnimation.nextRoundAnimation();
-		CombatReady.playSound(CombatReady.ROUND_SOUND);
+		CombatReady.resolvePlayersPermission(roundSoundPerm, () => { CombatReady.playSound(CombatReady.ROUND_SOUND) });
 	}
 	/**
 	 *
 	 */
 	static async timerTick(TIMECURRENT: number | null = null): Promise<void> {
 		if (!CombatReady.READY) return;
-		if (!CombatReady.fillData()) return;
 
 		if (getGame().settings.get(MODULE_NAME, "disabletimer")) {
 			return;
@@ -343,7 +438,7 @@ export class CombatReady {
 			if (CombatReady.DATA.currentCombatant.players.length == 0) return;
 		}
 		if (getGame().settings.get(MODULE_NAME, "disabletimerOnHidden")) {
-			if (CombatReady.DATA.currentCombatant.data.hidden && CombatReady.DATA.currentCombatant.players.length == 0) return;
+			if (CombatReady.DATA.currentCombatant.hidden && CombatReady.DATA.currentCombatant.players.length == 0) return;
 		}
 		if (CombatReady.isMasterOfTime(getGame().user)) {
 			CombatReady.TIMECURRENT++;

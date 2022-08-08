@@ -32,57 +32,31 @@ export const initHooks = () => {
 		if (CombatReady.isMasterOfTime(getGame().user)) {
 			await CombatReady.timerStop();
 		}
-		currentAnimation.cleanAnimations();
-		CombatReady.toggleCheck();
+		debouncedCheck(false);
 	});
 
 	/**
 	 * Handle combatant update
 	 */
-	Hooks.on("updateCombatant", function (context, parentId, data) {
+	Hooks.on("updateCombatant", function (combatant: Combatant, change, options, userId) {
 		//@ts-ignore
 		if (!getGame().modules.get(MODULE_NAME)?.api.isActive) { warn("Module not initialized yet - updateCombatant hook aborted"); return; }
 
-
-		const combat = getCombats().get(parentId);
+		const combat = combatant.combat;
 		if (combat) {
-			const combatant = combat.data.combatants.find((o) => o.id === data.id);
-			if (combatant instanceof Combatant) {
-				if (combatant.actor?.hasPlayerOwner) CombatReady.toggleCheck();
-			}
+			debouncedCheck(false);
 		}
 	});
 
 	/**
 	 * Handle combatant delete
 	 */
-	Hooks.on("deleteCombatant", function (context, parentId, data) {
+	Hooks.on("deleteCombatant", function (combatant: Combatant, options, userId) {
 		//@ts-ignore
 		if (!getGame().modules.get(MODULE_NAME)?.api.isActive) { warn("Module not initialized yet - deleteCombatant hook aborted"); return; }
-
-
-		let combat = getCombats().get(parentId);
-
+		let combat = combatant.combat;
 		if (combat) {
-			currentAnimation.cleanAnimations();
-		}
-		CombatReady.toggleCheck();
-	});
-
-	/**
-	 * Handle combatant added
-	 */
-	Hooks.on("addCombatant", function (context, parentId, data) {
-		//@ts-ignore
-		if (!getGame().modules.get(MODULE_NAME)?.api.isActive) { warn("Module not initialized yet - addCombatant hook aborted"); return; }
-
-
-		let combat = getCombats().get(parentId);
-		if (combat instanceof Combat) {
-			let combatant = combat.data.combatants.find((o) => o.id === data.id);
-			if (combatant instanceof Combatant) {
-				if (combatant.actor?.hasPlayerOwner) CombatReady.toggleCheck();
-			}
+			debouncedCheck(false);
 		}
 	});
 

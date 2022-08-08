@@ -50,7 +50,7 @@ export class CombatReadyAnimation extends SettingsAwareEntity {
 			if (nextTurn > curCombat.turns.length - 1) nextTurn = 0;
 			//@ts-ignore
 			if (getGame().settings.get("core", "combatTrackerConfig")?.skipDefeated ?? false) {
-				while (curCombat.turns[nextTurn].data.defeated) {
+				while (curCombat.turns[nextTurn].isDefeated) {
 					if (nextTurn == curCombat.turn) break;// Avoid running infinitely
 					nextTurn++;
 					if (nextTurn > curCombat.turns.length - 1) nextTurn = 0;
@@ -88,8 +88,7 @@ export class CombatReadyAnimation extends SettingsAwareEntity {
 			var testCombat = new Combat();
 			//@ts-ignore
 			let selectedToken = (<Token>(getCanvas().tokens?.objects?.children.find(e => e._controlled)))?.id ?? '';
-			var testCombatant = new Combatant({ tokenId: selectedToken }, { parent: testCombat });
-			if (selectedToken == "") testCombatant.data.name = <string>getGame().user?.name;
+			var testCombatant = new Combatant({ tokenId: selectedToken, name: (selectedToken == "") ? <string>getGame().user?.name : undefined }, { parent: testCombat });
 			let name = "";
 			let combatantName = testCombatant.name;
 			let playerName = <string>getGame().user?.name;
@@ -567,7 +566,7 @@ export class AnimationSubSettings extends CombatReadySubSettings {
 		})
 	}
 	getData(options: Application.RenderOptions): FormApplication.Data<{}, FormApplicationOptions> | Promise<FormApplication.Data<{}, FormApplicationOptions>> {
-		type Data = {object: {},options: FormApplicationOptions,title: string, isGM: Boolean, animations: Array<any>, selectedAnimationName: String, selectedAnimation: any };
+		type Data = { object: {}, options: FormApplicationOptions, title: string, isGM: Boolean, animations: Array<any>, selectedAnimationName: String, selectedAnimation: any };
 		const data: Data = {
 			isGM: false,
 			animations: [],
@@ -577,11 +576,11 @@ export class AnimationSubSettings extends CombatReadySubSettings {
 			options: AnimationSubSettings.defaultOptions,
 			title: ""
 		};
-		data.isGM = getGame().user?.isGM??false;
+		data.isGM = getGame().user?.isGM ?? false;
 		const selectedAnimation = currentAnimation.id;
 
 		data.animations = Object.values(availableAnimations).map(iAnimation => {
-			const animation: {id:string,hasSettings:boolean,settings:any,selectTitle:string,isSelected:boolean} = {
+			const animation: { id: string, hasSettings: boolean, settings: any, selectTitle: string, isSelected: boolean } = {
 				id: "",
 				hasSettings: false,
 				settings: undefined,
@@ -620,7 +619,7 @@ export class AnimationSubSettings extends CombatReadySubSettings {
 		html.find("button#combatready\\.animations\\.test\\.yourTurn").on("click", this.onAnimationTestClick.bind(this))
 		html.find("button#combatready\\.animations\\.test\\.nextUp").on("click", this.onAnimationTestClick.bind(this))
 		html.find("button#combatready\\.animations\\.test\\.nextRound").on("click", this.onAnimationTestClick.bind(this))
-	}animations
+	} animations
 
 	onAnimationTestClick(event): void {
 		currentAnimation.testMode = true;
