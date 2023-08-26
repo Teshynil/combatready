@@ -1,5 +1,5 @@
 import { gsap } from "../combatready";
-import { getCanvas, getCombats, getGame, MODULE_NAME } from "./settings";
+import { getCombats, MODULE_NAME } from "./settings";
 import { availableAnimations, currentAnimation } from "./api";
 import { CombatReady } from "./combatReady";
 import { CombatReadySubSettings, enumerateSettings, SettingsAwareEntity } from "./settingsAwareEntity";
@@ -49,7 +49,7 @@ export class CombatReadyAnimation extends SettingsAwareEntity {
 			let nextTurn = ((curCombat.turn || 0) + 1) % curCombat.turns.length;
 			if (nextTurn > curCombat.turns.length - 1) nextTurn = 0;
 			//@ts-ignore
-			if (getGame().settings.get("core", "combatTrackerConfig")?.skipDefeated ?? false) {
+			if (game.settings.get("core", "combatTrackerConfig")?.skipDefeated ?? false) {
 				while (curCombat.turns[nextTurn].isDefeated) {
 					if (nextTurn == curCombat.turn) break;// Avoid running infinitely
 					nextTurn++;
@@ -59,11 +59,11 @@ export class CombatReadyAnimation extends SettingsAwareEntity {
 			let nxtCombatant = curCombat.turns[nextTurn];
 			let name = "";
 			let combatantName = curCombatant.name;
-			let playerName = <string>getGame().user?.name;
+			let playerName = <string>game.user?.name;
 			let actorName = curCombatant.actor?.name ?? playerName;
 			let nxtName = "";
 			let nxtCombatantName = nxtCombatant.name;
-			let nxtPlayerName = <string>getGame().user?.name;
+			let nxtPlayerName = <string>game.user?.name;
 			let nxtActorName = nxtCombatant.actor?.name ?? playerName;
 			this.data = {
 				currentCombat: curCombat,
@@ -86,12 +86,22 @@ export class CombatReadyAnimation extends SettingsAwareEntity {
 		} else {//In case the test mode is active use the selected token as combatant if none selected use the on
 			//@ts-ignore
 			var testCombat = new Combat();
-			//@ts-ignore
-			let selectedToken = (<Token>(getCanvas().tokens?.objects?.children.find(e => e._controlled)))?.id ?? '';
-			var testCombatant = new Combatant({ tokenId: selectedToken, name: (selectedToken == "") ? <string>getGame().user?.name : undefined }, { parent: testCombat });
+
+			let selectedToken: Token | undefined = <Token>(canvas.tokens?.objects?.children.find(e => {
+				//@ts-ignore
+				return (<Token>e).controlled;
+			})
+			) ?? undefined;
+			var testCombatant = new Combatant({
+				tokenId: selectedToken?.id ?? '',
+				name: (selectedToken == undefined) ? <string>game.user?.name : selectedToken.name,
+				actorId: selectedToken?.actor?.id ?? ''
+			}, {
+				parent: testCombat
+			});
 			let name = "";
 			let combatantName = testCombatant.name;
-			let playerName = <string>getGame().user?.name;
+			let playerName = <string>game.user?.name;
 			let actorName = testCombatant.actor?.name ?? playerName;
 			this.data = {
 				currentCombat: testCombat,
@@ -224,7 +234,7 @@ export class NativeAnimation extends CombatReadyAnimation {
 		this.COVER = cover;
 
 		// language specific fonts
-		switch (getGame().i18n.lang) {
+		switch (game.i18n.lang) {
 			case "en":
 				this.LABEL.style.fontFamily = '"Speedp", "Signika", "Palatino Linotype", serif';
 				this.LABEL.style.fontSize = "124px";
@@ -351,9 +361,9 @@ export class NativeAnimation extends CombatReadyAnimation {
 				let label = Handlebars.compile(html);
 				this.LABEL.innerHTML = label({ name: this.data.nextTexts.name, actor: this.data.nextTexts.actorName, player: this.data.nextTexts.playerName, combatant: this.data.nextTexts.combatantName });
 			} else if (this.getSetting("usecombatantnameassubtitle") == "NextUp" || this.getSetting("usecombatantnameassubtitle") == "Both") {
-				this.LABEL.innerHTML = `<span>${getGame().i18n.localize("combatReady.text.next")}</span><span>${this.data.nextTexts.name}</span>`;
+				this.LABEL.innerHTML = `<span>${game.i18n.localize("combatReady.text.next")}</span><span>${this.data.nextTexts.name}</span>`;
 			} else {
-				this.LABEL.textContent = getGame().i18n.localize("combatReady.text.next");
+				this.LABEL.textContent = game.i18n.localize("combatReady.text.next");
 			}
 			this.LABEL.style.opacity = "0";
 			gsap.to(this.LABEL, 1, {
@@ -383,9 +393,9 @@ export class NativeAnimation extends CombatReadyAnimation {
 				let label = Handlebars.compile(html);
 				this.LABEL.innerHTML = label({ name: this.data.currentTexts.name, actor: this.data.currentTexts.actorName, player: this.data.currentTexts.playerName, combatant: this.data.currentTexts.combatantName });
 			} else if (this.getSetting("usecombatantnameassubtitle") == "YourTurn" || this.getSetting("usecombatantnameassubtitle") == "Both") {
-				this.LABEL.innerHTML = `<span>${getGame().i18n.localize("combatReady.text.turn")}</span><span>${this.data.currentTexts.name}</span>`;
+				this.LABEL.innerHTML = `<span>${game.i18n.localize("combatReady.text.turn")}</span><span>${this.data.currentTexts.name}</span>`;
 			} else {
-				this.LABEL.textContent = getGame().i18n.localize("combatReady.text.turn");
+				this.LABEL.textContent = game.i18n.localize("combatReady.text.turn");
 			}
 
 			$(this.BANNER).removeClass("combatready-bannerdisable");
@@ -557,11 +567,13 @@ export class NativeAnimation extends CombatReadyAnimation {
 }
 
 export class AnimationSubSettings extends CombatReadySubSettings {
+	private windowsStates: Map<number, boolean> = new Map<number, boolean>();
+	private endPreviewDialog: Array<Dialog> = [];
 	override type = "animations";
 	static get defaultOptions() {
 		return mergeObject(super.defaultOptions, {
 			id: "combatready-animations-settings",
-			title: getGame().i18n.localize("combatReady.settings.animations.settings.name"),
+			title: game.i18n.localize("combatReady.settings.animations.settings.name"),
 			template: "modules/combatready/templates/animations_settings.html"
 		})
 	}
@@ -576,7 +588,7 @@ export class AnimationSubSettings extends CombatReadySubSettings {
 			options: AnimationSubSettings.defaultOptions,
 			title: ""
 		};
-		data.isGM = getGame().user?.isGM ?? false;
+		data.isGM = game.user?.isGM ?? false;
 		const selectedAnimation = currentAnimation.id;
 
 		data.animations = Object.values(availableAnimations).map(iAnimation => {
@@ -600,8 +612,8 @@ export class AnimationSubSettings extends CombatReadySubSettings {
 
 		data.selectedAnimation = {
 			id: "selectedAnimation",
-			name: getGame().i18n.localize("combatReady.settings.animations.selectAnimation.name"),
-			hint: getGame().i18n.localize("combatReady.settings.animations.selectAnimation.hint"),
+			name: game.i18n.localize("combatReady.settings.animations.selectAnimation.name"),
+			hint: game.i18n.localize("combatReady.settings.animations.selectAnimation.hint"),
 			type: String,
 			choices: data.animations.reduce((choices, animations) => {
 				choices[animations.id] = animations.selectTitle
@@ -622,6 +634,12 @@ export class AnimationSubSettings extends CombatReadySubSettings {
 	} animations
 
 	onAnimationTestClick(event): void {
+		Object.values(ui.windows).forEach(async (window) => {
+			//@ts-ignore
+			this.windowsStates.set(<Number>(window.appId), window._minimized);
+			await window.minimize();
+		});
+		this.showEndPreviewDialog();
 		currentAnimation.testMode = true;
 		setTimeout(() => {
 			switch (event.currentTarget.value) {
@@ -640,5 +658,48 @@ export class AnimationSubSettings extends CombatReadySubSettings {
 			}
 			currentAnimation.testMode = false;
 		}, 64);
+	}
+
+	async closeEndPreviewDialog(): Promise<void> {
+		// go through all dialogs that we've opened and closed them
+		for (let d of this.endPreviewDialog) {
+			d.close();
+		}
+		this.endPreviewDialog.length = 0;
+	}
+
+	showEndPreviewDialog(): void {
+		this.closeEndPreviewDialog().then(() => {
+			let d = new Dialog(
+				{
+					title: "End Preview",
+					default: "",
+					content: "",
+					buttons: {
+						endpreview: {
+							label: game.i18n.localize("combatReady.settings.animations.endPreview"),
+							callback: () => {
+								currentAnimation.cleanAnimations();
+								this.windowsStates.forEach(async (windowState, index) => {
+									if (ui.windows[index] !== undefined) {
+										if (!windowState) {
+											await ui.windows[index].maximize();
+										}
+									}
+									this.setPosition({ height: "auto", width: 600 });
+								});
+							},
+						},
+					},
+				},
+				{
+					width: 300,
+					top: 5,
+				}
+			);
+			d.render(true);
+			// add dialog to array of dialogs. when using just a single object we'd end up with multiple dialogs
+			this.endPreviewDialog.push(d);
+		});
 	}
 }

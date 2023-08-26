@@ -3,7 +3,7 @@ import { CombatReadyAnimation } from "./module/animations";
 import { CombatReadyApi, initApi, updateAnimation, updateTimer } from "./module/api";
 import { CombatReady } from "./module/combatReady";
 import { initHooks } from "./module/hooks";
-import { getGame, MODULE_NAME, registerSettings } from "./module/settings";
+import { MODULE_NAME, registerSettings } from "./module/settings";
 
 export let debugEnabled = 3;
 // 0 = none, warnings = 1, debug = 2, all = 3
@@ -51,46 +51,33 @@ Hooks.on("ready", function () {
 	initHooks();
 	log("Calling Hook combatready.ready");
 	Hooks.callAll("combatready.ready", CombatReadyAnimation, CombatReadyTimer);
-	let masteroftime = <string>getGame().settings.get(MODULE_NAME, "masteroftime");
-	if (getGame().users?.find((user) => user.active && user.id == masteroftime) == undefined) {//Master of time not found seting first gm on list of connected players
-		masteroftime = getGame().users?.find((user) => user.active && user.isGM)?.id ?? "";
+	let masteroftime = <string>game.settings.get(MODULE_NAME, "masteroftime");
+	if (game.users?.find((user) => user.active && user.id == masteroftime) == undefined) {//Master of time not found seting first gm on list of connected players
+		masteroftime = game.users?.find((user) => user.active && user.isGM)?.id ?? "";
 		if (masteroftime !== "") {
-			getGame().settings.set(MODULE_NAME, "masteroftime", masteroftime);
+			game.settings.set(MODULE_NAME, "masteroftime", masteroftime);
 		} else {
 			ui?.notifications?.notify('Please make sure there is a GM connected and reload the page.', "error");
 			return;
 		}
 	}
+    let lastTime = game.settings.get(MODULE_NAME, "lasttime")?? 0;
 	CombatReady.MASTEROFTIME = masteroftime;
 	//if master of time connected do noting all is good
 	updateAnimation();
 	updateTimer();
 	CombatReady.init();
 	log("Initializing Timer");
-	let timemax = (Number)(getGame().settings.get(MODULE_NAME, "timemax")) ?? 3;
+	let timemax = (Number)(game.settings.get(MODULE_NAME, "timemax")) ?? 3;
 	CombatReady.setTimeMax(timemax * 60);
 	//check if it's our turn! since we're ready
 	CombatReady.toggleCheck();
 	//@ts-ignore
-	if (getGame().modules.get(MODULE_NAME)?.api ?? false) {
+	if (game.modules.get(MODULE_NAME)?.api ?? false) {
 		//@ts-ignore
-		getGame().modules.get(MODULE_NAME).api.isActive = true;
+		game.modules.get(MODULE_NAME).api.isActive = true;
 	}
 });
-
-function deepCopy<T>(source: T): T {
-	return Array.isArray(source)
-		? source.map(item => this.deepCopy(item))
-		: source instanceof Date
-			? new Date(source.getTime())
-			: source && typeof source === 'object'
-				? Object.getOwnPropertyNames(source).reduce((o, prop) => {
-					Object.defineProperty(o, prop, Object.getOwnPropertyDescriptor(source, prop)!);
-					o[prop] = this.deepCopy((source as { [key: string]: any })[prop]);
-					return o;
-				}, Object.create(Object.getPrototypeOf(source)))
-				: source as T;
-}
 //@ts-ignore
 const gmodule = await import(`../../../../${ROUTE_PREFIX}/scripts/greensock/esm/all.js`);
 export const gsap = gmodule.gsap;

@@ -13,7 +13,7 @@
 			"ES2020"
     	],
 		"types": [
-			"@league-of-foundry-developers/foundry-vtt-types",
+			"@league-of-foundry-developers/foundry-vtt-types/index-lenient",
 			"@types/jest"
 		],
     "strictNullChecks": true

@@ -19,10 +19,19 @@
 	{{else if this.isColor}}
 	<input id="{{this.id}}" type="text" name="{{this.id}}" value="{{this.value}}" style="display: none;" />
 	<button id="{{this.id}}-button" name="{{this.id}}-button" value="{{this.value}}" data-responsive-color
-		data-dtype="{{this.type}}" is="colorpicker-button" for="{{this.id}}" form="combatready-timers">{{localize
+		data-dtype="{{this.type}}" is="colorpicker-button" for="{{this.id}}" form="combatready-sounds">{{localize
 		name}}</button>
 	{{else if this.isMultiline}}
 	<textarea name="{{this.id}}" data-dtype="{{this.type}}">{{this.value}}</textarea>
+	{{else if this.isFilePicker}}
+	<div class="form-fields">
+		<button type="button" class="file-picker" data-type="{{this.filePicker}}" data-target="{{this.id}}"
+			title="Browse Files" tabindex="-1"><i class="fas fa-file-import fa-fw"></i></button>
+		<input type="text" name="{{this.id}}" value="{{this.value}}" data-dtype="String">
+		{{#if this.isSoundPicker}}
+		<i data-tooltip="{{localize 'Preview'}}" class="fas fa-play audio-preview" style="flex:0; cursor: pointer;"></i>
+		{{/if}}
+	</div>
 	{{else}}
 	<input type="text" name="{{this.id}}" value="{{this.value}}" data-dtype="{{this.type}}" />
 	{{/if}}
@@ -32,42 +41,21 @@
 
 
 
-<form class="flexcol combatready-timers" id="combatready-timers" autocomplete="off">
+<form class="flexcol combatready-sounds" id="combatready-sounds" autocomplete="off">
 	<section class="content">
 		<div class="settings-list">
-			{{#if this.isGM}}
-			{{#with this.selectedTimer}}
-			{{> settingPartial}}
-			{{/with}}
-			{{else}}
-			<div class="form-group"><label>{{localize "combatReady.settings.timers.activeTimer.name"}}</label>
-				<div class="form-fields" style="justify-content: flex-start;"><b>{{this.selectedTimerName}}</b>
-				</div>
-			</div>
-			<p class="notes">{{localize "combatReady.settings.timers.activeTimer.hint"}}</p>
-			{{/if}}
-			{{#each this.timers}}
-			<div class="combatready-timers-settings" id="combatready.timers.{{this.id}}" {{#unless
-				this.isSelected}}style="display:none" {{/unless}}>
-				<h2 class="module-header">{{localize "combatReady.settings.timers.settings.name"}}</h2>
-				{{#if this.hasSettings}}
-				{{#each settings}}
+			<div class="combatready-sounds-settings" id="combatready.sounds.settings">
+				<h2 class="module-header">{{localize "combatReady.settings.sounds.settings.name"}}</h2>
+				{{#each this}}
 				{{> settingPartial}}
 				{{/each}}
-				{{else}}
-				<p>{{localize "combatReady.settings.timers.noSettings"}}</p>
-				{{/if}}
 			</div>
-			{{/each}}
 		</div>
 	</section>
 
 	<footer class="sheet-footer flexrow">
 		<button type="submit" name="submit">
 			<i class="far fa-save"></i> {{localize 'SETTINGS.Save'}}
-		</button>
-		<button type="submit" name="apply">
-			<i class="far fa-check-circle"></i> {{localize 'combatReady.settings.timers.applyChanges'}}
 		</button>
 	</footer>
 	<script>

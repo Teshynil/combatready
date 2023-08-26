@@ -1,10 +1,10 @@
-import { getCanvas, getCombats, getGame, MODULE_NAME } from "./settings";
+import { getCombats, MODULE_NAME } from "./settings";
 import { currentAnimation, currentTimer } from "./api";
 import { warn } from "../combatready";
 import { updateYield } from "typescript";
 
 export const volume = () => {
-	return (Number)(getGame().settings.get(MODULE_NAME, "volume")) / 100.0;
+	return (Number)(game.settings.get(MODULE_NAME, "volume")) / 100.0;
 };
 enum Difference {
 	Current = 1,
@@ -96,24 +96,24 @@ export class CombatReady {
 			case "None":
 				break;
 			case "GM+Player":
-				if (getGame().user?.isGM || CombatReady.DATA.currentCombatant.actor?.isOwner) {
+				if (game.user?.isGM || CombatReady.DATA.currentCombatant.actor?.isOwner) {
 					callback();
 				}
 				break;
 			case "GM":
-				if (getGame().user?.isGM) {
+				if (game.user?.isGM) {
 					callback();
 				}
 				break;
 			case "OnlyPlayers":
-				if (!getGame().user?.isGM) {
+				if (!game.user?.isGM) {
 					callback();
 				}
 				break;
 			case "Player":
 				if (
-					((CombatReady.DATA.currentCombatant?.actor?.isOwner ?? false) && !getGame().user?.isGM)
-					|| (CombatReady.DATA.currentCombatant?.players.length == 0 ?? false) && getGame().user?.isGM
+					((CombatReady.DATA.currentCombatant?.actor?.isOwner ?? false) && !game.user?.isGM)
+					|| (CombatReady.DATA.currentCombatant?.players.length == 0 ?? false) && game.user?.isGM
 				) {
 					callback();
 				}
@@ -127,7 +127,7 @@ export class CombatReady {
 	static playSound(sound: { file: string, setting: string }): void {
 		let playTo = "Everyone";
 		try {
-			playTo = <string>getGame().settings.get(MODULE_NAME, sound.setting);
+			playTo = <string>game.settings.get(MODULE_NAME, sound.setting);
 		} catch (e) { }
 		CombatReady.resolvePlayersPermission(playTo, () => { AudioHelper.play({ src: sound.file, volume: volume() }); });
 	}
@@ -179,7 +179,7 @@ export class CombatReady {
 	}
 	static showWrapItUpDialog(): void {
 		CombatReady.closeWrapItUpDialog().then(() => {
-			if (getGame().settings.get(MODULE_NAME, "disabletimer")) {
+			if (game.settings.get(MODULE_NAME, "disabletimer")) {
 				return;
 			}
 			let d = new Dialog(
@@ -189,7 +189,7 @@ export class CombatReady {
 					content: "",
 					buttons: {
 						wrapitup: {
-							label: getGame().i18n.localize("combatReady.text.wrapItUp"),
+							label: game.i18n.localize("combatReady.text.wrapItUp"),
 							callback: () => {
 								CombatReady.timerStart()
 							},
@@ -217,12 +217,12 @@ export class CombatReady {
 		CombatReady.READY = true;
 		CombatReady.INTERVAL_IDS = [];
 		// sound statics
-		CombatReady.TURN_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "turnsoundfile"), setting: "turnsound" };
-		CombatReady.NEXT_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "nextsoundfile"), setting: "nextsound" };
-		CombatReady.ROUND_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "roundsoundfile"), setting: "roundsound" };
-		CombatReady.EXPIRE_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "expiresoundfile"), setting: "expiresound" };
-		CombatReady.ACK_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "acksoundfile"), setting: "acksound" };
-		CombatReady.TICK_SOUND = { file: <string>getGame().settings.get(MODULE_NAME, "ticksoundfile"), setting: "ticksound" };
+		CombatReady.TURN_SOUND = { file: <string>game.settings.get(MODULE_NAME, "turnsoundfile"), setting: "turnsound" };
+		CombatReady.NEXT_SOUND = { file: <string>game.settings.get(MODULE_NAME, "nextsoundfile"), setting: "nextsound" };
+		CombatReady.ROUND_SOUND = { file: <string>game.settings.get(MODULE_NAME, "roundsoundfile"), setting: "roundsound" };
+		CombatReady.EXPIRE_SOUND = { file: <string>game.settings.get(MODULE_NAME, "expiresoundfile"), setting: "expiresound" };
+		CombatReady.ACK_SOUND = { file: <string>game.settings.get(MODULE_NAME, "acksoundfile"), setting: "acksound" };
+		CombatReady.TICK_SOUND = { file: <string>game.settings.get(MODULE_NAME, "ticksoundfile"), setting: "ticksound" };
 	}
 
 	/**
@@ -241,7 +241,7 @@ export class CombatReady {
 
 	static getCombatantToken(): Token | undefined {
 		//Check if this combat is unlinked
-		let isUnlinked = getGame().release.isGenerationalChange("9.") ? CombatReady.DATA.currentCombat.scene == null : CombatReady.DATA.currentCombat.data.scene == null;
+		let isUnlinked = CombatReady.DATA.currentCombat.scene == null;
 		if (isUnlinked) {
 			//Get if this is a player token or an NPC token
 			let combatantIsLinked = CombatReady?.DATA?.currentCombatant?.token?.isLinked ?? false;
@@ -254,20 +254,20 @@ export class CombatReady {
 			let combatantToken: Token | undefined;
 			let combatantsTokens: Token[] | undefined;
 			if (combatantIsLinked) {
-				combatantToken = getCanvas().tokens?.placeables.find((token) => {
+				combatantToken = canvas.tokens?.placeables.find((token) => {
 					return token?.actor?.id === combatantActorId ?? false;
 				});
 				if (combatantToken !== undefined) return combatantToken;
 			}
 			//Check if there is a token that shares the actorId (Player Tokens, tokens on the original scene before unlinked)
-			combatantToken = getCanvas().tokens?.placeables.find((token) => {
+			combatantToken = canvas.tokens?.placeables.find((token) => {
 				return token?.id === combatantTokenId ?? false;
 			});
 			if (combatantToken !== undefined) return combatantToken;
 			//If there is not a token that share the actorId is possible to be a placeholder token
 			//We retrieve the list of tokens that share the same name if only one is present that token we will return
 
-			combatantsTokens = getCanvas().tokens?.placeables.filter((token) => {
+			combatantsTokens = canvas.tokens?.placeables.filter((token) => {
 				return token?.name === combatantTokenName ?? false;
 			});
 			if (combatantsTokens !== undefined) {
@@ -275,6 +275,7 @@ export class CombatReady {
 					return combatantsTokens[0];
 				}
 			}
+			return undefined;
 		} else {
 			return <Token>(CombatReady?.DATA?.currentCombatant?.token?.object);
 		}
@@ -284,7 +285,7 @@ export class CombatReady {
 		if (token !== undefined) {
 			let x = token.center.x ?? 0;
 			let y = token.center.y ?? 0;
-			getCanvas().animatePan({
+			canvas.animatePan({
 				x: x,
 				y: y,
 				duration: 250
@@ -301,7 +302,7 @@ export class CombatReady {
 	 * Animate the "you're up next" prompt
 	 */
 	static doAnimateNext(): void {
-		if (getGame().settings.get(MODULE_NAME, "disablenextup")) {
+		if (game.settings.get(MODULE_NAME, "disablenextup")) {
 			return;
 		}
 
@@ -313,17 +314,17 @@ export class CombatReady {
 		CombatReady.playSound(CombatReady.NEXT_SOUND);
 	}
 
-	static runAnimationForPlayer(combatant: Combatant): boolean {
+	static hadToRunAnimationForPlayer(combatant: Combatant): boolean {
 		if (combatant.actor !== null) {
-			let isSelectedCharacter = getGame().users?.filter(u => {
+			let isSelectedCharacter = game.users?.filter(u => {
 				if (u.active && !u.isGM) {
 					//@ts-ignore
 					return combatant.actor == u.character;
 				}
 				return false;
 			});
-			let isCurrentUserCharacter = getGame().user?.character == combatant.actor;
-			let isOwned = combatant.actor.isOwner && !getGame().user?.isGM;
+			let isCurrentUserCharacter = game.user?.character == combatant.actor;
+			let isOwned = combatant.actor.isOwner && !game.user?.isGM;
 			let runAnimation = isCurrentUserCharacter || isSelectedCharacter?.length == 0 && isOwned;
 			return runAnimation;
 		}
@@ -334,17 +335,17 @@ export class CombatReady {
 		let closing = CombatReady.closeEndTurnDialog();
 		await closing;
 
-		let runAnimation = CombatReady.runAnimationForPlayer(CombatReady.DATA.currentCombatant);
+		let runAnimation = CombatReady.hadToRunAnimationForPlayer(CombatReady.DATA.currentCombatant);
 
-		let panToTokenPerm = <string>getGame().settings.get(MODULE_NAME, "pantotoken");
+		let panToTokenPerm = <string>game.settings.get(MODULE_NAME, "pantotoken");
 		if (runAnimation) {
 			//replace with config dependant // Only to player whom token is
 			CombatReady.resolvePlayersPermission(panToTokenPerm, () => { CombatReady.doPanToToken(true) });
 			CombatReady.doAnimateTurn();
-			if (<boolean>getGame().settings.get(MODULE_NAME, "endturndialog"))
+			if (<boolean>game.settings.get(MODULE_NAME, "endturndialog"))
 				CombatReady.showEndTurnDialog();
 			return true;
-		} else if (getGame().user?.isGM) {
+		} else if (game.user?.isGM) {
 			CombatReady.resolvePlayersPermission(panToTokenPerm, () => { CombatReady.doPanToToken(true) });
 		} else {
 			CombatReady.resolvePlayersPermission(panToTokenPerm, () => { CombatReady.doPanToToken(false) });
@@ -357,7 +358,7 @@ export class CombatReady {
 		let nextTurn = ((CombatReady.DATA.currentCombat.turn || 0) + 1) % CombatReady.DATA.currentCombat.turns.length;
 		let nextCombatant = CombatReady.DATA.nextCombatant
 		//@ts-ignore
-		if (getGame().settings.get("core", "combatTrackerConfig")?.skipDefeated ?? false) {
+		if (game.settings.get("core", "combatTrackerConfig")?.skipDefeated ?? false) {
 			while (nextCombatant.isDefeated) {
 				if (nextTurn == CombatReady.DATA.currentCombat.turn) break;// Avoid running infinitely
 				nextTurn = (nextTurn + 1) % CombatReady.DATA.currentCombat.turns.length;
@@ -368,9 +369,9 @@ export class CombatReady {
 		let closing = CombatReady.closeEndTurnDialog();
 		await closing;
 
-		let runAnimation = CombatReady.runAnimationForPlayer(CombatReady.DATA.nextCombatant);
+		let runAnimation = CombatReady.hadToRunAnimationForPlayer(CombatReady.DATA.nextCombatant);
 		if (runAnimation) {
-			if (nextTurn == 0 && <boolean>getGame().settings.get(MODULE_NAME, "disablenextuponlastturn"))
+			if (nextTurn == 0 && <boolean>game.settings.get(MODULE_NAME, "disablenextuponlastturn"))
 				return false;
 			CombatReady.doAnimateNext();
 			return true;
@@ -390,14 +391,14 @@ export class CombatReady {
 		};
 		let difference = result[1];
 		if (CombatReady.DATA.currentCombat && CombatReady.DATA.currentCombat.started) {
-			if (<boolean>getGame().settings.get(MODULE_NAME, "wrapitupdialog")) {
-				if (getGame().user?.isGM && CombatReady.DATA.currentCombatant.players.length > 0) {
+			if (<boolean>game.settings.get(MODULE_NAME, "wrapitupdialog")) {
+				if (game.user?.isGM && CombatReady.DATA.currentCombatant.players.length > 0) {
 					CombatReady.showWrapItUpDialog();
 				} else {
 					CombatReady.closeWrapItUpDialog();
 				}
 			} else {
-				if (CombatReady.isMasterOfTime(getGame().user)) {
+				if (CombatReady.isMasterOfTime(game.user)) {
 					CombatReady.timerStart();
 				}
 			}
@@ -421,7 +422,7 @@ export class CombatReady {
 	}
 
 	static nextRound(): void {
-		let roundSoundPerm = <string>getGame().settings.get(MODULE_NAME, "roundsound");
+		let roundSoundPerm = <string>game.settings.get(MODULE_NAME, "roundsound");
 		currentAnimation.nextRoundAnimation();
 		CombatReady.resolvePlayersPermission(roundSoundPerm, () => { CombatReady.playSound(CombatReady.ROUND_SOUND) });
 	}
@@ -431,16 +432,16 @@ export class CombatReady {
 	static async timerTick(TIMECURRENT: number | null = null): Promise<void> {
 		if (!CombatReady.READY) return;
 
-		if (getGame().settings.get(MODULE_NAME, "disabletimer")) {
+		if (game.settings.get(MODULE_NAME, "disabletimer")) {
 			return;
 		}
-		if (getGame().settings.get(MODULE_NAME, "disabletimerGM")) {
+		if (game.settings.get(MODULE_NAME, "disabletimerGM")) {
 			if (CombatReady.DATA.currentCombatant.players.length == 0) return;
 		}
-		if (getGame().settings.get(MODULE_NAME, "disabletimerOnHidden")) {
+		if (game.settings.get(MODULE_NAME, "disabletimerOnHidden")) {
 			if (CombatReady.DATA.currentCombatant.hidden && CombatReady.DATA.currentCombatant.players.length == 0) return;
 		}
-		if (CombatReady.isMasterOfTime(getGame().user)) {
+		if (CombatReady.isMasterOfTime(game.user)) {
 			CombatReady.TIMECURRENT++;
 			CombatReady.SOCKET.executeForOthers('timerTick', CombatReady.TIMECURRENT);
 		} else {
@@ -452,16 +453,16 @@ export class CombatReady {
 		}
 
 		// If we're in the last seconds defined we tick
-		if (CombatReady.TIMEMAX - CombatReady.TIMECURRENT <= <Number>getGame().settings.get(MODULE_NAME, "tickonlast")) {
+		if (CombatReady.TIMEMAX - CombatReady.TIMECURRENT <= <number>game.settings.get(MODULE_NAME, "tickonlast")) {
 			CombatReady.playSound(CombatReady.TICK_SOUND);
 		}
 		let width = (CombatReady.TIMECURRENT * 100) / CombatReady.TIMEMAX;
 		if (width > 100) {
-			if (CombatReady.isMasterOfTime(getGame().user)) {
+			if (CombatReady.isMasterOfTime(game.user)) {
 				await CombatReady.timerStop();
 			}
-			if (<boolean>getGame().settings.get(MODULE_NAME, "autoendontimer")) {
-				if (CombatReady.isMasterOfTime(getGame().user)) {//run only from the GM side
+			if (<boolean>game.settings.get(MODULE_NAME, "autoendontimer")) {
+				if (CombatReady.isMasterOfTime(game.user)) {//run only from the GM side
 					if (CombatReady.DATA.currentCombatant.players.length > 0) {//run only if the actor has owners
 						getCombats().active?.nextTurn();
 					}
@@ -486,10 +487,10 @@ export class CombatReady {
 	static async timerStart(): Promise<void> {
 		if (!CombatReady.READY) return;
 		CombatReady.TIMECURRENT = 0;
-		if (getGame().settings.get(MODULE_NAME, "disabletimer")) return;
-		if (CombatReady.isMasterOfTime(getGame().user)) {
+		if (game.settings.get(MODULE_NAME, "disabletimer")) return;
+		if (CombatReady.isMasterOfTime(game.user)) {
 			CombatReady.SOCKET.executeForOthers('timerStart');
-			if (!getGame().paused) {
+			if (!game.paused) {
 				for (let idx = CombatReady.INTERVAL_IDS.length - 1; idx >= 0; --idx) {
 					let interval = CombatReady.INTERVAL_IDS[idx];
 					if (interval.name === "clock") {
@@ -513,7 +514,7 @@ export class CombatReady {
 	 */
 	static async timerStop(): Promise<void> {
 		if (!CombatReady.READY) return;
-		if (CombatReady.isMasterOfTime(getGame().user)) {
+		if (CombatReady.isMasterOfTime(game.user)) {
 			for (let idx = CombatReady.INTERVAL_IDS.length - 1; idx >= 0; --idx) {
 				let interval = CombatReady.INTERVAL_IDS[idx];
 				if (interval.name === "clock") {
@@ -534,7 +535,7 @@ export class CombatReady {
 	 */
 	static timerPause(): void {
 		if (!CombatReady.READY) return;
-		if (CombatReady.isMasterOfTime(getGame().user)) {
+		if (CombatReady.isMasterOfTime(game.user)) {
 			CombatReady.SOCKET.executeForOthers('timerPause');
 			for (let idx = CombatReady.INTERVAL_IDS.length - 1; idx >= 0; --idx) {
 				let interval = CombatReady.INTERVAL_IDS[idx];
@@ -553,7 +554,7 @@ export class CombatReady {
 	 */
 	static timerResume(): void {
 		if (!CombatReady.READY) return;
-		if (CombatReady.isMasterOfTime(getGame().user)) {
+		if (CombatReady.isMasterOfTime(game.user)) {
 			for (let idx = CombatReady.INTERVAL_IDS.length - 1; idx >= 0; --idx) {
 				let interval = CombatReady.INTERVAL_IDS[idx];
 				if (interval.name === "clock") return;

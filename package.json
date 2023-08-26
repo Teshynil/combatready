@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "combatready",
-  "version": "4.2.0",
+  "version": "5.0.0",
   "description": "",
   "scripts": {
     "package": "gulp clean && gulp build && gulp package",
@@ -20,7 +20,7 @@
   "author": "Teshynil",
   "license": "GNU3",
   "devDependencies": {
-    "@league-of-foundry-developers/foundry-vtt-types": "^9.269.0",
+    "@league-of-foundry-developers/foundry-vtt-types": "^9.280.0",
     "@types/jest": "^27.0.3",
     "@types/jquery": "^3.5.11",
     "@typescript-eslint/eslint-plugin": "^5.8.1",

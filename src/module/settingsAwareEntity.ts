@@ -1,6 +1,6 @@
 //@ts-ignore
 import { currentAnimation, currentTimer, updateAnimation, updateTimer } from "./api";
-import { getGame, MODULE_NAME } from "./settings";
+import { MODULE_NAME } from "./settings";
 
 export class SettingsAwareEntity {
 	public id: string;
@@ -14,7 +14,10 @@ export class SettingsAwareEntity {
 
 	getSetting(settingId: string) {
 		try {
-			return getGame().settings.get(MODULE_NAME, `${this.type}.${this.id}.setting.${settingId}`)
+			if (this.type == "submenu") {
+				return game.settings.get(MODULE_NAME, `${settingId}`)
+			}
+			return game.settings.get(MODULE_NAME, `${this.type}.${this.id}.setting.${settingId}`)
 		}
 		catch (e) {
 			if (this.settings.some(setting => setting.id === settingId)) {
@@ -31,7 +34,7 @@ export function enumerateSettings(settingEntity: SettingsAwareEntity): any {
 	const settings: any = []
 	for (const setting of settingEntity.settings) {
 		try {
-			if (setting.setting.scope === "world" && !getGame().user?.isGM)
+			if (setting.setting.scope === "world" && !game.user?.isGM)
 				continue
 			let s: any = duplicate(setting.setting);
 			s.isSeparator = (setting.setting.type === "Separator")
@@ -46,8 +49,8 @@ export function enumerateSettings(settingEntity: SettingsAwareEntity): any {
 				s.isMultiline = (setting.setting.multiline)
 				s.isFilePicker = (setting.setting.filePicker !== undefined)
 			}
-			s.name = getGame().i18n.localize(<string>setting.setting.name)
-			s.hint = getGame().i18n.localize(<string>setting.setting.hint)
+			s.name = game.i18n.localize(<string>setting.setting.name)
+			s.hint = game.i18n.localize(<string>setting.setting.hint)
 			settings.push(s)
 		}
 		catch (e) {
@@ -63,7 +66,8 @@ export class CombatReadySubSettings extends FormApplication<any, any, any> {
 	public type: string;
 	static get defaultOptions() {
 		return mergeObject(super.defaultOptions, {
-			width: 600
+			width: 600,
+			resizable: true
 		});
 	}
 
@@ -90,8 +94,8 @@ export class CombatReadySubSettings extends FormApplication<any, any, any> {
 		let mainKey = (this.type == "timers" ? "selectedTimer" : this.type == "animations" ? "selectedAnimation" : "");
 		if (mainKey == "") throw new Error("Incorrect Type for subsettings");
 
-		let selectedObject = <string>getGame().settings.get(MODULE_NAME, mainKey);
-		if (getGame().user?.isGM) {
+		let selectedObject = <string>game.settings.get(MODULE_NAME, mainKey);
+		if (game.user?.isGM) {
 			//@ts-ignore
 			selectedObject = (this.type == "timers" ? formData.selectedTimer : this.type == "animations" ? formData.selectedAnimation : "");
 		}
@@ -106,11 +110,11 @@ export class CombatReadySubSettings extends FormApplication<any, any, any> {
 				setting = `${this.type}.${key}`
 
 			// Get the old setting value
-			const oldValue = getGame().settings.get(MODULE_NAME, setting)
+			const oldValue = game.settings.get(MODULE_NAME, setting)
 
 			// Only update the setting if it has been changed (this leaves the default in place if it hasn't been touched)
 			if (value !== oldValue)
-				await getGame().settings.set(MODULE_NAME, setting, value)
+				await game.settings.set(MODULE_NAME, setting, value)
 		}
 		switch (this.type) {
 			case "timers":
@@ -129,7 +133,7 @@ export class CombatReadySubSettings extends FormApplication<any, any, any> {
 		html.find(`select[name=${mainKey}]`).on("change", this.onObjectSelectedChange.bind(this))
 	}
 
-	onObjectSelectedChange(event): void {
+	async onObjectSelectedChange(event): Promise<void> {
 		let mainKey = (this.type == "timers" ? "selectedTimer" : this.type == "animations" ? "selectedAnimation" : "");
 		if (mainKey == "") throw new Error("Incorrect Type for subsettings");
 		// Hide all module settings
@@ -140,5 +144,14 @@ export class CombatReadySubSettings extends FormApplication<any, any, any> {
 		// Recalculate window height
 		(<HTMLElement>this.element[0]).style.height = ""
 		this.position.height = null
+		await game.settings.set(MODULE_NAME, mainKey, event.currentTarget.value)
+		switch (this.type) {
+			case "timers":
+				updateTimer();
+				break;
+			case "animations":
+				updateAnimation();
+				break;
+		}
 	}
 }

@@ -109,10 +109,11 @@
 					"nextUp": "Test NextUp Animation",
 					"yourTurn": "Test YourTurn Animation",
 					"roundChange": "Test RoundChange Animation",
-					"hint": "To properly test an animation, first you need to apply any pending changes to it. Aditionally you should select a token in the Canvas, if none selected the module would use your user name for the tests."
+					"hint": "To properly test an animation, first you need to apply any pending changes to it. Aditionally you should select a token in the Canvas, if none selected the module would use your user name for the tests. To close the animation preview double click any empty space in the window"
 				},
 				"noSettings": "This theme has no settings",
 				"applyChanges": "Apply Changes",
+				"endPreview": "Return all windows to previous state and remove the animation",
 				"selectAnimation": {
 					"name": "Selected Animation Theme",
 					"hint": "Select the animation theme you would like to use for the alerts."
@@ -129,6 +130,13 @@
 				"selectTimer": {
 					"name": "Selected Timer",
 					"hint": "Select the timer you would like to use."
+				}
+			},
+			"sounds": {
+				"settings": {
+					"name": "Sound Settings",
+					"hint": "Change the sound settings",
+					"button": "Sound Settings"
 				}
 			}
 		},

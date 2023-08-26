@@ -1,6 +1,6 @@
 import { debug } from "../combatready";
 import { CombatReady } from "./combatReady";
-import { getGame, MODULE_NAME } from "./settings";
+import { MODULE_NAME } from "./settings";
 import { SettingsAwareEntity } from "./settingsAwareEntity";
 import { CombatReadyAnimation, NativeAnimation } from "./animations";
 import { CombatReadyTimer, NativeTimer } from "./timers";
@@ -66,7 +66,7 @@ export const CombatReadyApi: {
  */
 export function initApi(): void {
 	//@ts-ignore
-	getGame().modules.get(MODULE_NAME).api = CombatReadyApi;
+	game.modules.get(MODULE_NAME).api = CombatReadyApi;
 	debug("Setting default animation and timer");
 	setupAnimation(new NativeAnimation("native"));
 	setupTimer(new NativeTimer("native"));
@@ -102,7 +102,7 @@ function setupSettings(settingsAwareEntity): void {
 			if (setting.setting.type == "Separator") {
 				continue;
 			}
-			getGame().settings.register(MODULE_NAME, `${settingsAwareEntity.type}.${settingsAwareEntity.id}.setting.${setting.id}`, setting.setting);
+			game.settings.register(MODULE_NAME, `${settingsAwareEntity.type}.${settingsAwareEntity.id}.setting.${setting.id}`, setting.setting);
 		}
 	}
 }
@@ -117,7 +117,7 @@ function setupAnimation(animation): void {
 	}
 	setupSettings(animation);
 	availableAnimations[animation.id] = animation;
-	(<SettingConfig<String>>getGame().settings.settings.get(MODULE_NAME + ".selectedAnimation")).default = getDefaultAnimation()
+	(<SettingConfig<String>>game.settings.settings.get(MODULE_NAME + ".selectedAnimation")).default = getDefaultAnimation()
 }
 /**
  * Register a timer in the module
@@ -130,7 +130,7 @@ function setupTimer(timer): void {
 	}
 	setupSettings(timer);
 	availableTimers[timer.id] = timer;
-	(<SettingConfig<String>>getGame().settings.settings.get(MODULE_NAME + ".selectedTimer")).default = getDefaultTimer()
+	(<SettingConfig<String>>game.settings.settings.get(MODULE_NAME + ".selectedTimer")).default = getDefaultTimer()
 }
 /**
  * Retrieve the default animation id
@@ -161,13 +161,13 @@ export function getDefaultTimer(): string {
  * @returns {Promise<void>}
  */
 export async function updateAnimation(): Promise<void> {
-	const selectedAnimation = <String>getGame().settings.get(MODULE_NAME, "selectedAnimation")
+	const selectedAnimation = <String>game.settings.get(MODULE_NAME, "selectedAnimation")
 	currentAnimation?.destroy();
 	//@ts-ignore
-	currentAnimation = availableAnimations[selectedAnimation] ?? availableAnimations[<String>getGame().settings?.settings?.get(MODULE_NAME + ".selectedAnimation").default]
+	currentAnimation = availableAnimations[selectedAnimation] ?? availableAnimations[<String>game.settings?.settings?.get(MODULE_NAME + ".selectedAnimation").default]
 	//@ts-ignore
 	if (availableAnimations[selectedAnimation] == undefined) {
-		await getGame().settings.set(MODULE_NAME, "selectedAnimation", currentAnimation.id);
+		await game.settings.set(MODULE_NAME, "selectedAnimation", currentAnimation.id);
 	}
 	currentAnimation?.initialize();
 }
@@ -179,13 +179,13 @@ export async function updateAnimation(): Promise<void> {
  * @returns {Promise<void>}
  */
 export async function updateTimer(): Promise<void> {
-	const selectedTimer = <String>getGame().settings.get(MODULE_NAME, "selectedTimer")
+	const selectedTimer = <String>game.settings.get(MODULE_NAME, "selectedTimer")
 	currentTimer?.destroy();
 	//@ts-ignore
-	currentTimer = availableTimers[selectedTimer] ?? availableTimers[<String>getGame().settings?.settings?.get(MODULE_NAME + ".selectedTimer").default]
+	currentTimer = availableTimers[selectedTimer] ?? availableTimers[<String>game.settings?.settings?.get(MODULE_NAME + ".selectedTimer").default]
 	//@ts-ignore
 	if (availableTimers[selectedTimer] == undefined) {
-		await getGame().settings.set(MODULE_NAME, "selectedTimer", currentTimer.id);
+		await game.settings.set(MODULE_NAME, "selectedTimer", currentTimer.id);
 	}
 	currentTimer?.initialize();
 }

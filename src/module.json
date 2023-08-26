@@ -2,13 +2,13 @@
 	"id": "combatready",
 	"title": "Combat Ready!",
 	"description": "'<b><i>My Combat Tracker is Ready</i></b>' Combat ready indicator to remind players of their turn, as well as time taken. ",
-	"version": "4.2.0",
+	"version": "5.0.0",
 	"authors": [
 		{
 			"name": "Teshynil",
 			"url": "https://github.com/Teshynil/",
 			"email": "",
-			"discord": "Teshynil#8564",
+			"discord": "teshynil",
 			"ko-fi": "",
 			"patreon": "",
 			"reddit": "u/Teshynil",
@@ -73,7 +73,7 @@
 				"type": "module",
 				"manifest": "https://raw.githubusercontent.com/ardittristan/VTTColorSettings/master/module.json",
 				"compatibility": {
-					"verified": "2.8.4"
+					"verified": "2.9.1"
 				}
 			},
 			{
@@ -81,7 +81,7 @@
 				"type": "module",
 				"manifest": "https://raw.githubusercontent.com/manuelVo/foundryvtt-socketlib/master/module.json",
 				"compatibility": {
-					"verified": "1.0.10"
+					"verified": "1.0.13"
 				}
 			}
 		]
@@ -92,25 +92,13 @@
 	},
 	"packs": [],
 	"compatibility": {
-		"minimum": 9,
-		"verified": 10
+		"minimum": 10,
+		"verified": 11
 	},
 	"url": "https://github.com/Teshynil/combatready",
-	"download": "https://github.com/Teshynil/combatready/releases/download/4.2.0/combatready-v4.2.0.zip",
+	"download": "https://github.com/Teshynil/combatready/releases/download/5.0.0/combatready-v5.0.0.zip",
 	"manifest": "https://raw.githubusercontent.com/Teshynil/combatready/master/src/module.json",
-	"license": "https://github.com/Teshynil/combatready/blob/4.2.0/LICENSE",
-	"readme": "https://github.com/Teshynil/combatready/blob/4.2.0/README.md",
-	"changelog": "https://github.com/Teshynil/combatready/blob/4.2.0/CHANGELOG.md",
-	"name": "combatready",
-	"minimumCoreVersion": "9",
-	"compatibleCoreVersion": "10",
-	"author": "Teshynil",
-	"dependencies": [
-		{
-			"name": "colorsettings"
-		},
-		{
-			"name": "socketlib"
-		}
-	]
+	"license": "https://github.com/Teshynil/combatready/blob/5.0.0/LICENSE",
+	"readme": "https://github.com/Teshynil/combatready/blob/5.0.0/README.md",
+	"changelog": "https://github.com/Teshynil/combatready/blob/5.0.0/CHANGELOG.md"
 }

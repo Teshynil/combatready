@@ -1,4 +1,4 @@
-import { getCombats, getGame, MODULE_NAME } from "./settings";
+import { getCombats, MODULE_NAME } from "./settings";
 import { CombatReady, volume } from "./combatReady";
 import { currentAnimation } from "./api";
 import { CombatReadyTimer } from "./timers";
@@ -9,11 +9,11 @@ export const initHooks = () => {
 	 */
 	Hooks.on("pauseGame", function () {
 		//@ts-ignore
-		if (!getGame().modules.get(MODULE_NAME)?.api.isActive) { warn("Module not initialized yet - pauseGame hook aborted"); return; }
+		if (!game.modules.get(MODULE_NAME)?.api.isActive) { warn("Module not initialized yet - pauseGame hook aborted"); return; }
 
-		if (!(getGame().combat?.started ?? false)) return;
-		if (CombatReady.isMasterOfTime(getGame().user)) {
-			if (getGame().paused) {
+		if (!(game.combat?.started ?? false)) return;
+		if (CombatReady.isMasterOfTime(game.user)) {
+			if (game.paused) {
 				CombatReady.timerPause();
 			}
 			else {
@@ -27,9 +27,9 @@ export const initHooks = () => {
 	 */
 	Hooks.on("deleteCombat", async function () {
 		//@ts-ignore
-		if (!getGame().modules.get(MODULE_NAME)?.api.isActive) { warn("Module not initialized yet - deleteCombat hook aborted"); return; }
+		if (!game.modules.get(MODULE_NAME)?.api.isActive) { warn("Module not initialized yet - deleteCombat hook aborted"); return; }
 
-		if (CombatReady.isMasterOfTime(getGame().user)) {
+		if (CombatReady.isMasterOfTime(game.user)) {
 			await CombatReady.timerStop();
 		}
 		debouncedCheck(false);
@@ -40,7 +40,7 @@ export const initHooks = () => {
 	 */
 	Hooks.on("updateCombatant", function (combatant: Combatant, change, options, userId) {
 		//@ts-ignore
-		if (!getGame().modules.get(MODULE_NAME)?.api.isActive) { warn("Module not initialized yet - updateCombatant hook aborted"); return; }
+		if (!game.modules.get(MODULE_NAME)?.api.isActive) { warn("Module not initialized yet - updateCombatant hook aborted"); return; }
 
 		const combat = combatant.combat;
 		if (combat) {
@@ -53,7 +53,7 @@ export const initHooks = () => {
 	 */
 	Hooks.on("deleteCombatant", function (combatant: Combatant, options, userId) {
 		//@ts-ignore
-		if (!getGame().modules.get(MODULE_NAME)?.api.isActive) { warn("Module not initialized yet - deleteCombatant hook aborted"); return; }
+		if (!game.modules.get(MODULE_NAME)?.api.isActive) { warn("Module not initialized yet - deleteCombatant hook aborted"); return; }
 		let combat = combatant.combat;
 		if (combat) {
 			debouncedCheck(false);
@@ -65,7 +65,7 @@ export const initHooks = () => {
 	 */
 	Hooks.on("collapseSidebar", function (a, collapsed) {
 		//@ts-ignore
-		if (!getGame().modules.get(MODULE_NAME)?.api.isActive) { warn("Module not initialized yet - collapseSidebar hook aborted"); return; }
+		if (!game.modules.get(MODULE_NAME)?.api.isActive) { warn("Module not initialized yet - collapseSidebar hook aborted"); return; }
 
 
 		// set width to sidebar offset size
@@ -77,7 +77,7 @@ export const initHooks = () => {
 	 */
 	Hooks.on("updateCombat", async function (data, delta) {
 		//@ts-ignore
-		if (!getGame().modules.get(MODULE_NAME)?.api.isActive) { warn("Module not initialized yet - updateCombat hook aborted"); return; }
+		if (!game.modules.get(MODULE_NAME)?.api.isActive) { warn("Module not initialized yet - updateCombat hook aborted"); return; }
 		let updateAnimations = false;
 		let newRound = false;
 		if (Object.keys(delta).some((k) => k === "round")) {
@@ -92,7 +92,7 @@ export const initHooks = () => {
 		if (Object.keys(delta).some((k) => k === "turn")) {
 			updateAnimations = true;
 		}
-		if (CombatReady.isMasterOfTime(getGame().user)) {
+		if (CombatReady.isMasterOfTime(game.user)) {
 			if (Object.keys(delta).some((k) => k === "turn")) {
 				await CombatReady.timerStop();
 			}
@@ -109,6 +109,11 @@ export const initHooks = () => {
 			debouncedCheck(newRound);
 		}
 	});
+
+	Hooks.on("closeAnimationSubSettings",function (event){
+        currentAnimation.cleanAnimations();
+		document.querySelector("combatready-testcover")?.remove();
+    });
 
 	var debouncedCheck = debounce((newRound: Boolean) => {
 		log("Executing Animation update");

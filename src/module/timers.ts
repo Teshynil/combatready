@@ -1,6 +1,6 @@
 //@ts-ignore
 import { gsap } from "/scripts/greensock/esm/all.js";
-import { getCanvas, getCombats, getGame, MODULE_NAME } from "./settings";
+import { getCombats, MODULE_NAME } from "./settings";
 import { availableTimers, currentTimer } from "./api";
 import { CombatReady } from "./combatReady";
 import { CombatReadySubSettings, enumerateSettings, SettingsAwareEntity } from "./settingsAwareEntity";
@@ -163,13 +163,13 @@ export class TimerSubSettings extends CombatReadySubSettings {
     static get defaultOptions() {
         return mergeObject(super.defaultOptions, {
             id: "combatready-timers-settings",
-            title: getGame().i18n.localize("combatReady.settings.timers.settings.name"),
+            title: game.i18n.localize("combatReady.settings.timers.settings.name"),
             template: "modules/combatready/templates/timers_settings.html"
         })
     }
     getData(options: Application.RenderOptions): FormApplication.Data<{}, FormApplicationOptions> | Promise<FormApplication.Data<{}, FormApplicationOptions>> {
         const data: any = {}
-        data.isGM = getGame().user?.isGM
+        data.isGM = game.user?.isGM
         const selectedTimer = currentTimer.id
 
         data.timers = Object.values(availableTimers).map(iTimer => {
@@ -187,8 +187,8 @@ export class TimerSubSettings extends CombatReadySubSettings {
 
         data.selectedTimer = {
             id: "selectedTimer",
-            name: getGame().i18n.localize("combatReady.settings.timers.selectTimer.name"),
-            hint: getGame().i18n.localize("combatReady.settings.timers.selectTimer.hint"),
+            name: game.i18n.localize("combatReady.settings.timers.selectTimer.name"),
+            hint: game.i18n.localize("combatReady.settings.timers.selectTimer.hint"),
             type: String,
             choices: data.timers.reduce((choices, timers) => {
                 choices[timers.id] = timers.selectTitle
