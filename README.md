@@ -2,13 +2,14 @@
 
 [![Forge Installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fcombatready&colorB=006400&style=for-the-badge)](https://forge-vtt.com/bazaar#package=combatready) 
 
-![Foundry Core Compatible Version](https://img.shields.io/badge/dynamic/json.svg?url=https%3A%2F%2Fraw.githubusercontent.com%2FTeshynil%2Fcombatready%2Fmaster%2Fsrc%2Fmodule.json&label=Foundry%20Version&query=$.compatibleCoreVersion&colorB=orange&style=for-the-badge)
+![Foundry Core Compatible Version](https://img.shields.io/badge/dynamic/json.svg?url=https%3A%2F%2Fraw.githubusercontent.com%2FTeshynil%2Fcombatready%2Fmaster%2Fsrc%2Fmodule.json&label=Foundry%20Version&query=$.compatibility.verified&colorB=orange&style=for-the-badge)
 
 ![Latest Version](https://img.shields.io/badge/dynamic/json.svg?url=https%3A%2F%2Fraw.githubusercontent.com%2FTeshynil%2Fcombatready%2Fmaster%2Fsrc%2Fmodule.json&label=Latest%20Release&prefix=v&query=$.version&colorB=red&style=for-the-badge)
 
 [![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Fcombatready%2Fshield%2Fendorsements&style=for-the-badge)](https://www.foundryvtt-hub.com/package/combatready/)
 
 ![GitHub all releases](https://img.shields.io/github/downloads/Teshynil/combatready/total?style=for-the-badge)
+![Latest](https://img.shields.io/github/downloads/teshynil/combatready/latest/total?style=for-the-badge)
 
 Shows an animation with sound to players to alert them about their next turn, also an alert when its now their turn.
 
@@ -26,7 +27,7 @@ Combat Ready is a system agnostic module about being ready for combat, it featur
 
 **All features are customizables.**
 
-Combat Ready is currently spected to work with FVTT version 9
+Combat Ready is currently spected to work with FVTT version 10 & 11
 
 ## Note
 
