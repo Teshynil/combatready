@@ -27,7 +27,7 @@ Combat Ready is a system agnostic module about being ready for combat, it featur
 
 **All features are customizables.**
 
-Combat Ready is currently spected to work with FVTT version 9
+Combat Ready is currently spected to work with FVTT version 10 & 11
 
 ## Note
 
