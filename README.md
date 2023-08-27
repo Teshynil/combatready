@@ -9,6 +9,7 @@
 [![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Fcombatready%2Fshield%2Fendorsements&style=for-the-badge)](https://www.foundryvtt-hub.com/package/combatready/)
 
 ![GitHub all releases](https://img.shields.io/github/downloads/Teshynil/combatready/total?style=for-the-badge)
+![Latest](https://img.shields.io/github/downloads/teshynil/combatready/latest/total?style=for-the-badge)
 
 Shows an animation with sound to players to alert them about their next turn, also an alert when its now their turn.
 
