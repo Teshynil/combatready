@@ -1,4 +1,14 @@
 # CHANGELOG
+## [5.0.1] 2023-08-27
+* Fix bug: default timer not advancing
+> Takes care of #23
+
+
+## [5.0.0] 2023-08-26
+* Refactoring of code
+* Updated compatibility to FoundryVTT v11
+* Adding sound settings as a separate menu
+
 ## [4.2.0] 2022-07-08
 * Refactoring of code
 * Improving user detection & combatants update to avoid multiple animations launching when there are not needed
